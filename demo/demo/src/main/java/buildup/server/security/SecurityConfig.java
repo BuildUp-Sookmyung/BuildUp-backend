@@ -1,6 +1,7 @@
 package buildup.server.security;
-import buildup.buildupback.security.local.LocalUserDetailsService;
-import buildup.buildupback.service.UserService;
+
+import buildup.server.security.local.LocalUserDetailsService;
+import buildup.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

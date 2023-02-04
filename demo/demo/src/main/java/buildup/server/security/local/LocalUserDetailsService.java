@@ -1,7 +1,7 @@
 package buildup.server.security.local;
 
-import buildup.buildupback.domain.user.User;
-import buildup.buildupback.service.UserService;
+import buildup.server.domain.user.Member;
+import buildup.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,7 +15,7 @@ public class LocalUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findByUsername(username);
-        return new LocalUserDetails(user);
+        Member member = userService.findByUsername(username);
+        return new LocalUserDetails(member);
     }
 }

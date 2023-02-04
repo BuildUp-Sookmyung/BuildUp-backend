@@ -1,11 +1,11 @@
 package buildup.server.dto;
 
 
-import buildup.buildupback.domain.user.User;
+import buildup.server.domain.user.Member;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class CreateLocalAccountRequestDto {
@@ -15,10 +15,10 @@ public class CreateLocalAccountRequestDto {
     private String nickname;
     private String phone;
     private String email;
-    private Date birth;
+    private LocalDate birth;
 
-    public User toEntity() {
-        return User.builder()
+    public Member toEntity() {
+        return Member.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)

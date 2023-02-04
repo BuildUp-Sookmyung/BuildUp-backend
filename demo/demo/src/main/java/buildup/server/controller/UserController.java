@@ -1,7 +1,7 @@
 package buildup.server.controller;
-import buildup.buildupback.dto.CreateLocalAccountDto;
-import buildup.buildupback.dto.CreateLocalAccountRequestDto;
-import buildup.buildupback.service.UserService;
+
+import buildup.server.dto.CreateLocalAccountRequestDto;
+import buildup.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
