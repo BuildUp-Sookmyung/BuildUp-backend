@@ -1,4 +1,4 @@
-package buildup.server;
+package buildup.server.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

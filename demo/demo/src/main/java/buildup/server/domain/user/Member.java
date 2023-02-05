@@ -1,6 +1,6 @@
 package buildup.server.domain.user;
 
-import buildup.server.BaseTimeEntity;
+import buildup.server.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
