@@ -29,6 +29,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter(tokenProvider);
+    }
+
+    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
@@ -44,7 +49,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.headers().frameOptions().disable()
+                .and()
+                .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
                 .sessionManagement()
@@ -52,13 +59,13 @@ public class SecurityConfig {
 
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-
-                .and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .authenticationEntryPoint(new RestAuthenticationEntryPoint());
 
         http.authorizeHttpRequests()
-                .requestMatchers("/admin/**").hasRole("ADMIN");
+                .requestMatchers("/api").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         http.authenticationProvider(authenticationProvider());
 
