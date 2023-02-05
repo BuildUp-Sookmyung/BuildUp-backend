@@ -1,7 +1,6 @@
 package buildup.server.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,5 +42,48 @@ public class AuthToken {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(expiry)
                 .compact();
+    }
+
+    public boolean validate() {
+        return this.getTokenClaims() != null;
+    }
+
+    public Claims getTokenClaims() {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SecurityException e) {
+            log.info("Invalid JWT signature.");
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN_SIGNATURE);
+        } catch (MalformedJwtException e) {
+            log.info("Invalid JWT token.");
+            throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token.");
+            throw new AuthException(AuthErrorCode.EXPIRED_JWT_TOKEN);
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT token.");
+            throw new AuthException(AuthErrorCode.UNSUPPORTED_JWT_TOKEN);
+        } catch (IllegalArgumentException e) {
+            log.info("JWT token compact of handler are invalid.");
+            throw new AuthException(AuthErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    public Claims getExpiredTokenClaims() {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token. Return claims");
+            return e.getClaims();
+        }
+        return null;
     }
 }
