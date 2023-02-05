@@ -12,9 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/join/local/request")
+    @PostMapping("/join/local")
     public Long joinByLocalAccount(@RequestBody LocalJoinRequest localJoinRequest) {
-        return memberService.join(localJoinRequest.toEntity());
+        Long new_id = memberService.join(localJoinRequest);
+        if (localJoinRequest.getPhone() != null) {
+            //TODO: 전화번호 저장하는 로직
+        }
+        return new_id;
     }
 
 }

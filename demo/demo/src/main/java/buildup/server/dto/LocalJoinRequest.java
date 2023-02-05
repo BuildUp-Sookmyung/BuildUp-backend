@@ -2,6 +2,7 @@ package buildup.server.dto;
 
 
 import buildup.server.domain.user.Member;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,12 @@ public class LocalJoinRequest {
     private String username;
     @NotBlank
     private String password;
+
+    @NotBlank
+    private String smsAgreeYn;
+
+    @NotBlank
+    private String emailAgreeYn;
     private String phone;
 
     public Member toEntity() {
@@ -23,6 +30,8 @@ public class LocalJoinRequest {
                 .nickname(nickname)
                 .username(username)
                 .password(passwordEncoder.encode(password))
+                .smsAgreeYn(smsAgreeYn)
+                .emailAgreeYn(emailAgreeYn)
                 .build();
     }
 

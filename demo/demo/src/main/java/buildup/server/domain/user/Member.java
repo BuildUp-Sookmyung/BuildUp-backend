@@ -30,6 +30,10 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Provider provider;
+
     @Column(nullable = false)
     private String smsAgreeYn;
 
@@ -41,12 +45,13 @@ public class Member extends BaseTimeEntity {
     private String profileSetYn;
 
     @Builder
-    public Member(String nickname, String email, String username, String password, String smsAgreeYn, String emailAgreeYn) {
+    public Member(String nickname, String email, String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn) {
         this.nickname = nickname;
         this.email = email;
         this.username = username;
         this.password = password;
         this.role = Role.USER;
+        this.provider = provider;
         this.smsAgreeYn = smsAgreeYn;
         this.emailAgreeYn = emailAgreeYn;
         this.profileSetYn = "N";

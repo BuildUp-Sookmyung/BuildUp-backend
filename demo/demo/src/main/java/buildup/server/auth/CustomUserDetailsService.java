@@ -2,6 +2,7 @@ package buildup.server.auth;
 
 import buildup.server.auth.domain.CustomUserDetails;
 import buildup.server.domain.user.Member;
+import buildup.server.repository.MemberRepository;
 import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberService.findByUsername(username);
-        return new CustomUserDetails(member);
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException());
+        //TODO: 예외처리
+        return CustomUserDetails.create(member);
     }
 }
