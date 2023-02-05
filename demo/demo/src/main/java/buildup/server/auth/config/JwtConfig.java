@@ -1,4 +1,4 @@
-package buildup.server.auth;
+package buildup.server.auth.config;
 
 import buildup.server.auth.domain.AuthTokenProvider;
 import org.springframework.beans.factory.annotation.Value;
