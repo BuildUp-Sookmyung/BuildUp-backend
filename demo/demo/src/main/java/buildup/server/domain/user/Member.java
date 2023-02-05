@@ -45,7 +45,7 @@ public class Member extends BaseTimeEntity {
     private String profileSetYn;
 
     @Builder
-    public Member(String nickname, String email, String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn) {
+    public Member(String nickname, String email, String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
         this.nickname = nickname;
         this.email = email;
         this.username = username;
@@ -54,7 +54,7 @@ public class Member extends BaseTimeEntity {
         this.provider = provider;
         this.smsAgreeYn = smsAgreeYn;
         this.emailAgreeYn = emailAgreeYn;
-        this.profileSetYn = "N";
+        this.profileSetYn = profileSetYn;
     }
 
     public String getRoleKey() {

@@ -32,6 +32,7 @@ public class LocalJoinRequest {
                 .password(passwordEncoder.encode(password))
                 .smsAgreeYn(smsAgreeYn)
                 .emailAgreeYn(emailAgreeYn)
+                .profileSetYn("N")
                 .build();
     }
 
