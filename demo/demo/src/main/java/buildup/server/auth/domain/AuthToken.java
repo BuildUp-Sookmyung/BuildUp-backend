@@ -1,4 +1,4 @@
-package buildup.server.security;
+package buildup.server.auth.domain;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;

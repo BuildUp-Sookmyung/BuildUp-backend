@@ -1,4 +1,4 @@
-package buildup.server.security;
+package buildup.server.auth.domain;
 
 import buildup.server.domain.user.Member;
 import org.springframework.security.core.GrantedAuthority;

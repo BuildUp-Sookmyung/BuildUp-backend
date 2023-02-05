@@ -1,4 +1,4 @@
-package buildup.server.security;
+package buildup.server.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

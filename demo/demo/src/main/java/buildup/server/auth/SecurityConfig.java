@@ -1,5 +1,6 @@
-package buildup.server.security;
+package buildup.server.auth;
 
+import buildup.server.auth.domain.AuthTokenProvider;
 import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

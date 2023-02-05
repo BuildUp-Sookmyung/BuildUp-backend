@@ -1,5 +1,6 @@
-package buildup.server.security;
+package buildup.server.auth;
 
+import buildup.server.auth.domain.CustomUserDetails;
 import buildup.server.domain.user.Member;
 import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
-package buildup.server.security;
+package buildup.server.auth.domain;
 
+import buildup.server.auth.domain.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;

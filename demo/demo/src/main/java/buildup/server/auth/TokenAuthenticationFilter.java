@@ -1,5 +1,7 @@
-package buildup.server.security;
+package buildup.server.auth;
 
+import buildup.server.auth.domain.AuthToken;
+import buildup.server.auth.domain.AuthTokenProvider;
 import buildup.server.common.HeaderUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
