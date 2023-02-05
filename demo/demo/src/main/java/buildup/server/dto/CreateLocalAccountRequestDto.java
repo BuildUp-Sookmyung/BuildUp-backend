@@ -3,13 +3,13 @@ package buildup.server.dto;
 
 import buildup.server.domain.user.Member;
 import lombok.Data;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
 @Data
 public class CreateLocalAccountRequestDto {
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private String username;
     private String password;
     private String nickname;
