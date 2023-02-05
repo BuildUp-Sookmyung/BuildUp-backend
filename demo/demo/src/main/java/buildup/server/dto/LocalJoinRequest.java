@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
-
 @Data
 public class LocalJoinRequest {
     private final PasswordEncoder passwordEncoder;
