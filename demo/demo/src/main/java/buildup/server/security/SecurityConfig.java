@@ -1,7 +1,7 @@
 package buildup.server.security;
 
 import buildup.server.security.local.LocalUserDetailsService;
-import buildup.server.service.UserService;
+import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    private final UserService userService;
+    private final MemberService memberService;
     private final LocalUserDetailsService localUserDetailsService;
 
     @Bean
