@@ -1,4 +1,4 @@
-package buildup.server.security.local;
+package buildup.server.security;
 
 import buildup.server.domain.user.Member;
 import buildup.server.service.MemberService;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LocalUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
     private final MemberService memberService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberService.findByUsername(username);
-        return new LocalUserDetails(member);
+        return new CustomUserDetails(member);
     }
 }
