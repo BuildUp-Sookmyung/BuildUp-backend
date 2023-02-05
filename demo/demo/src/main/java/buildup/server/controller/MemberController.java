@@ -1,6 +1,6 @@
 package buildup.server.controller;
 
-import buildup.server.dto.CreateLocalAccountRequestDto;
+import buildup.server.dto.LocalJoinRequest;
 import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +13,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/join/local/request")
-    public Long joinByLocalAccount(@RequestBody CreateLocalAccountRequestDto createLocalAccountRequestDto) {
-        return memberService.join(createLocalAccountRequestDto.toEntity());
+    public Long joinByLocalAccount(@RequestBody LocalJoinRequest localJoinRequest) {
+        return memberService.join(localJoinRequest.toEntity());
     }
 
 }
