@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -28,36 +29,30 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String phone;
-
-    @Column(nullable = true)
-    private LocalDate birth;
-
-    @Column
-    private String picture;
-
     @Enumerated(EnumType.STRING) // DB 저장 시 Enum 값 설정 (디폴트 = int형 숫자) -> 문자로 변경
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private String smsAgreeYn;
+
+    @Column(nullable = false)
+    private String emailAgreeYn;
+
+    @Setter
+    @Column(nullable = false)
+    private String profileSetYn;
+
     @Builder
-    public Member(String nickname, String email, String username, String password, String picture, String phone, LocalDate birth, Role role) {
+    public Member(String nickname, String email, String username, String password, String smsAgreeYn, String emailAgreeYn) {
         this.nickname = nickname;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.phone = phone;
-        this.birth = birth;
-        this.picture = picture;
-        this.role = role;
-    }
-
-    public Member update(String nickname, String picture) {
-        this.nickname = nickname;
-        this.picture = picture;
-
-        return this;
+        this.role = Role.USER;
+        this.smsAgreeYn = smsAgreeYn;
+        this.emailAgreeYn = emailAgreeYn;
+        this.profileSetYn = "N";
     }
 
     public String getRoleKey() {
