@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TokenResponse {
+public class TokenDto {
 
     private String accessToken;
     private String refreshToken;

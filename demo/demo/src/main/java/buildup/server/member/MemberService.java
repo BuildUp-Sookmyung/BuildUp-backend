@@ -3,20 +3,21 @@ package buildup.server.member;
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
+import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final String SOCIAL_PW = "social1234";
+    private static final long THREE_DAYS_MSEC = 259200000;
 
     //TODO: 추후 제거
     @Transactional
@@ -78,10 +80,11 @@ public class MemberService {
 
     @Transactional
     public AuthInfo signIn(SocialLoginRequest request) {
+        // TODO: 번호 존재하면 번호도 저장!!!(네이버)
         String username = request.getProvider() + request.getEmail();
         if (memberRepository.findByUsername(username).isEmpty()) {
             // 멤버 디비에 저장 = 회원 가입
-            Member saveMember = saveMember(request, SOCIAL_PW);
+            saveMember(request, SOCIAL_PW);
         }
         LoginRequest loginRequest = LoginRequest.toLoginRequest(request, SOCIAL_PW);
         return new AuthInfo(
@@ -91,12 +94,63 @@ public class MemberService {
 
     }
 
+    // TODO: 예외처리
+    @Transactional
+    public AuthInfo reissueToken(TokenDto dto) {
+        AuthToken expiredToken = tokenProvider.convertAuthToken(dto.getAccessToken());
+        AuthToken refreshToken = tokenProvider.convertAuthToken(dto.getRefreshToken());
+
+        Claims claims = expiredToken.getExpiredTokenClaims();
+        if (claims == null) {
+            throw new RuntimeException("아직 만료되지 않음");
+        } else {
+            log.info("claims={}", claims);
+        }
+        String username = claims.getSubject();
+        Role role = Role.of(claims.get("role", String.class));
+
+        if (!refreshToken.validate()) {
+            throw new RuntimeException("AuthErrorCode.INVALID_REFRESH_TOKEN");
+        }
+
+        // refresh token으로 DB에서 user 정보와 확인
+        MemberRefreshToken memberRefreshToken = refreshTokenRepository.findByUsernameAndRefreshToken(username, dto.getRefreshToken());
+        log.info("UserRefreshToken={}", refreshToken);
+        if (memberRefreshToken == null) {
+            throw new RuntimeException("가입되지 않은 회원 또는 유효하지 않은 리프레시 토큰");
+        }
+
+        Date now = new Date();
+
+        AuthToken newAccessToken = tokenProvider.createAuthToken(
+                username,
+                role.getKey(),
+                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+        );
+
+        long validTime = refreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
+
+        // 토큰 만료기간이 3일 이하인 경우 refresh token 발급
+        if (validTime <= THREE_DAYS_MSEC) {
+            long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
+
+            refreshToken = tokenProvider.createAuthToken(
+                    appProperties.getAuth().getTokenSecret(),
+                    new Date(now.getTime() + refreshTokenExpiry)
+            );
+            // DB에 토큰 업데이트
+            memberRefreshToken.setRefreshToken(refreshToken.getToken());
+        }
+
+        return new AuthInfo(newAccessToken, memberRefreshToken);
+    }
+
     //TODO: 리팩토링-중복코드 제거
 
     // 액세스 토큰 발급
     private AuthToken createAuth(LoginRequest request) {
 
-        // TODO: BadCredentialsException 처리 (아이디, 비밀번호 틀림)
+        // TODO: BadCredentialsException 처리 (아이디, 비밀번호 틀린 경우)
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),

@@ -18,12 +18,6 @@ public class SocialLoginRequest {
     private String email;
     private String phone;
 
-    public SocialLoginRequest(String provider, String email, String phone) {
-        this.provider = provider;
-        this.email = email;
-        this.phone = phone != null? phone : "NA";
-    }
-
     public static Member toEntity(SocialLoginRequest request, String pw) {
         return Member.builder()
                 .username(request.getProvider()+request.getEmail())

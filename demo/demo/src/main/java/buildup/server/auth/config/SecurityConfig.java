@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint());
 
         http.authorizeHttpRequests()
-                .requestMatchers("/join/**", "/login/**").permitAll()
+                .requestMatchers("/join/**", "/login/**", "/reissue").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
