@@ -24,8 +24,6 @@ public class MemberController {
     public TokenResponse joinByLocalAccount(@RequestBody LocalJoinRequest localJoinRequest) {
         AuthInfo info = memberService.join(localJoinRequest);
         phoneService.savePhone(info);
-
-        //TODO: 전화번호 저장하는 로직
         return new TokenResponse(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
