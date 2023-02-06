@@ -19,7 +19,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -50,11 +49,10 @@ public class MemberService {
     @Transactional
     public AuthInfo join(@Valid LocalJoinRequest request) {
         if (memberRepository.findByUsername(request.getUsername()).isPresent())
-            throw new RuntimeException("이미 가입된 사용자");
-            //TODO: 예외처리
+            throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
 
         // 신규 회원이면 멤버 엔티티 db에 저장
-        Member saveMember = saveMember(request);
+        saveMember(request);
 
         // 회원 가입 후 자동 로그인
         LoginRequest loginRequest = LoginRequest.toLoginRequest(request);
@@ -69,7 +67,7 @@ public class MemberService {
     public AuthInfo signIn(LoginRequest request) {
         // 회원이 가입되어 있는지 확인
         memberRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("회원이 존재하지 않음"));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         //로그인
         return new AuthInfo(

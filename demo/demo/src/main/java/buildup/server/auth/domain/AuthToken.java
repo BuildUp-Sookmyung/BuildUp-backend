@@ -1,5 +1,7 @@
 package buildup.server.auth.domain;
 
+import buildup.server.auth.AuthErrorCode;
+import buildup.server.auth.AuthException;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +59,19 @@ public class AuthToken {
                     .getBody();
         } catch (SecurityException e) {
             log.info("Invalid JWT signature.");
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN_SIGNATURE);
         } catch (MalformedJwtException e) {
             log.info("Invalid JWT token.");
+            throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.");
+            throw new AuthException(AuthErrorCode.EXPIRED_JWT_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token.");
+            throw new AuthException(AuthErrorCode.UNSUPPORTED_JWT_TOKEN);
         } catch (IllegalArgumentException e) {
             log.info("JWT token compact of handler are invalid.");
+
         }
         return null;
     }
