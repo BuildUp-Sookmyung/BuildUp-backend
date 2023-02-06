@@ -1,8 +1,8 @@
 package buildup.server.service;
 
+import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.service.AuthService;
-import buildup.server.domain.user.Member;
-import buildup.server.domain.user.Provider;
+import buildup.server.domain.member.Member;
 import buildup.server.dto.LocalJoinRequest;
 import buildup.server.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,13 +20,17 @@ public class MemberService {
 
     // 회원가입
     @Transactional
-    public Long join(LocalJoinRequest request) {
+    public AuthInfo join(LocalJoinRequest request) {
         if (memberRepository.findByUsername(request.getUsername()).isEmpty()) {
+            // 신규 회원이면
             Member saveMember = saveMember(request);
-            authService.createAuth(request);
-            return saveMember.getId();
+            return new AuthInfo(
+                    authService.createAuth(request),
+                    authService.setRefreshToken(request)
+            );
         }
-        throw new RuntimeException();
+        throw new RuntimeException("이미 가입된 사용자");
+        //TODO: 예외처리
     }
 
     private Member saveMember(LocalJoinRequest request) {

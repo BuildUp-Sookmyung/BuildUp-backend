@@ -1,10 +1,8 @@
-package buildup.server.domain.user;
+package buildup.server.domain.member;
 
 import buildup.server.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -1,8 +1,7 @@
-package buildup.server.domain.user;
+package buildup.server.domain.member;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Arrays;
 

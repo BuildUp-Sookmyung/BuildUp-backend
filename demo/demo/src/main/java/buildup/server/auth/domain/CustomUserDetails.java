@@ -1,20 +1,17 @@
 package buildup.server.auth.domain;
 
-import buildup.server.domain.user.Member;
-import buildup.server.domain.user.Provider;
-import buildup.server.domain.user.Role;
+import buildup.server.domain.member.Member;
+import buildup.server.domain.member.Provider;
+import buildup.server.domain.member.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 
 @Getter

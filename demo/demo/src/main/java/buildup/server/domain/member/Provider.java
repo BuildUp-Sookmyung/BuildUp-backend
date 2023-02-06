@@ -1,4 +1,4 @@
-package buildup.server.domain.user;
+package buildup.server.domain.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
