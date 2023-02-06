@@ -1,8 +1,8 @@
 package buildup.server.dto;
 
 
-import buildup.server.domain.member.Member;
-import buildup.server.domain.member.Provider;
+import buildup.server.member.Member;
+import buildup.server.member.Provider;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;

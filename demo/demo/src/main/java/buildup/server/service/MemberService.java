@@ -3,7 +3,7 @@ package buildup.server.service;
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
-import buildup.server.domain.member.Member;
+import buildup.server.member.Member;
 import buildup.server.dto.LocalJoinRequest;
 import buildup.server.dto.LocalLoginRequest;
 import buildup.server.repository.MemberRepository;

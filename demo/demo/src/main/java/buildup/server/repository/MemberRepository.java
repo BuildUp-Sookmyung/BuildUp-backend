@@ -1,6 +1,6 @@
 package buildup.server.repository;
 
-import buildup.server.domain.member.Member;
+import buildup.server.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

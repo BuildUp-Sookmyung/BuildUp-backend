@@ -1,4 +1,4 @@
-package buildup.server.domain.member;
+package buildup.server.member;
 
 import buildup.server.common.BaseTimeEntity;
 import jakarta.persistence.*;

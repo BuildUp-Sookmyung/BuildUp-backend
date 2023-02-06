@@ -1,4 +1,4 @@
-package buildup.server.domain.member;
+package buildup.server.member;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
