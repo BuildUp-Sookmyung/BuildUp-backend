@@ -3,16 +3,14 @@ package buildup.server.member;
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
-import buildup.server.member.Member;
-import buildup.server.member.LocalJoinRequest;
-import buildup.server.member.LocalLoginRequest;
-import buildup.server.member.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +22,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-
     private final AuthenticationManager authenticationManager;
     private final AuthTokenProvider tokenProvider;
     private final AppProperties appProperties;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private static final String SOCIAL_PW = "social1234";
+
+    //TODO: 추후 제거
+    @Transactional
+    public String test() {
+        Member currentMember = findCurrentMember();
+        return "인증정보="+currentMember.getUsername();
+    }
+
+    private Member findCurrentMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Member user = memberRepository.findByUsername(authentication.getName()).get();
+        return user;
+    }
+
+    // TODO: 추후 제거
 
     // 일반 회원가입 후 자동 로그인
     @Transactional
@@ -41,16 +55,16 @@ public class MemberService {
         Member saveMember = saveMember(request);
 
         // 회원 가입 후 자동 로그인
-        LocalLoginRequest localLoginRequest = LocalJoinRequest.toLoginRequest(request);
+        LoginRequest loginRequest = LoginRequest.toLoginRequest(request);
         return new AuthInfo(
-                createAuth(localLoginRequest),
-                setRefreshToken(localLoginRequest)
+                createAuth(loginRequest),
+                setRefreshToken(loginRequest)
         );
     }
 
     // 일반 로그인
     @Transactional
-    public AuthInfo signIn(LocalLoginRequest request) {
+    public AuthInfo signIn(LoginRequest request) {
         // 회원이 가입되어 있는지 확인
         memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("회원이 존재하지 않음"));
@@ -62,11 +76,27 @@ public class MemberService {
         );
     }
 
+    @Transactional
+    public AuthInfo signIn(SocialLoginRequest request) {
+        String username = request.getProvider() + request.getEmail();
+        if (memberRepository.findByUsername(username).isEmpty()) {
+            // 멤버 디비에 저장 = 회원 가입
+            Member saveMember = saveMember(request, SOCIAL_PW);
+        }
+        LoginRequest loginRequest = LoginRequest.toLoginRequest(request, SOCIAL_PW);
+        return new AuthInfo(
+                createAuth(loginRequest),
+                setRefreshToken(loginRequest)
+        );
+
+    }
+
     //TODO: 리팩토링-중복코드 제거
 
     // 액세스 토큰 발급
-    private AuthToken createAuth(LocalLoginRequest request) {
+    private AuthToken createAuth(LoginRequest request) {
 
+        // TODO: BadCredentialsException 처리 (아이디, 비밀번호 틀림)
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -88,7 +118,7 @@ public class MemberService {
     }
 
     // 리프레시 토큰 발급 및 저장 또는 수정
-    private MemberRefreshToken setRefreshToken(LocalLoginRequest request) {
+    private MemberRefreshToken setRefreshToken(LoginRequest request) {
 
         Date now = new Date();
         String username = request.getUsername();
@@ -115,6 +145,12 @@ public class MemberService {
 
     private Member saveMember(LocalJoinRequest request) {
         return memberRepository.save(request.toEntity());
+    }
+
+    private Member saveMember(SocialLoginRequest request, String pw) {
+        return memberRepository.save(
+                SocialLoginRequest.toEntity(request, pw)
+        );
     }
 
     public List<Member> findAll() {
