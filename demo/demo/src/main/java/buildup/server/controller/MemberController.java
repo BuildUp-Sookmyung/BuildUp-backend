@@ -6,6 +6,7 @@ import buildup.server.domain.member.Phone;
 import buildup.server.domain.member.PhoneRepository;
 import buildup.server.domain.member.PhoneService;
 import buildup.server.dto.LocalJoinRequest;
+import buildup.server.dto.LocalLoginRequest;
 import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,12 @@ public class MemberController {
     public TokenResponse joinByLocalAccount(@RequestBody LocalJoinRequest localJoinRequest) {
         AuthInfo info = memberService.join(localJoinRequest);
         phoneService.savePhone(info);
+        return new TokenResponse(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
+    }
+
+    @PostMapping("/login/local")
+    public TokenResponse signInByLocalAccount(@RequestBody LocalLoginRequest localLoginRequest) {
+        AuthInfo info = memberService.signIn(localLoginRequest);
         return new TokenResponse(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 

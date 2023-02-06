@@ -37,4 +37,8 @@ public class LocalJoinRequest {
                 .build();
     }
 
+    public static LocalLoginRequest toLoginRequest(LocalJoinRequest request) {
+        return new LocalLoginRequest(request.getUsername(), request.getPassword());
+    }
+
 }

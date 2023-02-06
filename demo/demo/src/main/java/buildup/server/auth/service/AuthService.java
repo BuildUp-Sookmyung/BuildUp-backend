@@ -4,6 +4,7 @@ import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
 import buildup.server.dto.LocalJoinRequest;
+import buildup.server.dto.LocalLoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
 
 
-    public AuthToken createAuth(LocalJoinRequest request) {
+    public AuthToken createAuth(LocalLoginRequest request) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -46,7 +47,7 @@ public class AuthService {
         return accessToken;
     }
 
-    public MemberRefreshToken setRefreshToken(LocalJoinRequest request) {
+    public MemberRefreshToken setRefreshToken(LocalLoginRequest request) {
 
         Date now = new Date();
         String username = request.getUsername();
