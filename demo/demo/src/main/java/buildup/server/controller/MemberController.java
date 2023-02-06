@@ -23,8 +23,9 @@ public class MemberController {
 
     @PostMapping("/join/local")
     public TokenResponse joinByLocalAccount(@RequestBody LocalJoinRequest localJoinRequest) {
+        String phone = localJoinRequest.getPhone();
         AuthInfo info = memberService.join(localJoinRequest);
-        phoneService.savePhone(info);
+        phoneService.savePhone(phone, info);
         return new TokenResponse(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 

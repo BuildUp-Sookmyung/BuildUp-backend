@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    private final MemberService memberService;
     private final CustomUserDetailsService userDetailsService;
     private final AuthTokenProvider tokenProvider;
 
@@ -66,7 +65,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint());
 
         http.authorizeHttpRequests()
-                .requestMatchers("/api").permitAll()
+                .requestMatchers("/join/**", "/login/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);

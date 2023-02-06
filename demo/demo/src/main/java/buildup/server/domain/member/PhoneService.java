@@ -16,13 +16,12 @@ public class PhoneService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void savePhone(AuthInfo info) {
+    public void savePhone(String phone, AuthInfo info) {
         Member member = memberRepository.findByUsername(info.getMemberRefreshToken().getUsername())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        Optional<Phone> optionalPhone = phoneRepository.findByMember(member);
-        if (optionalPhone.isPresent())
+        if (phoneRepository.findByMember(member).isPresent())
             throw new RuntimeException("이미 가입된 번호입니다.");
-        phoneRepository.save(new Phone(member, optionalPhone.get().getNumber()));
+        phoneRepository.save(new Phone(member, phone));
     }
 }

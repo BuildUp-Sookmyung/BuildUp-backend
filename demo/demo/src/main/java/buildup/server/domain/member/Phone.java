@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Phone {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private Long id;
 
     @OneToOne
     @JoinColumn(name = "member_id")

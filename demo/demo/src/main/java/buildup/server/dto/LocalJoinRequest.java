@@ -2,13 +2,15 @@ package buildup.server.dto;
 
 
 import buildup.server.domain.member.Member;
+import buildup.server.domain.member.Provider;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.*;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
-@Data
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class LocalJoinRequest {
-    private final PasswordEncoder passwordEncoder;
 
     @NotBlank
     private String nickname;
@@ -30,7 +32,8 @@ public class LocalJoinRequest {
         return Member.builder()
                 .nickname(nickname)
                 .username(username)
-                .password(passwordEncoder.encode(password))
+                .password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password))
+                .provider(Provider.LOCAL)
                 .smsAgreeYn(smsAgreeYn)
                 .emailAgreeYn(emailAgreeYn)
                 .profileSetYn("N")

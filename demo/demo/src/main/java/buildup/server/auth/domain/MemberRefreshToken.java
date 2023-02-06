@@ -12,13 +12,12 @@ import lombok.*;
 @Entity
 public class MemberRefreshToken {
 
-    @JsonIgnore
     @Id
     @Column(name = "refresh_token_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long refreshTokenId;
 
-    @Column(name="member_id", unique = true)
+    @Column(name="username", unique = true)
     @NotNull
     private String username;
 

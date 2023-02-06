@@ -16,7 +16,6 @@ import java.util.Collections;
 
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
     private final String username;

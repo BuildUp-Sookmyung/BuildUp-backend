@@ -12,16 +12,16 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String nickname;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String username;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     @Enumerated(EnumType.STRING) // DB 저장 시 Enum 값 설정 (디폴트 = int형 숫자) -> 문자로 변경
@@ -29,17 +29,17 @@ public class Member extends BaseTimeEntity {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private Provider provider;
 
-    @Column(nullable = false)
+    @Column
     private String smsAgreeYn;
 
-    @Column(nullable = false)
+    @Column
     private String emailAgreeYn;
 
     @Setter
-    @Column(nullable = false)
+    @Column
     private String profileSetYn;
 
     @Builder
