@@ -1,11 +1,7 @@
-package buildup.server.controller;
+package buildup.server.member;
 
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.domain.TokenResponse;
-import buildup.server.member.PhoneService;
-import buildup.server.dto.LocalJoinRequest;
-import buildup.server.dto.LocalLoginRequest;
-import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

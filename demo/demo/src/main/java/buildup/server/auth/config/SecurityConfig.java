@@ -4,7 +4,6 @@ import buildup.server.auth.CustomUserDetailsService;
 import buildup.server.auth.RestAuthenticationEntryPoint;
 import buildup.server.auth.TokenAuthenticationFilter;
 import buildup.server.auth.domain.AuthTokenProvider;
-import buildup.server.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

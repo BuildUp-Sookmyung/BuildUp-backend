@@ -1,12 +1,12 @@
-package buildup.server.service;
+package buildup.server.member;
 
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
 import buildup.server.member.Member;
-import buildup.server.dto.LocalJoinRequest;
-import buildup.server.dto.LocalLoginRequest;
-import buildup.server.repository.MemberRepository;
+import buildup.server.member.LocalJoinRequest;
+import buildup.server.member.LocalLoginRequest;
+import buildup.server.member.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

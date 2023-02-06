@@ -2,7 +2,7 @@ package buildup.server.auth;
 
 import buildup.server.auth.domain.CustomUserDetails;
 import buildup.server.member.Member;
-import buildup.server.repository.MemberRepository;
+import buildup.server.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

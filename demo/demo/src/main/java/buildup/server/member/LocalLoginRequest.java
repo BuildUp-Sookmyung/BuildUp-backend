@@ -1,4 +1,4 @@
-package buildup.server.dto;
+package buildup.server.member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

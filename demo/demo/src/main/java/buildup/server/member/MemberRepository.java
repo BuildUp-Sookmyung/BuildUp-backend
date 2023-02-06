@@ -1,4 +1,4 @@
-package buildup.server.repository;
+package buildup.server.member;
 
 import buildup.server.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
