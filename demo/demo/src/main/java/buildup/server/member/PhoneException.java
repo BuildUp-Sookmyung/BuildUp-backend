@@ -8,11 +8,13 @@ public class PhoneException extends RuntimeException{
     private String errorMessage;
 
     public PhoneException(PhoneErrorCode errorCode) {
+        super(errorCode.getDefaultMessage());
         this.errorCode = errorCode;
         this.errorMessage = errorCode.getDefaultMessage();
     }
 
     public PhoneException(PhoneErrorCode errorCode, String errorMessage) {
+        super(errorCode.getDefaultMessage());
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
     }

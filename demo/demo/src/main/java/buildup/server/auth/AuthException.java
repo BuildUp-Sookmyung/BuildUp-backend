@@ -9,11 +9,13 @@ public class AuthException extends RuntimeException{
     private String errorMessage;
 
     public AuthException(AuthErrorCode errorCode) {
+        super(errorCode.getDefaultMessage());
         this.errorCode = errorCode;
         this.errorMessage = errorCode.getDefaultMessage();
     }
 
     public AuthException(AuthErrorCode errorCode, String errorMessage) {
+        super(errorCode.getDefaultMessage());
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
     }

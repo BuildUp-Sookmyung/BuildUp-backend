@@ -8,11 +8,13 @@ public class MemberException extends RuntimeException{
     private String errorMessage;
 
     public MemberException(MemberErrorCode errorCode) {
+        super(errorCode.getDefaultMessage());
         this.errorCode = errorCode;
         this.errorMessage = errorCode.getDefaultMessage();
     }
 
     public MemberException(MemberErrorCode errorCode, String errorMessage) {
+        super(errorCode.getDefaultMessage());
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
     }

@@ -4,11 +4,15 @@ import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.domain.TokenDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -31,7 +35,10 @@ public class MemberController {
 
     @PostMapping("/login/social")
     public TokenDto signInBySocialAccount(@Valid @RequestBody SocialLoginRequest request) {
+        Optional<String> phone = Optional.ofNullable(request.getPhone());
         AuthInfo info = memberService.signIn(request);
+        if (phone.isPresent())
+            phoneService.savePhone(phone.get(), info);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
