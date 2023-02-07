@@ -1,7 +1,8 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.AuthErrorCode;
-import buildup.server.auth.AuthException;
+import buildup.server.auth.dto.TokenDto;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;

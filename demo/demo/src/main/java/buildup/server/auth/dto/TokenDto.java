@@ -1,4 +1,4 @@
-package buildup.server.auth.domain;
+package buildup.server.auth.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

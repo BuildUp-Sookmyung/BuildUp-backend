@@ -1,4 +1,4 @@
-package buildup.server.auth;
+package buildup.server.auth.exception;
 
 import buildup.server.common.response.ErrorEntity;
 import lombok.extern.slf4j.Slf4j;

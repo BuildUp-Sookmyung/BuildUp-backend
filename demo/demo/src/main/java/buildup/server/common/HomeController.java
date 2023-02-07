@@ -1,7 +1,7 @@
 package buildup.server.common;
 
-import buildup.server.auth.AuthErrorCode;
-import buildup.server.auth.AuthException;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
 import buildup.server.common.response.ErrorEntity;
 import buildup.server.common.response.StringResponse;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package buildup.server.auth;
+package buildup.server.auth.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

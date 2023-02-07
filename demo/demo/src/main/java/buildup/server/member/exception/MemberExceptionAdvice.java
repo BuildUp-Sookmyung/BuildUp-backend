@@ -1,6 +1,5 @@
 package buildup.server.member.exception;
 
-import buildup.server.auth.AuthException;
 import buildup.server.common.response.ErrorEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

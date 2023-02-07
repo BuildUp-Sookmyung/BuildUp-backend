@@ -1,8 +1,7 @@
 package buildup.server.auth.domain;
 
-import buildup.server.auth.AuthErrorCode;
-import buildup.server.auth.AuthException;
-import buildup.server.auth.domain.AuthToken;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;

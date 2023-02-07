@@ -1,7 +1,7 @@
 package buildup.server.member.domain;
 
-import buildup.server.auth.AuthErrorCode;
-import buildup.server.auth.AuthException;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

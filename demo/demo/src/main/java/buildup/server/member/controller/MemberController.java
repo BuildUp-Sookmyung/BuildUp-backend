@@ -1,7 +1,7 @@
-package buildup.server.member;
+package buildup.server.member.controller;
 
 import buildup.server.auth.domain.AuthInfo;
-import buildup.server.auth.domain.TokenDto;
+import buildup.server.auth.dto.TokenDto;
 import buildup.server.common.response.StringResponse;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
