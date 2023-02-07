@@ -1,6 +1,5 @@
 package buildup.server.auth;
 
-import buildup.server.member.PhoneErrorCode;
 import lombok.Getter;
 
 @Getter

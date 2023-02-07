@@ -1,4 +1,4 @@
-package buildup.server.member;
+package buildup.server.member.exception;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

@@ -13,7 +13,9 @@ import java.io.IOException;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException, ServletException {
         authException.printStackTrace();
         log.info("Responding with unauthorized error. Message = {}", authException.getMessage());
         log.info("AuthenticationEntryPoint, 인증실패");

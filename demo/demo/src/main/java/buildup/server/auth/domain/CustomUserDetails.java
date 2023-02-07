@@ -1,8 +1,8 @@
 package buildup.server.auth.domain;
 
-import buildup.server.member.Member;
-import buildup.server.member.Provider;
-import buildup.server.member.Role;
+import buildup.server.member.domain.Member;
+import buildup.server.member.domain.Provider;
+import buildup.server.member.domain.Role;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

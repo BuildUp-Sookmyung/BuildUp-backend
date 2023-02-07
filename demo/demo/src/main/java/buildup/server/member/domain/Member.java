@@ -1,4 +1,4 @@
-package buildup.server.member;
+package buildup.server.member.domain;
 
 import buildup.server.common.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @Column
-    private String nickname;
+    private String name;
 
     @Column
     private String email;
@@ -43,8 +43,8 @@ public class Member extends BaseTimeEntity {
     private String profileSetYn;
 
     @Builder
-    public Member(String nickname, String email, String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
-        this.nickname = nickname;
+    public Member(String name, String email, String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
+        this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;

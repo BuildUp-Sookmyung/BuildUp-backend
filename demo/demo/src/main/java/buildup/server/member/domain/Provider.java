@@ -1,4 +1,4 @@
-package buildup.server.member;
+package buildup.server.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;

@@ -2,6 +2,11 @@ package buildup.server.member;
 
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.domain.TokenDto;
+import buildup.server.member.dto.LocalJoinRequest;
+import buildup.server.member.dto.LoginRequest;
+import buildup.server.member.dto.SocialLoginRequest;
+import buildup.server.member.service.MemberService;
+import buildup.server.member.service.PhoneService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

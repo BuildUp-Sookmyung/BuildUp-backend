@@ -1,8 +1,16 @@
-package buildup.server.member;
+package buildup.server.member.service;
 
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
+import buildup.server.member.domain.Member;
+import buildup.server.member.domain.Role;
+import buildup.server.member.dto.LocalJoinRequest;
+import buildup.server.member.dto.LoginRequest;
+import buildup.server.member.dto.SocialLoginRequest;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
+import buildup.server.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
