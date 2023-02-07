@@ -86,7 +86,6 @@ public class MemberService {
 
     @Transactional
     public AuthInfo signIn(SocialLoginRequest request) {
-        // TODO: 번호 존재하면 번호도 저장!!!(네이버)
         String username = request.getProvider() + request.getEmail();
         if (memberRepository.findByUsername(username).isEmpty()) {
             // 멤버 디비에 저장 = 회원 가입

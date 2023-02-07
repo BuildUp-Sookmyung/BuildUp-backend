@@ -2,6 +2,7 @@ package buildup.server.member;
 
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.domain.TokenDto;
+import buildup.server.common.response.StringResponse;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
 import buildup.server.member.dto.SocialLoginRequest;
@@ -54,8 +55,8 @@ public class MemberController {
     }
 
     @GetMapping("/test")
-    public String test() {
-        return memberService.test();
+    public StringResponse test() {
+        return new StringResponse(memberService.test());
     }
 
 }
