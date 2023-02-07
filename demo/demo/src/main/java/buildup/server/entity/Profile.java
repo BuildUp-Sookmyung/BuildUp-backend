@@ -16,6 +16,7 @@ import java.util.List;
 public class Profile {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "profile_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)

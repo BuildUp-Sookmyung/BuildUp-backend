@@ -1,14 +1,17 @@
 package buildup.server.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Interest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "interest_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -18,4 +21,9 @@ public class Interest {
     private String field;
     //TODO: enum 고민해보기
 
+
+    public Interest(Profile profile, String field) {
+        this.profile = profile;
+        this.field = field;
+    }
 }
