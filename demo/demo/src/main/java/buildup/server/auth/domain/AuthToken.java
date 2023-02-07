@@ -1,7 +1,7 @@
 package buildup.server.auth.domain;
 
-import buildup.server.auth.AuthErrorCode;
-import buildup.server.auth.AuthException;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +71,7 @@ public class AuthToken {
             throw new AuthException(AuthErrorCode.UNSUPPORTED_JWT_TOKEN);
         } catch (IllegalArgumentException e) {
             log.info("JWT token compact of handler are invalid.");
-
+//            throw new AuthException(AuthErrorCode.UNAUTHORIZED, "인증에 실패했습니다.");
         }
         return null;
     }

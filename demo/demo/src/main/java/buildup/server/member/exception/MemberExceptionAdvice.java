@@ -1,9 +1,44 @@
 package buildup.server.member.exception;
 
+import buildup.server.common.response.ErrorEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
 @RestControllerAdvice
 public class MemberExceptionAdvice {
 
-    //Todo: 공통응답 머지 후 처리 Member, Phone, Provider 한번에
+    @ExceptionHandler(MemberException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity handleAuthException(MemberException e) {
+        log.error("Member Exception({})={}", e.getErrorCode(), e.getErrorMessage());
+        return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
+    }
+
+    @ExceptionHandler(PhoneException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity handlePhoneException(PhoneException e) {
+        log.error("Phone Exception({})={}", e.getErrorCode(), e.getErrorMessage());
+        return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity dtoValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors()
+                .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
+        log.error("Dto Validation Exception({}) - {}", DtoValidationErrorCode.BAD_INPUT, DtoValidationErrorCode.BAD_INPUT.getDefaultMessage());
+        return new ErrorEntity(DtoValidationErrorCode.BAD_INPUT.toString(),
+                DtoValidationErrorCode.BAD_INPUT.getDefaultMessage(),
+                errors);
+    }
 }

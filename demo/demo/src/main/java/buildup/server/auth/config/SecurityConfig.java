@@ -1,7 +1,7 @@
 package buildup.server.auth.config;
 
-import buildup.server.auth.CustomUserDetailsService;
-import buildup.server.auth.RestAuthenticationEntryPoint;
+import buildup.server.auth.service.CustomUserDetailsService;
+import buildup.server.auth.exception.RestAuthenticationEntryPoint;
 import buildup.server.auth.TokenAuthenticationFilter;
 import buildup.server.auth.domain.AuthTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +64,11 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint());
 
         http.authorizeHttpRequests()
-                .requestMatchers("/join/**", "/login/**", "/reissue", "/find_id").permitAll()
+                .requestMatchers("/member/local",
+                        "/member/social",
+                        "/member/login",
+                        "/member/reissue",
+                        "/home/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);

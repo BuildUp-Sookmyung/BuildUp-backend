@@ -1,4 +1,4 @@
-package buildup.server.auth;
+package buildup.server.auth.service;
 
 import buildup.server.auth.domain.CustomUserDetails;
 import buildup.server.member.domain.Member;
