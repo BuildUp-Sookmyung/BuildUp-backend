@@ -18,6 +18,6 @@ public class HomeController {
     @GetMapping("/home/entrypoint")
     public ErrorEntity authEntryPoint() {
         AuthException authException = new AuthException(AuthErrorCode.UNAUTHORIZED);
-        return new ErrorEntity(authEntryPoint().getErrorCode(), "AuthenticationEntryPoint");
+        return new ErrorEntity(authException.getErrorCode().toString(), "AuthenticationEntryPoint");
     }
 }

@@ -11,21 +11,19 @@ import buildup.server.member.service.PhoneService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
     private final PhoneService phoneService;
 
-    @PostMapping("/join/local")
+    @PostMapping("/local")
     public TokenDto joinByLocalAccount(@Valid @RequestBody LocalJoinRequest localJoinRequest) {
         String phone = localJoinRequest.getPhone();
         AuthInfo info = memberService.join(localJoinRequest);
@@ -33,13 +31,13 @@ public class MemberController {
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
-    @PostMapping("/login/local")
+    @PostMapping("/login")
     public TokenDto signInByLocalAccount(@Valid @RequestBody LoginRequest loginRequest) {
         AuthInfo info = memberService.signIn(loginRequest);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
-    @PostMapping("/login/social")
+    @PostMapping("/social")
     public TokenDto signInBySocialAccount(@Valid @RequestBody SocialLoginRequest request) {
         Optional<String> phone = Optional.ofNullable(request.getPhone());
         AuthInfo info = memberService.signIn(request);

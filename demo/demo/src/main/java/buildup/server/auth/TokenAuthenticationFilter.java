@@ -14,12 +14,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthTokenProvider tokenProvider;
+
+    private static final List<String> EXCLUDE_URL =
+            List.of(
+                    "/member/local",
+                    "/member/social",
+                    "/member/login",
+                    "/member/reissue",
+                    "/home/health",
+                    "/home/entrypoint"
+            );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -35,5 +46,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
 
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return EXCLUDE_URL.stream().anyMatch(exclude -> exclude.equalsIgnoreCase(request.getServletPath()));
     }
 }

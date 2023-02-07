@@ -1,5 +1,6 @@
 package buildup.server.member.exception;
 
+import buildup.server.auth.AuthException;
 import buildup.server.common.response.ErrorEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,19 @@ import java.util.Map;
 @RestControllerAdvice
 public class MemberExceptionAdvice {
 
-    //Todo: 공통응답 머지 후 처리 Member, Phone, Provider 한번에
+    @ExceptionHandler(MemberException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity handleAuthException(MemberException e) {
+        log.error("Member Exception({})={}", e.getErrorCode(), e.getErrorMessage());
+        return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
+    }
+
+    @ExceptionHandler(PhoneException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity handlePhoneException(PhoneException e) {
+        log.error("Phone Exception({})={}", e.getErrorCode(), e.getErrorMessage());
+        return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
