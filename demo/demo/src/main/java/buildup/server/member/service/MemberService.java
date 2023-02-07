@@ -1,5 +1,7 @@
 package buildup.server.member.service;
 
+import buildup.server.auth.AuthErrorCode;
+import buildup.server.auth.AuthException;
 import buildup.server.auth.domain.*;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
@@ -16,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -107,7 +110,7 @@ public class MemberService {
 
         Claims claims = expiredToken.getExpiredTokenClaims();
         if (claims == null) {
-            throw new RuntimeException("아직 만료되지 않음");
+            throw new AuthException(AuthErrorCode.NOT_EXPIRED_TOKEN_YET);
         } else {
             log.info("claims={}", claims);
         }
@@ -115,14 +118,17 @@ public class MemberService {
         Role role = Role.of(claims.get("role", String.class));
 
         if (!refreshToken.validate()) {
-            throw new RuntimeException("AuthErrorCode.INVALID_REFRESH_TOKEN");
+            throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         // refresh token으로 DB에서 user 정보와 확인
         MemberRefreshToken memberRefreshToken = refreshTokenRepository.findByUsernameAndRefreshToken(username, dto.getRefreshToken());
         log.info("UserRefreshToken={}", refreshToken);
         if (memberRefreshToken == null) {
-            throw new RuntimeException("가입되지 않은 회원 또는 유효하지 않은 리프레시 토큰");
+            throw new AuthException(
+                    AuthErrorCode.INVALID_REFRESH_TOKEN,
+                    "가입되지 않은 회원이거나 유효하지 않은 리프레시 토큰입니다."
+            );
         }
 
         Date now = new Date();
@@ -156,24 +162,28 @@ public class MemberService {
     private AuthToken createAuth(LoginRequest request) {
 
         // TODO: BadCredentialsException 처리 (아이디, 비밀번호 틀린 경우)
-        Authentication authentication = authenticationManager.authenticate(
+        try{
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
                 )
-        );
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        Date now = new Date();
-        String username = request.getUsername();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Date now = new Date();
+            String username = request.getUsername();
 
-        AuthToken accessToken = tokenProvider.createAuthToken(
-                username,
-                ((CustomUserDetails) authentication.getPrincipal()).getRole().getKey(),
-                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
-        );
+            AuthToken accessToken = tokenProvider.createAuthToken(
+                    username,
+                    ((CustomUserDetails) authentication.getPrincipal()).getRole().getKey(),
+                    new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+            );
 
-        return accessToken;
+            return accessToken;
+        } catch (BadCredentialsException e) {
+            throw new AuthException(AuthErrorCode.CREDENTIAL_MISS_MATCH);
+        }
     }
 
     // 리프레시 토큰 발급 및 저장 또는 수정

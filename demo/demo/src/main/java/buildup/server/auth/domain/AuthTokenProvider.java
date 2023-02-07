@@ -1,5 +1,7 @@
 package buildup.server.auth.domain;
 
+import buildup.server.auth.AuthErrorCode;
+import buildup.server.auth.AuthException;
 import buildup.server.auth.domain.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -41,18 +43,18 @@ public class AuthTokenProvider {
 
     public Authentication getAuthentication(AuthToken authToken) {
 
-       authToken.validate();
-       Claims claims = authToken.getTokenClaims();
+       if (authToken.validate()) {
+           Claims claims = authToken.getTokenClaims();
+           List<? extends GrantedAuthority> authorities = Arrays.stream(new String[]{claims.get(AUTHORITIES_KEY).toString()})
+                   .map(SimpleGrantedAuthority::new)
+                   .collect(Collectors.toList());
 
-       List<? extends GrantedAuthority> authorities = Arrays.stream(new String[]{claims.get(AUTHORITIES_KEY).toString()})
-               .map(SimpleGrantedAuthority::new)
-               .collect(Collectors.toList());
-
-       log.info("claims subject := [{}]", claims.getSubject());
-       User principal = new User(claims.getSubject(),
-               PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("pw1234"),
-               authorities);
-       return new UsernamePasswordAuthenticationToken(principal, authToken, authorities);
-
+           log.info("claims subject := [{}]", claims.getSubject());
+           User principal = new User(claims.getSubject(),
+                   PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("pw1234"),
+                   authorities);
+           return new UsernamePasswordAuthenticationToken(principal, authToken, authorities);
+       }
+       throw new AuthException(AuthErrorCode.UNAUTHORIZED);
     }
 }

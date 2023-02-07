@@ -1,5 +1,7 @@
 package buildup.server.member.domain;
 
+import buildup.server.auth.AuthErrorCode;
+import buildup.server.auth.AuthException;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +23,7 @@ public enum Provider {
         return Arrays.stream(Provider.values())
                 .filter(provider -> provider.title.equals(str))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Provider를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AuthException(AuthErrorCode.AUTH_PROVIDER_MISS_MATCH));
     }
-    // TODO: 예외처리
 
 }
