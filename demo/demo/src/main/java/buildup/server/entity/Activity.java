@@ -17,6 +17,7 @@ public class Activity {
     @Column(name = "activity_id")
     private Long id;
 
+    @Column(name = "activity_name")
     private String name;
 
     private String host;

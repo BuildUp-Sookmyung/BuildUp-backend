@@ -16,9 +16,6 @@ public class Member extends BaseTimeEntity {
     private String name;
 
     @Column
-    private String email;
-
-    @Column
     private String username;
 
     @Column
@@ -42,12 +39,9 @@ public class Member extends BaseTimeEntity {
     @Column
     private String profileSetYn;
 
-    //TODO: email 필드 제거
-
     @Builder
-    public Member(String name, String email, String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
+    public Member(String name,String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
         this.name = name;
-        this.email = email;
         this.username = username;
         this.password = password;
         this.role = Role.USER;
