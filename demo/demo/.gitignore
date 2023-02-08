@@ -7,7 +7,7 @@ build/
 application.properties
 application.yml
 application-dev.yml
-applicatiom-dep.yml
+application-dep.yml
 
 
 ### STS ###
