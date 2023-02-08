@@ -21,4 +21,6 @@ public class RecordImg {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
     private Record record;
+
+    private Long index;
 }
