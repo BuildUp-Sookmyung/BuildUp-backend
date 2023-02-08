@@ -1,4 +1,4 @@
-# appspec.yml
+# appspec.yaml
 
 version: 0.0
 os: linux
