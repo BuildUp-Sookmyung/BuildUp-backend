@@ -13,7 +13,7 @@ jobs:
     name: Github Action CD
     runs-on: ubuntu-latest
     env:
-      working-directory: ./demo
+      working-directory: ./demo/demo
       application: ${{ secrets.APPLICATION }}
     steps:
       - name: Checkout
@@ -23,10 +23,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: make application.properties
-        if: true
-        run:
+          
+      - name: make application-aws.properties
+        if: true # branch가 develop일 때
+        run: |
+          # application.yml 빈 파일 생성
           touch ./src/main/resources/application.yml
+          # GitHub-Actions에서 설정한 값을 application.yml 파일에 쓰기
           echo "${{ env.application }}" > ./src/main/resources/application.yml
         shell: bash
         working-directory: ${{ env.working-directory }}
