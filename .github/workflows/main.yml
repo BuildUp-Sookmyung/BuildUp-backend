@@ -1,4 +1,4 @@
-name: buildup
+name: buildup v1
 
 on:
   push:
