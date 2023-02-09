@@ -68,7 +68,7 @@ public class SecurityConfig {
                         "/member/social",
                         "/member/login",
                         "/member/reissue",
-                        "/home/**").permitAll()
+                        "/home/**", "/health").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);

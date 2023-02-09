@@ -29,6 +29,9 @@ public class HomeController {
                 .orElse(defaultProfile));
     }
 
+    @GetMapping("/health")
+    public StringResponse healthCheck() {return new StringResponse("HealthCheck");}
+
     @GetMapping("/home/entrypoint")
     public ErrorEntity authEntryPoint() {
         AuthException authException = new AuthException(AuthErrorCode.UNAUTHORIZED);
