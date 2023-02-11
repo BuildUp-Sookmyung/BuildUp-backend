@@ -30,7 +30,7 @@ public class HomeController {
     }
 
     @GetMapping("/health")
-    public StringResponse healthCheck() {return new StringResponse("HealthCheck v4");}
+    public StringResponse healthCheck() {return new StringResponse("HealthCheck v5");}
 
     @GetMapping("/home/entrypoint")
     public ErrorEntity authEntryPoint() {
