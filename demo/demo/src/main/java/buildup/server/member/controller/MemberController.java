@@ -2,6 +2,7 @@ package buildup.server.member.controller;
 
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.dto.TokenDto;
+import buildup.server.auth.service.AuthService;
 import buildup.server.common.response.StringResponse;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
+    private final AuthService authService;
     private final PhoneService phoneService;
 
     @PostMapping("/local")
@@ -48,7 +50,7 @@ public class MemberController {
 
     @PostMapping("/reissue")
     public TokenDto reissueToken(@Valid @RequestBody TokenDto tokenDto) {
-        AuthInfo info = memberService.reissueToken(tokenDto);
+        AuthInfo info = authService.reissueToken(tokenDto);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
