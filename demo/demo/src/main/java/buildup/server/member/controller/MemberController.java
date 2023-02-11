@@ -4,16 +4,20 @@ import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.dto.TokenDto;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.response.StringResponse;
+import buildup.server.member.dto.EmailAuthRequest;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
 import buildup.server.member.dto.SocialLoginRequest;
+import buildup.server.member.service.EmailService;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.PhoneService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 @Slf4j
@@ -23,7 +27,14 @@ import java.util.Optional;
 public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
+    private final EmailService emailService;
     private final PhoneService phoneService;
+
+    @PostMapping("login/mailConfirm")
+    public String mailConfirm(@RequestBody EmailAuthRequest emailDto) throws MessagingException, UnsupportedEncodingException {
+        String authCode = emailService.sendEmail(emailDto.getEmail());
+        return authCode;
+    }
 
     @PostMapping("/local")
     public TokenDto joinByLocalAccount(@Valid @RequestBody LocalJoinRequest localJoinRequest) {
