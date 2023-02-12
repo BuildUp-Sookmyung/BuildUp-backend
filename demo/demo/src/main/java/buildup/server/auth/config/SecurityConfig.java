@@ -70,6 +70,7 @@ public class SecurityConfig {
                         "/member/login",
                         "/member/reissue",
                         "/member/email",
+                        "/member/code",
                         "/home/**", "/health").permitAll()
                 .anyRequest().authenticated()
                 .and()

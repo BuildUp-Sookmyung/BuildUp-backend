@@ -3,12 +3,12 @@ package buildup.server.member.controller;
 import buildup.server.auth.RedisUtil;
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.dto.TokenDto;
+import buildup.server.auth.exception.AuthException;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.response.StringResponse;
-import buildup.server.member.dto.EmailAuthRequest;
-import buildup.server.member.dto.LocalJoinRequest;
-import buildup.server.member.dto.LoginRequest;
-import buildup.server.member.dto.SocialLoginRequest;
+import buildup.server.member.dto.*;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
 import buildup.server.member.service.EmailService;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.PhoneService;
@@ -34,9 +34,18 @@ public class MemberController {
     @PostMapping("/email")
     public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException, UnsupportedEncodingException {
         String email = emailDto.getEmail();
-        String authCode = emailService.sendEmail(email);
+        emailService.sendEmail(email);
 
         return new StringResponse("인증번호 메일을 전송했습니다.");
+    }
+
+    @PostMapping("/code")
+    public StringResponse verifyCode(@RequestBody EmailCodeRequest codeDto) {
+        if (emailService.verifyAuthNum(codeDto.getEmail(), codeDto.getInput())) {
+            log.info("이메일 인증 성공");
+            return new StringResponse("인증에 성공하였습니다.");
+        }
+        throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
     }
 
     @PostMapping("/local")

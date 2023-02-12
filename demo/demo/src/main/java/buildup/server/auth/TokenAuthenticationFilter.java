@@ -29,6 +29,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     "/member/login",
                     "/member/reissue",
                     "/member/email",
+                    "/member/code",
                     "/home/health",
                     "/home/entrypoint"
             );

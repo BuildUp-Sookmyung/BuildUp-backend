@@ -22,23 +22,31 @@ public class EmailService {
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
     private final RedisUtil redisUtil;
-    private String authNum;
 
     @Transactional
-    public String sendEmail(String toEmail) throws MessagingException, UnsupportedEncodingException {
+    public boolean verifyAuthNum(String email, String input) {
+        String data = redisUtil.getData(email);
+        if (data == null)
+            return false;
+        return data.equals(input);
+    }
+
+    @Transactional
+    public void sendEmail(String toEmail) throws MessagingException {
 
         if (redisUtil.existData(toEmail))
             redisUtil.deleteData(toEmail);
+
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(toEmail);
+
         //실제 메일 전송
         emailSender.send(emailForm);
         log.info("이메일 전송 성공");
 
-        return authNum; //인증 코드 반환
     }
 
-    private void createCode() {
+    private String createCode() {
         Random random = new Random();
         StringBuffer key = new StringBuffer();
 
@@ -57,12 +65,12 @@ public class EmailService {
                     break;
             }
         }
-        authNum = key.toString();
+        return key.toString();
     }
 
     private MimeMessage createEmailForm(String toEmail) throws MessagingException {
 
-        createCode(); //인증 코드 생성
+        String code = createCode();//인증 코드 생성
         String setFrom = "buildupbackend0204@gmail.com"; //email-config에 설정한 자신의 이메일 주소(보내는 사람)
         String title = "BuildUp 회원가입 인증 번호"; //제목
 
@@ -71,10 +79,10 @@ public class EmailService {
         message.addRecipients(MimeMessage.RecipientType.TO, toEmail); //보낼 이메일 설정
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
-        message.setText(setContext(authNum), "utf-8", "html");
+        message.setText(setContext(code), "utf-8", "html");
 
         // 인증 코드 레디스에 저장 유효시간 5분
-        redisUtil.setDataExpire(toEmail, authNum, 60 * 5L);
+        redisUtil.setDataExpire(toEmail, code, 60 * 5L);
 
         return message;
     }
