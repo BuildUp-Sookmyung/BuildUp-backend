@@ -46,12 +46,11 @@ public class MemberService {
     }
 
     private Member findCurrentMember() {
+        // TODO: 쿼리 날리지 않고 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member user = memberRepository.findByUsername(authentication.getName()).get();
         return user;
     }
-
-    // TODO: 추후 제거
 
     // 일반 회원가입 후 자동 로그인
     @Transactional
