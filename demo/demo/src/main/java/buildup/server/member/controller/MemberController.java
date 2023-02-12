@@ -30,10 +30,10 @@ public class MemberController {
     private final EmailService emailService;
     private final PhoneService phoneService;
 
-    @PostMapping("login/mailConfirm")
-    public String mailConfirm(@RequestBody EmailAuthRequest emailDto) throws MessagingException, UnsupportedEncodingException {
+    @PostMapping("/email")
+    public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException, UnsupportedEncodingException {
         String authCode = emailService.sendEmail(emailDto.getEmail());
-        return authCode;
+        return new StringResponse("인증번호 메일을 전송했습니다.");
     }
 
     @PostMapping("/local")

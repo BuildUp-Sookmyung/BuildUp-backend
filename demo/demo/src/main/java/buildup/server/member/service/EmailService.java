@@ -29,6 +29,7 @@ public class EmailService {
         MimeMessage emailForm = createEmailForm(toEmail);
         //실제 메일 전송
         emailSender.send(emailForm);
+        log.info("이메일 전송 성공");
 
         return authNum; //인증 코드 반환
     }

@@ -64,10 +64,12 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint());
 
         http.authorizeHttpRequests()
-                .requestMatchers("/member/local",
+                .requestMatchers(
+                        "/member/local",
                         "/member/social",
                         "/member/login",
                         "/member/reissue",
+                        "/member/email",
                         "/home/**", "/health").permitAll()
                 .anyRequest().authenticated()
                 .and()
