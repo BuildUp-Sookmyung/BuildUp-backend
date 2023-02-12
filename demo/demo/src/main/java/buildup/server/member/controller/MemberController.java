@@ -1,5 +1,6 @@
 package buildup.server.member.controller;
 
+import buildup.server.auth.RedisUtil;
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.dto.TokenDto;
 import buildup.server.auth.service.AuthService;
@@ -32,7 +33,9 @@ public class MemberController {
 
     @PostMapping("/email")
     public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException, UnsupportedEncodingException {
-        String authCode = emailService.sendEmail(emailDto.getEmail());
+        String email = emailDto.getEmail();
+        String authCode = emailService.sendEmail(email);
+
         return new StringResponse("인증번호 메일을 전송했습니다.");
     }
 

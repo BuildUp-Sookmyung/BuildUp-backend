@@ -1,5 +1,6 @@
 package buildup.server.member.service;
 
+import buildup.server.auth.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,14 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
+    private final RedisUtil redisUtil;
     private String authNum;
 
     @Transactional
     public String sendEmail(String toEmail) throws MessagingException, UnsupportedEncodingException {
 
+        if (redisUtil.existData(toEmail))
+            redisUtil.deleteData(toEmail);
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(toEmail);
         //실제 메일 전송
@@ -68,6 +72,9 @@ public class EmailService {
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(authNum), "utf-8", "html");
+
+        // 인증 코드 레디스에 저장 유효시간 5분
+        redisUtil.setDataExpire(toEmail, authNum, 60 * 5L);
 
         return message;
     }
