@@ -1,33 +1,22 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.dto.TokenDto;
-import buildup.server.auth.exception.AuthErrorCode;
-import buildup.server.auth.exception.AuthException;
 import buildup.server.auth.domain.*;
-import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
-import buildup.server.common.AppProperties;
 import buildup.server.member.domain.Member;
-import buildup.server.member.domain.Role;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
 import buildup.server.member.dto.SocialLoginRequest;
 import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
-import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -84,12 +73,20 @@ public class MemberService {
     }
 
     @Transactional
-    public AuthInfo signIn(SocialLoginRequest request) {
+    public boolean verifyMember(SocialLoginRequest request) {
         String username = request.getProvider() + request.getEmail();
         if (memberRepository.findByUsername(username).isEmpty()) {
-            // 멤버 디비에 저장 = 회원 가입
+            // 새로 가입하는 회원. 멤버 디비에 저장 = 회원 가입
             saveMember(request, SOCIAL_PW);
+            return false;
         }
+        // 기존 회원
+        return true;
+    }
+
+    @Transactional
+    public AuthInfo signUp(SocialLoginRequest request) {
+        //TODO: 프로필 입력받아서 저장 후
         LoginRequest loginRequest = LoginRequest.toLoginRequest(request, SOCIAL_PW);
         return new AuthInfo(
                 authService.createAuth(loginRequest),
@@ -99,7 +96,7 @@ public class MemberService {
     }
 
     private Member saveMember(LocalJoinRequest request) {
-        return memberRepository.save(request.toEntity());
+        return memberRepository.save(request.toMember());
     }
 
     private Member saveMember(SocialLoginRequest request, String pw) {

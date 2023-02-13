@@ -17,7 +17,6 @@ public class SocialLoginRequest {
 
     @NotBlank
     private String email;
-    private String phone;
 
     public static Member toEntity(SocialLoginRequest request, String pw) {
         return Member.builder()

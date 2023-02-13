@@ -1,6 +1,8 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.RedisUtil;
+import buildup.server.member.domain.Code;
+import buildup.server.member.exception.MemberException;
+import buildup.server.member.repository.CodeRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 import java.util.Random;
+
+import static buildup.server.member.exception.MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED;
 
 @Slf4j
 @Service
@@ -21,21 +25,27 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
-    private final RedisUtil redisUtil;
+    private final CodeRepository codeRepository;
 
     @Transactional
-    public boolean verifyAuthNum(String email, String input) {
-        String data = redisUtil.getData(email);
-        if (data == null)
+    public boolean verifyAuthCode(String email, String input) {
+        Code data = codeRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_EMAIL_AUTH_FAILED));
+        if (data.getCode() == null)
             return false;
-        return data.equals(input);
+        if (data.getCode().equals(input)) {
+            codeRepository.delete(data);
+            return true;
+        }
+        return false;
     }
 
     @Transactional
     public void sendEmail(String toEmail) throws MessagingException {
 
-        if (redisUtil.existData(toEmail))
-            redisUtil.deleteData(toEmail);
+        Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
+        if (optionalCode.isPresent())
+            codeRepository.delete(optionalCode.get());
 
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(toEmail);
@@ -81,8 +91,8 @@ public class EmailService {
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(code), "utf-8", "html");
 
-        // 인증 코드 레디스에 저장 유효시간 5분
-        redisUtil.setDataExpire(toEmail, code, 60 * 5L);
+        // TODO: 인증 코드 저장 유효시간 5분 설정하기
+        codeRepository.save(new Code(toEmail, code));
 
         return message;
     }
