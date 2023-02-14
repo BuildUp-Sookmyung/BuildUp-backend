@@ -4,6 +4,7 @@ import buildup.server.auth.exception.AuthErrorCode;
 import buildup.server.auth.exception.AuthException;
 import buildup.server.common.response.ErrorEntity;
 import buildup.server.common.response.StringResponse;
+import buildup.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.util.List;
 public class HomeController {
 
     private final Environment env;
+    private final MemberService memberService;
 
     @GetMapping("/home/profile")
     public StringResponse profile() {
@@ -31,6 +33,11 @@ public class HomeController {
 
     @GetMapping("/health")
     public StringResponse healthCheck() {return new StringResponse("HealthCheck v3");}
+
+    @GetMapping("/test")
+    public StringResponse test() {
+        return new StringResponse(memberService.test());
+    }
 
     @GetMapping("/home/entrypoint")
     public ErrorEntity authEntryPoint() {

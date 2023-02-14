@@ -1,5 +1,6 @@
 package buildup.server.entity;
 
+import buildup.server.member.domain.Profile;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

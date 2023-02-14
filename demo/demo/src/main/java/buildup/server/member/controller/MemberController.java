@@ -2,18 +2,18 @@ package buildup.server.member.controller;
 
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.dto.TokenDto;
+import buildup.server.auth.service.AuthService;
 import buildup.server.common.response.StringResponse;
-import buildup.server.member.dto.LocalJoinRequest;
-import buildup.server.member.dto.LoginRequest;
-import buildup.server.member.dto.SocialLoginRequest;
+import buildup.server.member.dto.*;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
+import buildup.server.member.service.EmailService;
 import buildup.server.member.service.MemberService;
-import buildup.server.member.service.PhoneService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -21,13 +21,30 @@ import java.util.Optional;
 @RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
-    private final PhoneService phoneService;
+    private final AuthService authService;
+    private final EmailService emailService;
+
+    @PostMapping("/email")
+    public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException {
+        String email = emailDto.getEmail();
+        emailService.sendEmail(email);
+
+        return new StringResponse("인증코드 메일을 전송했습니다.");
+    }
+
+    @PostMapping("/code")
+    public StringResponse verifyCode(@RequestBody EmailCodeRequest codeDto) {
+        if (emailService.verifyAuthCode(codeDto.getEmail(), codeDto.getInput())) {
+            log.info("이메일 인증 성공");
+            return new StringResponse("인증에 성공하였습니다.");
+        }
+        throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
+    }
 
     @PostMapping("/local")
     public TokenDto joinByLocalAccount(@Valid @RequestBody LocalJoinRequest localJoinRequest) {
-        String phone = localJoinRequest.getPhone();
         AuthInfo info = memberService.join(localJoinRequest);
-        phoneService.savePhone(phone, info);
+        // TODO: 프로필 서비스 호출-> 프로필 추가
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
@@ -37,24 +54,26 @@ public class MemberController {
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
-    @PostMapping("/social")
+    @PostMapping("/social-access")
+    public StringResponse accessBySocialAccount(@Valid @RequestBody SocialLoginRequest request) {
+        if (memberService.verifyMember(request))
+            return new StringResponse("이미 가입된 회원입니다. 로그인을 위해 토큰 요청 필요합니다.");
+        return new StringResponse("새로 가입된 회원입니다. 프로필 입력 진행해주세요.");
+    }
+
+    // 소셜로그인 접근 시 이미 가입된 회원일 때 토큰 반환
+    @PostMapping("/social-token")
     public TokenDto signInBySocialAccount(@Valid @RequestBody SocialLoginRequest request) {
-        Optional<String> phone = Optional.ofNullable(request.getPhone());
-        AuthInfo info = memberService.signIn(request);
-        if (phone.isPresent())
-            phoneService.savePhone(phone.get(), info);
+        AuthInfo info = memberService.signUp(request);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
+
+    // TODO: 프로필 입력받는 엔드포인트
 
     @PostMapping("/reissue")
     public TokenDto reissueToken(@Valid @RequestBody TokenDto tokenDto) {
-        AuthInfo info = memberService.reissueToken(tokenDto);
+        AuthInfo info = authService.reissueToken(tokenDto);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
-    }
-
-    @GetMapping("/test")
-    public StringResponse test() {
-        return new StringResponse(memberService.test());
     }
 
 }
