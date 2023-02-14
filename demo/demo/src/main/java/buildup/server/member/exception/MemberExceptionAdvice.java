@@ -23,13 +23,6 @@ public class MemberExceptionAdvice {
         return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
     }
 
-    @ExceptionHandler(PhoneException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorEntity handlePhoneException(PhoneException e) {
-        log.error("Phone Exception({})={}", e.getErrorCode(), e.getErrorMessage());
-        return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorEntity dtoValidationException(MethodArgumentNotValidException ex) {

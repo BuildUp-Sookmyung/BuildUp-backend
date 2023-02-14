@@ -25,10 +25,9 @@ public class LocalJoinRequest {
     @NotBlank
     private String emailAgreeYn;
 
-    @NotBlank
-    private String phone;
+    // TODO: 화 Profile 집어넣기
 
-    public Member toEntity() {
+    public Member toMember() {
         return Member.builder()
                 .name(name)
                 .username(username)
@@ -39,6 +38,8 @@ public class LocalJoinRequest {
                 .profileSetYn("N")
                 .build();
     }
+
+    // TODO: 화 PROFILE BUILDER
 
 
 }
