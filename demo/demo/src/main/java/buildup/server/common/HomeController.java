@@ -5,6 +5,7 @@ import buildup.server.auth.exception.AuthException;
 import buildup.server.common.response.ErrorEntity;
 import buildup.server.common.response.StringResponse;
 import buildup.server.member.service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +41,8 @@ public class HomeController {
     }
 
     @GetMapping("/home/entrypoint")
-    public ErrorEntity authEntryPoint() {
+    public ErrorEntity authEntryPoint(HttpServletResponse response) {
         AuthException authException = new AuthException(AuthErrorCode.UNAUTHORIZED);
-        return new ErrorEntity(authException.getErrorCode().toString(), "AuthenticationEntryPoint");
+        return new ErrorEntity(authException.getErrorCode().toString(), response.getHeader("error"));
     }
 }

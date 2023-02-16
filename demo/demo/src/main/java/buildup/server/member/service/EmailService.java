@@ -34,21 +34,21 @@ public class EmailService {
         if (data.getCode() == null)
             return false;
         if (data.getCode().equals(input)) {
-            codeRepository.delete(data);
+            data.setAuthYn("Y");
             return true;
         }
         return false;
     }
 
     @Transactional
-    public void sendEmail(String toEmail) throws MessagingException {
+    public void sendEmail(String name, String toEmail) throws MessagingException {
 
         Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
         if (optionalCode.isPresent())
             codeRepository.delete(optionalCode.get());
 
         //메일전송에 필요한 정보 설정
-        MimeMessage emailForm = createEmailForm(toEmail);
+        MimeMessage emailForm = createEmailForm(name, toEmail);
 
         //실제 메일 전송
         emailSender.send(emailForm);
@@ -78,7 +78,7 @@ public class EmailService {
         return key.toString();
     }
 
-    private MimeMessage createEmailForm(String toEmail) throws MessagingException {
+    private MimeMessage createEmailForm(String name, String toEmail) throws MessagingException {
 
         String code = createCode();//인증 코드 생성
         String setFrom = "buildupbackend0204@gmail.com"; //email-config에 설정한 자신의 이메일 주소(보내는 사람)
@@ -89,18 +89,19 @@ public class EmailService {
         message.addRecipients(MimeMessage.RecipientType.TO, toEmail); //보낼 이메일 설정
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
-        message.setText(setContext(code), "utf-8", "html");
+        message.setText(setContext(name, code), "utf-8", "html");
 
-        // TODO: 인증 코드 저장 유효시간 5분 설정하기
-        codeRepository.save(new Code(toEmail, code));
+        // TODO: N인 상태로 5분 지속 -> 인증코드 삭제
+        codeRepository.save(new Code(name, toEmail, code));
 
         return message;
     }
 
     //타임리프를 이용한 context 설정
-    private String setContext(String code) {
+    private String setContext(String name, String code) {
         Context context = new Context();
         context.setVariable("code", code);
+        context.setVariable("name", name);
         return templateEngine.process("mail", context); //mail.html
     }
 

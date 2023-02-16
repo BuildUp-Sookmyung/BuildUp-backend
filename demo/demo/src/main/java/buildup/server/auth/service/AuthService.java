@@ -38,7 +38,6 @@ public class AuthService {
     @Transactional
     public AuthToken createAuth(LoginRequest request) {
 
-        // TODO: BadCredentialsException 처리 (아이디, 비밀번호 틀린 경우)
         try{
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -128,7 +127,7 @@ public class AuthService {
 
         long validTime = refreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
 
-        // 토큰 만료기간이 3일 이하인 경우 refresh token 발급
+        // 리프레시 토큰 만료기간이 3일 이하인 경우 refresh token 발급
         if (validTime <= THREE_DAYS_MSEC) {
             long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
 

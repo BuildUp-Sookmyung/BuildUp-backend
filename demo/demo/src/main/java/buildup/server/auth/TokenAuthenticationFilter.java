@@ -22,14 +22,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthTokenProvider tokenProvider;
 
+    //TODO: 아이디 비밀번호 찾기 엔드포인트 추가
     private static final List<String> EXCLUDE_URL =
             List.of(
-                    "/member/local",
-                    "/member/social",
-                    "/member/login",
-                    "/member/reissue",
                     "/member/email",
                     "/member/code",
+                    "/member/local",
+                    "/member/social-access",
+                    "/member/social-profile",
+                    "/member/social-token",
+                    "/member/login",
+                    "/member/reissue",
                     "/home/health",
                     "/home/entrypoint"
             );
@@ -51,7 +54,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         return EXCLUDE_URL.stream().anyMatch(exclude -> exclude.equalsIgnoreCase(request.getServletPath()));
     }
 }
