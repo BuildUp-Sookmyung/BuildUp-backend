@@ -21,9 +21,6 @@ public class LocalJoinRequest {
     private ProfileSaveRequest profile;
 
     @NotBlank
-    private String smsAgreeYn;
-
-    @NotBlank
     private String emailAgreeYn;
 
     public Member toMember() {
@@ -31,7 +28,6 @@ public class LocalJoinRequest {
                 .username(username)
                 .password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password))
                 .provider(Provider.LOCAL)
-                .smsAgreeYn(smsAgreeYn)
                 .emailAgreeYn(emailAgreeYn)
                 .build();
     }

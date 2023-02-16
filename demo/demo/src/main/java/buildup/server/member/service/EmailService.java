@@ -1,5 +1,7 @@
 package buildup.server.member.service;
 
+import buildup.server.auth.exception.AuthException;
+import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Code;
 import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.CodeRepository;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import static buildup.server.member.exception.MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED;
+import static buildup.server.member.exception.MemberErrorCode.MEMBER_NOT_AUTHENTICATED;
 
 @Slf4j
 @Service
@@ -26,6 +29,7 @@ public class EmailService {
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
     private final CodeRepository codeRepository;
+    private final RedisUtil redisUtil;
 
     @Transactional
     public boolean verifyAuthCode(String email, String input) {
@@ -41,11 +45,22 @@ public class EmailService {
     }
 
     @Transactional
+    public boolean verifyByCode(String email, String code) {
+        String data = redisUtil.getData(email);
+        if (code == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
+            throw new MemberException(MEMBER_NOT_AUTHENTICATED);
+        }
+        // 해당 email로 user를 꺼낸다.
+        return data.equals(code);
+    }
+
+    @Transactional
     public void sendEmail(String name, String toEmail) throws MessagingException {
 
-        Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
-        if (optionalCode.isPresent())
-            codeRepository.delete(optionalCode.get());
+        //TODO: Redis Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
+        if (redisUtil.existData(toEmail))
+            //TODO: Redis codeRepository.delete(optionalCode.get());
+            redisUtil.deleteData(toEmail);
 
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(name, toEmail);
@@ -92,7 +107,8 @@ public class EmailService {
         message.setText(setContext(name, code), "utf-8", "html");
 
         // TODO: N인 상태로 5분 지속 -> 인증코드 삭제
-        codeRepository.save(new Code(name, toEmail, code));
+        //TODO: Redis codeRepository.save(new Code(name, toEmail, code));
+        redisUtil.setDataExpire(toEmail, code, 60*5);
 
         return message;
     }

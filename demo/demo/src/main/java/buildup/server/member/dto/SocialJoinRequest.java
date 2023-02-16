@@ -16,15 +16,12 @@ public class SocialJoinRequest {
     private String provider;
     private ProfileSaveRequest profile;
     private String emailAgreeYn;
-    private String smsAgreeYn;
-
     public static Member toEntity(SocialJoinRequest request, String pw) {
         return Member.builder()
                 .username(request.getProvider()+request.profile.getEmail())
                 .password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(pw))
                 .provider(Provider.toProvider(request.provider))
                 .emailAgreeYn(request.emailAgreeYn)
-                .smsAgreeYn(request.smsAgreeYn)
                 .build();
     }
 }

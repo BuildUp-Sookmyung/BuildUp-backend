@@ -21,8 +21,10 @@ repositories {
 dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.281'
 	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+	implementation 'io.lettuce:lettuce-core:6.2.1.RELEASE'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-mail:2.6.3'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

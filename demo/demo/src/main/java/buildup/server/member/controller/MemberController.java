@@ -39,7 +39,7 @@ public class MemberController {
 
     @PostMapping("/code")
     public StringResponse verifyCode(@RequestBody EmailCodeRequest codeDto) {
-        if (emailService.verifyAuthCode(codeDto.getEmail(), codeDto.getInput())) {
+        if (emailService.verifyByCode(codeDto.getEmail(), codeDto.getInput())) {
             log.info("이메일 인증 성공");
             return new StringResponse("인증에 성공하였습니다.");
         }
