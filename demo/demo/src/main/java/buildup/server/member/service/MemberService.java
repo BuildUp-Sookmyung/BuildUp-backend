@@ -2,6 +2,7 @@ package buildup.server.member.service;
 
 import buildup.server.auth.domain.*;
 import buildup.server.auth.service.AuthService;
+import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Code;
 import buildup.server.member.domain.Member;
 import buildup.server.member.dto.LocalJoinRequest;
@@ -33,6 +34,7 @@ public class MemberService {
     private final CodeRepository codeRepository;
     private final AuthService authService;
     private final ProfileService profileService;
+    private final RedisUtil redisUtil;
     private static final String SOCIAL_PW = "social1234";
 
     //TODO: 추후 제거
@@ -53,7 +55,9 @@ public class MemberService {
     @Transactional
     public AuthInfo join(@Valid LocalJoinRequest request, MultipartFile img) throws IOException {
         // 이메일 인증 거쳤는지 확인
-        if (! verifyAuthYn(request.getCode()))
+// TODO: Redis        if (! verifyAuthYn(request.getCode()))
+        String data = redisUtil.getData(request.getProfile().getEmail());
+        if (data==null || !data.equals(request.getCode()))
             throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
 
         // 기존 회원 확인

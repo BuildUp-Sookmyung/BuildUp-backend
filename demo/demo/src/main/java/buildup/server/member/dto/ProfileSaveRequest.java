@@ -22,6 +22,7 @@ public class ProfileSaveRequest {
     private String major;
     @NotBlank
     private String grade;
+    private String schoolPublicYn;
 
     private List<String> interests;
 
@@ -32,14 +33,8 @@ public class ProfileSaveRequest {
                 .school(school)
                 .grade(grade)
                 .major(major)
+                .schoolPublicYn(schoolPublicYn)
                 .build();
-    }
-
-    public static List<Interest> saveInterests(List<String> interests, Profile profile) {
-        for (String interest : interests) {
-            profile.getInterestList().add(new Interest(profile, interest));
-        }
-        return profile.getInterestList();
     }
 
 }

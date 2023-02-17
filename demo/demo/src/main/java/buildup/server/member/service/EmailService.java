@@ -47,7 +47,7 @@ public class EmailService {
     @Transactional
     public boolean verifyByCode(String email, String code) {
         String data = redisUtil.getData(email);
-        if (code == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
+        if (data == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
             throw new MemberException(MEMBER_NOT_AUTHENTICATED);
         }
         // 해당 email로 user를 꺼낸다.
@@ -57,10 +57,9 @@ public class EmailService {
     @Transactional
     public void sendEmail(String name, String toEmail) throws MessagingException {
 
-        //TODO: Redis Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
-        if (redisUtil.existData(toEmail))
-            //TODO: Redis codeRepository.delete(optionalCode.get());
-            redisUtil.deleteData(toEmail);
+         Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
+         if (optionalCode.isPresent())
+            codeRepository.delete(optionalCode.get());
 
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(name, toEmail);
@@ -106,9 +105,7 @@ public class EmailService {
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(name, code), "utf-8", "html");
 
-        // TODO: N인 상태로 5분 지속 -> 인증코드 삭제
-        //TODO: Redis codeRepository.save(new Code(name, toEmail, code));
-        redisUtil.setDataExpire(toEmail, code, 60*5);
+        codeRepository.save(new Code(name, toEmail, code));
 
         return message;
     }

@@ -33,16 +33,19 @@ public class Profile {
     @Setter
     private String imgUrl;
 
+    private String schoolPublicYn;
+
     @OneToMany(mappedBy = "profile")
-    private List<Interest> interestList = new ArrayList<>();
+    private List<Interest> interests = new ArrayList<>();
 
     @Builder
-    public Profile(Member member, String nickname, String email, String school, String major, String grade) {
+    public Profile(Member member, String nickname, String email, String school, String major, String grade, String schoolPublicYn) {
         this.member = member;
         this.nickname = nickname;
         this.email = email;
         this.school = school;
         this.major = major;
         this.grade = grade;
+        this.schoolPublicYn = schoolPublicYn;
     }
 }

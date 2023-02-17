@@ -46,10 +46,12 @@ public class MemberController {
         throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
     }
 
+    //TODO: 시간 체크 받을 엔드포인트
+
     @PostMapping("/local")
-    public TokenDto joinByLocalAccount(@Valid @RequestPart LocalJoinRequest localJoinRequest,
+    public TokenDto joinByLocalAccount(@Valid @RequestPart LocalJoinRequest request,
                                        @RequestPart MultipartFile img) throws IOException {
-        AuthInfo info = memberService.join(localJoinRequest, img);
+        AuthInfo info = memberService.join(request, img);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
