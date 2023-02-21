@@ -39,14 +39,22 @@ public class MemberController {
 
     @PostMapping("/code")
     public StringResponse verifyCode(@RequestBody EmailCodeRequest codeDto) {
-        if (emailService.verifyByCode(codeDto.getEmail(), codeDto.getInput())) {
+        Long codeId = emailService.verifyCodeByRdb(codeDto.getEmail(), codeDto.getInput());
+        if (codeId != null) {
             log.info("이메일 인증 성공");
-            return new StringResponse("인증에 성공하였습니다.");
+            return new StringResponse("인증에 성공하였습니다. id = " + codeId);
         }
         throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
     }
 
     //TODO: 시간 체크 받을 엔드포인트
+    @GetMapping("{id}")
+    public StringResponse deleteCode(@PathVariable Long id) {
+        if (emailService.deleteCode(id)) {
+            return new StringResponse("코드 삭제");
+        }
+        throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
+    }
 
     @PostMapping("/local")
     public TokenDto joinByLocalAccount(@Valid @RequestPart LocalJoinRequest request,

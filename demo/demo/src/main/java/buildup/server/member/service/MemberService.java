@@ -55,9 +55,9 @@ public class MemberService {
     @Transactional
     public AuthInfo join(@Valid LocalJoinRequest request, MultipartFile img) throws IOException {
         // 이메일 인증 거쳤는지 확인
-// TODO: Redis        if (! verifyAuthYn(request.getCode()))
-        String data = redisUtil.getData(request.getProfile().getEmail());
-        if (data==null || !data.equals(request.getCode()))
+        if (! verifyAuthYn(request.getCode()))
+// TODO: Redis                String data = redisUtil.getData(request.getProfile().getEmail());
+//        if (data==null || !data.equals(request.getCode()))
             throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
 
         // 기존 회원 확인

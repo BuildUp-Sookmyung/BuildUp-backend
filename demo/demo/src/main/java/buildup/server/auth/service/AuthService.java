@@ -52,7 +52,8 @@ public class AuthService {
 
             AuthToken accessToken = tokenProvider.createAuthToken(
                     username,
-                    ((CustomUserDetails) authentication.getPrincipal()).getRole().getKey(),
+//                    ((UserAdapter)authentication.getPrincipal()).getMember().getRoleKey(),
+                    ((CustomUserDetails)authentication.getPrincipal()).getRole().getKey(),
                     new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
             );
 

@@ -13,8 +13,6 @@ import java.util.List;
 @Entity
 public class Profile {
 
-    //TODO: 이메일 빼버리기!!!
-
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "profile_id")
     private Long id;

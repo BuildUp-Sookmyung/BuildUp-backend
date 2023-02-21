@@ -4,6 +4,7 @@ import buildup.server.auth.exception.AuthErrorCode;
 import buildup.server.auth.exception.AuthException;
 import buildup.server.common.response.ErrorEntity;
 import buildup.server.common.response.StringResponse;
+import buildup.server.member.domain.Member;
 import buildup.server.member.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
