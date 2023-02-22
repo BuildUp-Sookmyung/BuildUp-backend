@@ -157,7 +157,7 @@ public class EmailService {
         String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
         String[] result = {memberUsername, memberCreated};
 
-        if (findMemberID.isPresent()) {
+        if (memberUsername != null) {
             return result;
         } else {
             throw new MemberException(MEMBER_NOT_FOUND);    // 등록된 id 없을때
