@@ -56,7 +56,7 @@ public class MemberController {
 
 
     @PostMapping("/find-id")
-    public IdResponse findIDandDate(@RequestBody EmailCodeRequest codeDto) {
+    public IdResponse findIDandDate(@RequestBody EmailAuthRequest codeDto) {
         String[] result = emailService.findIDandDate(codeDto.getEmail());
         String username = result[0];
         String createdAt = result[1];
