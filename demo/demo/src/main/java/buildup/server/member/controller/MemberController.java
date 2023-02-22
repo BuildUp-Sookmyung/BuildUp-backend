@@ -71,7 +71,7 @@ public class MemberController {
 
     @PostMapping("/find-pw")
     public StringResponse findPw(@RequestBody NewLoginRequest dto) {
-        emailService.updatePW(dto);
+        emailService.updatePw(dto);
 
 //        Authentication authentication = authenticationManager.authenticate(
 //                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
