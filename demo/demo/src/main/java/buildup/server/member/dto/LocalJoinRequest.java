@@ -27,6 +27,7 @@ public class LocalJoinRequest {
         return Member.builder()
                 .username(username)
                 .password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password))
+                .email(profile.getEmail())
                 .provider(Provider.LOCAL)
                 .emailAgreeYn(emailAgreeYn)
                 .build();
