@@ -153,9 +153,9 @@ public class EmailService {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
         Member member = findMemberID.get();
-        String member_username = member.getUsername();
-        String member_created = member.getCreatedAt().toString().substring(0,10) + " 가입";
-        String[] result = {member_username, member_created};
+        String memberUsername = member.getUsername();
+        String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
+        String[] result = {memberUsername, memberCreated};
 
         if (findMemberID.isPresent()) {
             return result;
