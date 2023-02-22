@@ -141,7 +141,7 @@ public class EmailService {
     }
 
     @Transactional
-    public String[] findIDandDate(String email) throws MemberException {
+    public String[] findIdAndDate(String email) throws MemberException {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
         Member member = findMemberID.get();
