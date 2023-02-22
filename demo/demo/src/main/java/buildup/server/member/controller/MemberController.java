@@ -55,7 +55,6 @@ public class MemberController {
     }
 
 
-
     @PostMapping("/find-id")
     public IdResponse findIDandDate(@RequestBody EmailCodeRequest codeDto) {
         String[] result = emailService.findIDandDate(codeDto.getEmail());
@@ -69,7 +68,7 @@ public class MemberController {
 
     }
     @PostMapping("/find-pw")
-    public StringResponse FindPw(@RequestBody NewLoginRequest dto) {
+    public StringResponse findPw(@RequestBody NewLoginRequest dto) {
         emailService.UpdatePW(dto.getEmail(),dto);
 
         Authentication authentication = authenticationManager.authenticate(
