@@ -51,7 +51,7 @@ public class EmailService {
         if (data.getCode().equals(input)) {
 
 //            codeRepository.delete(data);
-            return true;
+
 
             data.setAuthYn("Y");
             return data.getId();
@@ -130,7 +130,7 @@ public class EmailService {
 
 
         // TODO: 인증 코드 저장 유효시간 5분 설정하기
-        codeRepository.save(new Code(toEmail, code));
+//        codeRepository.save(new Code(toEmail, code));
 
         codeRepository.save(new Code(name, toEmail, code));
 
