@@ -142,15 +142,16 @@ public class EmailService {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
 
-        if (findMemberID.isPresent()){
+        if (findMemberID.isPresent()) {
 
             Member member = findMemberID.get();
             String memberUsername = member.getUsername();
-            String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
+            String memberCreated = member.getCreatedAt().toString().substring(0, 10) + " 가입";
             String[] result = {memberUsername, memberCreated};
 
             return result;
-        else {
+
+        } else {
             throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);    // 등록된 id 없을때
         }
 
