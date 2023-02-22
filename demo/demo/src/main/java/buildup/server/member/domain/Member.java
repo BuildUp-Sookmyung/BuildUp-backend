@@ -13,13 +13,13 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @Column
-    private String name;
-
-    @Column
     private String username;
 
     @Column
     private String password;
+
+    @Column
+    private String email;
 
     @Enumerated(EnumType.STRING) // DB 저장 시 Enum 값 설정 (디폴트 = int형 숫자) -> 문자로 변경
     @Column(nullable = false)
@@ -30,28 +30,24 @@ public class Member extends BaseTimeEntity {
     private Provider provider;
 
     @Column
-    private String smsAgreeYn;
-
-    @Column
     private String emailAgreeYn;
 
-    @Setter
-    @Column
-    private String profileSetYn;
 
     @Builder
-    public Member(String name,String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
-        this.name = name;
+    public Member(String username, String password, String email, Provider provider,String emailAgreeYn) {
         this.username = username;
         this.password = password;
+        this.email = email;
         this.role = Role.USER;
         this.provider = provider;
-        this.smsAgreeYn = smsAgreeYn;
         this.emailAgreeYn = emailAgreeYn;
-        this.profileSetYn = profileSetYn;
     }
 
     public String getRoleKey() {
         return this.role.getKey();
+    }
+
+    public void modifyPw(String password) {
+        this.password = password;
     }
 }

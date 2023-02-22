@@ -8,4 +8,9 @@ import java.util.Optional;
 public interface CodeRepository extends JpaRepository<Code, Long> {
 
     Optional<Code> findByEmail(String email);
+
+    Optional<Code> findByCode(String code);
+
+    Optional<Code> findTopByEmailOrderByIdDesc(String email);
+
 }

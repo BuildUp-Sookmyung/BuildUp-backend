@@ -1,4 +1,4 @@
-package buildup.server.member.dto;
+package buildup.server.auth.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EmailAuthRequest {
-    public String name;
-    public String email;
+public class CodeDto {
+    private String code;
 }
