@@ -33,6 +33,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     "/member/social-token",
                     "/member/login",
                     "/member/reissue",
+                    "/member/find-id",
+                    "/member/find-pw",
                     "/home/health",
                     "/home/entrypoint"
             );
