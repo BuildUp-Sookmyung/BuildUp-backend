@@ -27,14 +27,14 @@
       <div class="text-group-ewg">
         <p class="item--brv">인증번호를 입력해주세요.</p>
         <p class="buildup--tr2">
-          안녕하세요, Buildup입니다.
-          <br/>
-          아래의 인증번호를 회원가입 창에 입력하여 인증을 완료해주세요.
+        <div th:text="${name}"></div>님 안녕하세요, Buildup입니다.
+        <br/>
+        아래의 인증번호를 회원가입 창에 입력하여 인증을 완료해주세요.
         </p>
       </div>
       <div class="item--Xe6">
         <p class="item--48E">인증번호</p>
-        <p class="item-123456-xzJ">${code}</p>
+        <p class="item-123456-xzJ"><div th:text="${code}"></div></p>
       </div>
       <p class="item--fNv">이 메일은 발신전용이므로 회신이 되지 않습니다.</p>
     </div>
