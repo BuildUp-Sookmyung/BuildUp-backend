@@ -20,6 +20,7 @@ public class SocialJoinRequest {
         return Member.builder()
                 .username(request.getProvider()+request.profile.getEmail())
                 .password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(pw))
+                .email(request.getProfile().getEmail())
                 .provider(Provider.toProvider(request.provider))
                 .emailAgreeYn(request.emailAgreeYn)
                 .build();
