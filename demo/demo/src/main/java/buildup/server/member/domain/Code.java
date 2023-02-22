@@ -22,9 +22,13 @@ public class Code {
     @Setter
     private String authYn;
 
+    @Setter
+    private String expiredYn;
+
     public Code(String name, String email, String code) {
         this.email = email;
         this.code = code;
         this.authYn = "N";
+        this.expiredYn = "N";
     }
 }

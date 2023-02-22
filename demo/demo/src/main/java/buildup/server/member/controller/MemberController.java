@@ -1,6 +1,7 @@
 package buildup.server.member.controller;
 
 import buildup.server.auth.domain.AuthInfo;
+import buildup.server.auth.dto.EmailDto;
 import buildup.server.auth.dto.TokenDto;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.response.IdResponse;
@@ -39,9 +40,9 @@ public class MemberController {
     public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException {
         String name = emailDto.getName();
         String email = emailDto.getEmail();
-        emailService.sendEmail(name, email);
+        String str = emailService.sendEmail(name, email);
 
-        return new StringResponse("인증코드 메일을 전송했습니다.");
+        return new StringResponse("인증코드 메일을 전송했습니다. 인증코드: " + str);
     }
 
     @PostMapping("/code")
@@ -56,7 +57,7 @@ public class MemberController {
 
 
     @PostMapping("/find-id")
-    public IdResponse findIDandDate(@RequestBody EmailAuthRequest codeDto) {
+    public IdResponse findIdAndDate(@RequestBody EmailAuthRequest codeDto) {
         String[] result = emailService.findIDandDate(codeDto.getEmail());
         String username = result[0];
         String createdAt = result[1];
@@ -88,10 +89,10 @@ public class MemberController {
 
 
     //TODO: 시간 체크 받을 엔드포인트
-    @GetMapping("{id}")
-    public StringResponse deleteCode(@PathVariable Long id) {
-        if (emailService.deleteCode(id)) {
-            return new StringResponse("코드 삭제");
+    @PostMapping("/time")
+    public StringResponse deleteCode(@RequestBody EmailDto email) {
+        if (emailService.deleteCode(email)) {
+            return new StringResponse("만료처리");
         }
         throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
     }
