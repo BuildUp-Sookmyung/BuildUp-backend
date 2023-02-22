@@ -18,6 +18,9 @@ public class Member extends BaseTimeEntity {
     @Column
     private String password;
 
+    @Column
+    private String email;
+
     @Enumerated(EnumType.STRING) // DB 저장 시 Enum 값 설정 (디폴트 = int형 숫자) -> 문자로 변경
     @Column(nullable = false)
     private Role role;
