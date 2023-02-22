@@ -152,28 +152,37 @@ public class EmailService {
     public String[] findIDandDate(String email) throws MemberException {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
-        Member member = findMemberID.get();
-        String memberUsername = member.getUsername();
-        String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
-        String[] result = {memberUsername, memberCreated};
 
-        if (memberUsername != null) {
+        if (findMemberID.isPresent()){
+
+            Member member = findMemberID.get();
+            String memberUsername = member.getUsername();
+            String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
+            String[] result = {memberUsername, memberCreated};
+
             return result;
-        } else {
-            throw new MemberException(MEMBER_NOT_FOUND);    // 등록된 id 없을때
+        } else{
+            throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);    // 등록된 id 없을때
         }
+
+
     }
 
     @Transactional
     public void updatePW(NewLoginRequest requestDto) {
         Optional<Member> findMemberID = memberRepository.findByEmail(requestDto.getEmail());
-        Member member1 = findMemberID.get();
-        String member_password = member1.getPassword();
+        if (findMemberID.isPresent()){
+            Member member1 = findMemberID.get();
+            member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
+        } else{
+            throw new MemberException(MEMBER_PW_UPDATE_FAILED);
+        }
+        // Member member1 = findMemberID.get();
+        //String member_password = member1.getPassword();
+        //Member member2 = memberRepository.findByPassword(member_password)
+        //        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
 
-        Member member2 = memberRepository.findByPassword(member_password)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
-
-        member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
+        //member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
 
 
 
