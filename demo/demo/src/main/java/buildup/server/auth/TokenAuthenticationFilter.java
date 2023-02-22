@@ -36,7 +36,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     "/member/find-id",
                     "/member/find-pw",
                     "/member/time",
-                    "/home/health",
+                    "/health",
                     "/home/entrypoint"
             );
 
