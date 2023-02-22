@@ -67,9 +67,10 @@ public class MemberController {
         throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
 
     }
+
     @PostMapping("/find-pw")
     public StringResponse findPw(@RequestBody NewLoginRequest dto) {
-        emailService.UpdatePW(dto.getEmail(),dto);
+        emailService.updatePW(dto.getEmail(),dto);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
