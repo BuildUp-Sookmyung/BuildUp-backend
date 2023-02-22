@@ -1,6 +1,6 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.exception.AuthException;
+import buildup.server.auth.dto.CodeDto;
 import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Code;
 import buildup.server.member.domain.Member;
@@ -23,13 +23,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.util.Optional;
 import java.util.Random;
 
-
-import static buildup.server.member.exception.MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED;
-import static buildup.server.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-
-import static buildup.server.member.exception.MemberErrorCode.*;
-
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -42,10 +35,12 @@ public class EmailService {
 
     private final MemberRepository memberRepository;
 
+    private String code;
+
     @Transactional
     public Long verifyCodeByRdb(String email, String input) {
-        Code data = codeRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(MEMBER_EMAIL_AUTH_FAILED));
+        Code data = codeRepository.findTopByEmailOrderByIdDesc(email)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
         if (data.getCode() == null)
             return null;
         if (data.getCode().equals(input)) {
@@ -64,21 +59,22 @@ public class EmailService {
     public boolean verifyCodeByRedis(String email, String code) {
         String data = redisUtil.getData(email);
         if (data == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
-            throw new MemberException(MEMBER_NOT_AUTHENTICATED);
+            throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
         }
         // 해당 email로 user를 꺼낸다.
         return data.equals(code);
     }
 
     @Transactional
-    public boolean deleteCode(Long codeId) {
-        Code code = codeRepository.findById(codeId).orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        codeRepository.delete(code);
+    public boolean deleteCode(CodeDto codeDto) {
+        Code code = codeRepository.findByCode(codeDto.getCode())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_CODE_NOT_FOUND));
+        code.setExpiredYn("Y");
         return true;
     }
 
     @Transactional
-    public void sendEmail(String name, String toEmail) throws MessagingException {
+    public String sendEmail(String name, String toEmail) throws MessagingException {
 
          Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
          if (optionalCode.isPresent())
@@ -91,6 +87,7 @@ public class EmailService {
         emailSender.send(emailForm);
         log.info("이메일 전송 성공");
 
+        return this.code;
     }
 
     private String createCode() {
@@ -117,7 +114,7 @@ public class EmailService {
 
     private MimeMessage createEmailForm(String name, String toEmail) throws MessagingException {
 
-        String code = createCode();//인증 코드 생성
+        code = createCode();//인증 코드 생성
         String setFrom = "buildupbackend0204@gmail.com"; //email-config에 설정한 자신의 이메일 주소(보내는 사람)
         String title = "BuildUp 회원가입 인증 번호"; //제목
 
@@ -127,16 +124,8 @@ public class EmailService {
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(name, code), "utf-8", "html");
-
-
-        // TODO: 인증 코드 저장 유효시간 5분 설정하기
-//        codeRepository.save(new Code(toEmail, code));
-
-        codeRepository.save(new Code(name, toEmail, code));
-
-
-
-
+        
+        codeRepository.save(new Code(toEmail, code));
         return message;
     }
 
@@ -149,7 +138,7 @@ public class EmailService {
     }
 
     @Transactional
-    public String[] findIDandDate(String email) throws MemberException {
+    public String[] findIdAndDate(String email) throws MemberException {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
 
@@ -161,10 +150,9 @@ public class EmailService {
             String[] result = {memberUsername, memberCreated};
 
             return result;
-        } else{
+        else {
             throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);    // 등록된 id 없을때
         }
-
 
     }
 
@@ -183,9 +171,6 @@ public class EmailService {
         //        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
 
         //member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
-
-
-
 
     }
 

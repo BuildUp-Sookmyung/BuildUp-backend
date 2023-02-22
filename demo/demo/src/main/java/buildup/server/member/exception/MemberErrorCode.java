@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public enum MemberErrorCode {
 
     MEMBER_NOT_FOUND("회원을 찾을 수 없습니다."),
+    MEMBER_CODE_NOT_FOUND("인증코드를 찾을 수 없습니다."),
     MEMBER_DUPLICATED("이미 가입된 회원입니다."),
     MEMBER_EMAIL_AUTH_FAILED("이메일 인증에 실패하였습니다."),
 
