@@ -1,7 +1,7 @@
 package buildup.server.auth.config;
 
+import buildup.server.auth.exception.AuthExceptionHandlerFilter;
 import buildup.server.auth.service.CustomUserDetailsService;
-import buildup.server.auth.exception.RestAuthenticationEntryPoint;
 import buildup.server.auth.TokenAuthenticationFilter;
 import buildup.server.auth.domain.AuthTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -57,24 +57,14 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint());
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeHttpRequests()
-                .requestMatchers(
-                        "/member/local",
-                        "/member/social",
-                        "/member/login",
-                        "/member/reissue",
-                        "/member/email",
-                        "/member/code",
-                        "/home/**", "/health").permitAll()
+                .requestMatchers("/member/**", "/home/**", "/health").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new AuthExceptionHandlerFilter(), TokenAuthenticationFilter.class);
 
         http.authenticationProvider(authenticationProvider());
 

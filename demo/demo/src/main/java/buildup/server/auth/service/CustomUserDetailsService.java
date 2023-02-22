@@ -1,6 +1,7 @@
 package buildup.server.auth.service;
 
 import buildup.server.auth.domain.CustomUserDetails;
+import buildup.server.auth.domain.UserAdapter;
 import buildup.server.member.domain.Member;
 import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;

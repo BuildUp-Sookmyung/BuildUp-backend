@@ -3,6 +3,7 @@ package buildup.server.auth.domain;
 import buildup.server.auth.exception.AuthErrorCode;
 import buildup.server.auth.exception.AuthException;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,8 @@ public class AuthToken {
     }
 
     public boolean validate() {
-        return this.getTokenClaims() != null;
+        Claims claims = this.getTokenClaims();
+        return claims != null;
     }
 
     public Claims getTokenClaims() {
@@ -57,23 +59,22 @@ public class AuthToken {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (SecurityException e) {
-            log.info("Invalid JWT signature.");
+        } catch (SignatureException e) {
+            log.error("Invalid JWT signature.");
             throw new AuthException(AuthErrorCode.INVALID_TOKEN_SIGNATURE);
         } catch (MalformedJwtException e) {
-            log.info("Invalid JWT token.");
+            log.error("Invalid JWT token.");
             throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT token.");
+            log.error("Expired JWT token.");
             throw new AuthException(AuthErrorCode.EXPIRED_JWT_TOKEN);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT token.");
+            log.error("Unsupported JWT token.");
             throw new AuthException(AuthErrorCode.UNSUPPORTED_JWT_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.info("JWT token compact of handler are invalid.");
-//            throw new AuthException(AuthErrorCode.UNAUTHORIZED, "인증에 실패했습니다.");
+            log.error("JWT token compact of handler are invalid.");
+            throw new AuthException(AuthErrorCode.UNAUTHORIZED);
         }
-        return null;
     }
 
     public Claims getExpiredTokenClaims() {
