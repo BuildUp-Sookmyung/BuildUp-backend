@@ -48,7 +48,6 @@ public class AuthTokenProvider {
                    .map(SimpleGrantedAuthority::new)
                    .collect(Collectors.toList());
 
-           log.info("claims subject := [{}]", claims.getSubject());
            User principal = new User(claims.getSubject(),
                    PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("pw1234"),
                    authorities);
