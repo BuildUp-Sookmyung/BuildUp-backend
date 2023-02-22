@@ -154,7 +154,7 @@ public class EmailService {
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
         Member member = findMemberID.get();
         String member_username = member.getUsername();
-        String member_created = member.getCreatedAt().toString().substring(0,4) + " 가입";
+        String member_created = member.getCreatedAt().toString().substring(0,10) + " 가입";
         String[] result = {member_username, member_created};
 
         if (findMemberID.isPresent()) {
@@ -165,7 +165,7 @@ public class EmailService {
     }
 
     @Transactional
-    public void UpdatePW(String email, NewLoginRequest requestDto) {
+    public void updatePW(String email, NewLoginRequest requestDto) {
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
         Member member1 = findMemberID.get();
         String member_password = member1.getPassword();
