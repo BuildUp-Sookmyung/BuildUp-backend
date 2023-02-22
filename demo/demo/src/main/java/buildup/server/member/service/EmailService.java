@@ -47,6 +47,7 @@ public class EmailService {
 
 //            codeRepository.delete(data);
 
+
             data.setAuthYn("Y");
             return data.getId();
 
@@ -123,11 +124,8 @@ public class EmailService {
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(name, code), "utf-8", "html");
-
-
-        // TODO: 인증 코드 저장 유효시간 5분 설정하기
+        
         codeRepository.save(new Code(toEmail, code));
-
         return message;
     }
 
@@ -136,7 +134,6 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("code", code);
 
-        context.setVariable("name", name);
         return templateEngine.process("mail2", context); //mail2.html
     }
 
@@ -144,28 +141,36 @@ public class EmailService {
     public String[] findIdAndDate(String email) throws MemberException {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
-        Member member = findMemberID.get();
-        String memberUsername = member.getUsername();
-        String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
-        String[] result = {memberUsername, memberCreated};
 
-        if (findMemberID.isPresent()) {
+        if (findMemberID.isPresent()){
+
+            Member member = findMemberID.get();
+            String memberUsername = member.getUsername();
+            String memberCreated = member.getCreatedAt().toString().substring(0,10) + " 가입";
+            String[] result = {memberUsername, memberCreated};
+
             return result;
-        } else {
+        else {
             throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);    // 등록된 id 없을때
         }
+
     }
 
     @Transactional
     public void updatePW(NewLoginRequest requestDto) {
         Optional<Member> findMemberID = memberRepository.findByEmail(requestDto.getEmail());
-        Member member1 = findMemberID.get();
-        String member_password = member1.getPassword();
+        if (findMemberID.isPresent()){
+            Member member1 = findMemberID.get();
+            member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
+        } else{
+            throw new MemberException(MEMBER_PW_UPDATE_FAILED);
+        }
+        // Member member1 = findMemberID.get();
+        //String member_password = member1.getPassword();
+        //Member member2 = memberRepository.findByPassword(member_password)
+        //        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
 
-        Member member2 = memberRepository.findByPassword(member_password)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
-
-        member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
+        //member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
 
     }
 
