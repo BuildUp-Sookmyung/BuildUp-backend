@@ -1,13 +1,18 @@
 package buildup.server.member.service;
 
 import buildup.server.member.domain.Code;
+import buildup.server.member.domain.Member;
+import buildup.server.member.dto.NewLoginRequest;
+import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.CodeRepository;
+import buildup.server.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -17,6 +22,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import static buildup.server.member.exception.MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED;
+import static buildup.server.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -27,6 +33,8 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final CodeRepository codeRepository;
 
+    private final MemberRepository memberRepository;
+
     @Transactional
     public boolean verifyAuthCode(String email, String input) {
         Code data = codeRepository.findByEmail(email)
@@ -34,7 +42,7 @@ public class EmailService {
         if (data.getCode() == null)
             return false;
         if (data.getCode().equals(input)) {
-            codeRepository.delete(data);
+//            codeRepository.delete(data);
             return true;
         }
         return false;
@@ -91,8 +99,11 @@ public class EmailService {
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(code), "utf-8", "html");
 
+
         // TODO: 인증 코드 저장 유효시간 5분 설정하기
         codeRepository.save(new Code(toEmail, code));
+
+
 
         return message;
     }
@@ -101,7 +112,41 @@ public class EmailService {
     private String setContext(String code) {
         Context context = new Context();
         context.setVariable("code", code);
-        return templateEngine.process("mail", context); //mail.html
+        return templateEngine.process("mail2", context); //mail2.html
     }
+
+    @Transactional
+    public String[] findIDandDate(String email) throws MemberException {
+
+        Optional<Member> findMemberID = memberRepository.findByEmail(email);
+        Member member = findMemberID.get();
+        String member_username = member.getUsername();
+        String member_created = member.getCreatedAt().toString().substring(0,4) + " 가입";
+        String[] result = {member_username, member_created};
+
+        if (findMemberID.isPresent()) {
+            return result;
+        } else {
+            throw new MemberException(MEMBER_NOT_FOUND);    // 등록된 id 없을때
+        }
+    }
+
+    @Transactional
+    public void UpdatePW(String email, NewLoginRequest requestDto) {
+        Optional<Member> findMemberID = memberRepository.findByEmail(email);
+        Member member1 = findMemberID.get();
+        String member_password = member1.getPassword();
+
+        Member member2 = memberRepository.findByPassword(member_password)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
+
+        String encPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword());
+        member2.modify(requestDto.getPassword(), encPassword);
+
+
+    }
+
+
+
 
 }

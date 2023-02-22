@@ -54,4 +54,9 @@ public class Member extends BaseTimeEntity {
     public String getRoleKey() {
         return this.role.getKey();
     }
+
+    public void modify(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

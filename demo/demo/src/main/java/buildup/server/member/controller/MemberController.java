@@ -3,6 +3,7 @@ package buildup.server.member.controller;
 import buildup.server.auth.domain.AuthInfo;
 import buildup.server.auth.dto.TokenDto;
 import buildup.server.auth.service.AuthService;
+import buildup.server.common.response.IdResponse;
 import buildup.server.common.response.StringResponse;
 import buildup.server.member.dto.*;
 import buildup.server.member.exception.MemberErrorCode;
@@ -13,6 +14,10 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -23,6 +28,8 @@ public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
     private final EmailService emailService;
+
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/email")
     public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException {
@@ -40,6 +47,38 @@ public class MemberController {
         }
         throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
     }
+
+
+    @PostMapping("/find-id")
+    public IdResponse findIDandDate(@RequestBody EmailCodeRequest codeDto) {
+        String[] result = emailService.findIDandDate(codeDto.getEmail());
+        String username = result[0];
+        String createdAt = result[1];
+
+        if(username != null){
+            return new IdResponse(username, createdAt);
+        }
+        throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
+
+    }
+    @PostMapping("/find-pw")
+    public StringResponse FindPw(@RequestBody NewLoginRequest dto) {
+        emailService.UpdatePW(dto.getEmail(),dto);
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return new StringResponse("비밀번호 재설정이 완료되었습니다.");
+//        if (emailService.UpdatePW(newloginDto.getPassword())) {
+//            log.info("비밀번호 재설정 성공");
+//            return new StringResponse("비밀번호 재설정이 완료되었습니다.");
+//        }
+//        throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
+
+
+    }
+
 
     @PostMapping("/local")
     public TokenDto joinByLocalAccount(@Valid @RequestBody LocalJoinRequest localJoinRequest) {
