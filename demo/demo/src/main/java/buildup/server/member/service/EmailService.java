@@ -178,8 +178,6 @@ public class EmailService {
 
 
 
-        context.setVariable("name", name);
-        return templateEngine.process("mail2", context); //mail2.html
 
     }
 
