@@ -176,7 +176,6 @@ public class EmailService {
         String encPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword());
         member2.modify(requestDto.getPassword(), encPassword);
 
-
     }
 
 
