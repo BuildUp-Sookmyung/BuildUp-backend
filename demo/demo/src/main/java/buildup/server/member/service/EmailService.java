@@ -160,16 +160,15 @@ public class EmailService {
     }
 
     @Transactional
-    public void updatePW(String email, NewLoginRequest requestDto) {
-        Optional<Member> findMemberID = memberRepository.findByEmail(email);
+    public void updatePW(NewLoginRequest requestDto) {
+        Optional<Member> findMemberID = memberRepository.findByEmail(requestDto.getEmail());
         Member member1 = findMemberID.get();
         String member_password = member1.getPassword();
 
         Member member2 = memberRepository.findByPassword(member_password)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
 
-        String encPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword());
-        member2.modify(requestDto.getPassword(), encPassword);
+        member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
 
     }
 

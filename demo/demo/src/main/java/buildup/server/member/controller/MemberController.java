@@ -70,11 +70,11 @@ public class MemberController {
 
     @PostMapping("/find-pw")
     public StringResponse findPw(@RequestBody NewLoginRequest dto) {
-        emailService.updatePW(dto.getEmail(),dto);
+        emailService.updatePW(dto);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return new StringResponse("비밀번호 재설정이 완료되었습니다.");
 //        if (emailService.UpdatePW(newloginDto.getPassword())) {
