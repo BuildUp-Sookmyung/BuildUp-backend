@@ -13,9 +13,6 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @Column
-    private String name;
-
-    @Column
     private String username;
 
     @Column
@@ -30,25 +27,16 @@ public class Member extends BaseTimeEntity {
     private Provider provider;
 
     @Column
-    private String smsAgreeYn;
-
-    @Column
     private String emailAgreeYn;
 
-    @Setter
-    @Column
-    private String profileSetYn;
 
     @Builder
-    public Member(String name,String username, String password, Provider provider, String smsAgreeYn, String emailAgreeYn, String profileSetYn) {
-        this.name = name;
+    public Member(String username, String password, Provider provider,String emailAgreeYn) {
         this.username = username;
         this.password = password;
         this.role = Role.USER;
         this.provider = provider;
-        this.smsAgreeYn = smsAgreeYn;
         this.emailAgreeYn = emailAgreeYn;
-        this.profileSetYn = profileSetYn;
     }
 
     public String getRoleKey() {
