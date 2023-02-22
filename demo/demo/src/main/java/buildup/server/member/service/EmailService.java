@@ -1,6 +1,6 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.dto.EmailDto;
+import buildup.server.auth.dto.CodeDto;
 import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Code;
 import buildup.server.member.domain.Member;
@@ -65,9 +65,9 @@ public class EmailService {
     }
 
     @Transactional
-    public boolean deleteCode(EmailDto email) {
-        Code code = codeRepository.findByEmail(email.getEmail())
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+    public boolean deleteCode(CodeDto codeDto) {
+        Code code = codeRepository.findByCode(codeDto.getCode())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_CODE_NOT_FOUND));
         code.setExpiredYn("Y");
         return true;
     }
@@ -126,7 +126,7 @@ public class EmailService {
 
 
         // TODO: 인증 코드 저장 유효시간 5분 설정하기
-        codeRepository.save(new Code(name, toEmail, code));
+        codeRepository.save(new Code(toEmail, code));
 
         return message;
     }

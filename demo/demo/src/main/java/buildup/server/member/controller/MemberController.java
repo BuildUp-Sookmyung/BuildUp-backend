@@ -1,7 +1,7 @@
 package buildup.server.member.controller;
 
 import buildup.server.auth.domain.AuthInfo;
-import buildup.server.auth.dto.EmailDto;
+import buildup.server.auth.dto.CodeDto;
 import buildup.server.auth.dto.TokenDto;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.response.IdResponse;
@@ -50,7 +50,7 @@ public class MemberController {
         Long codeId = emailService.verifyCodeByRdb(codeDto.getEmail(), codeDto.getInput());
         if (codeId != null) {
             log.info("이메일 인증 성공");
-            return new StringResponse("인증에 성공하였습니다. id = " + codeId);
+            return new StringResponse("인증에 성공하였습니다.");
         }
         throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
     }
@@ -90,8 +90,8 @@ public class MemberController {
 
     //TODO: 시간 체크 받을 엔드포인트
     @PostMapping("/time")
-    public StringResponse deleteCode(@RequestBody EmailDto email) {
-        if (emailService.deleteCode(email)) {
+    public StringResponse deleteCode(@RequestBody CodeDto code) {
+        if (emailService.deleteCode(code)) {
             return new StringResponse("만료처리");
         }
         throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);

@@ -15,8 +15,6 @@ public class Code {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    private String name;
     private String email;
     private String code;
     @Setter
@@ -25,7 +23,7 @@ public class Code {
     @Setter
     private String expiredYn;
 
-    public Code(String name, String email, String code) {
+    public Code(String email, String code) {
         this.email = email;
         this.code = code;
         this.authYn = "N";
