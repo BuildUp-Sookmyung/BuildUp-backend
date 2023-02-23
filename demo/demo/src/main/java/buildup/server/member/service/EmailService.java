@@ -133,7 +133,7 @@ public class EmailService {
     private String setContext(String name, String code) {
         Context context = new Context();
         context.setVariable("code", code);
-
+        context.setVariable("name", name);
         return templateEngine.process("mail2", context); //mail2.html
     }
 
