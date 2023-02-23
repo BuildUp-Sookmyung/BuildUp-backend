@@ -28,6 +28,13 @@ public class CategoryService {
         return categoryRepository.save(new Category(request.getCategoryName(), member));
     }
 
+    @Transactional
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        categoryRepository.delete(category);
+    }
+
     @Transactional(readOnly = true)
     public List<CategoryResponse> readCategories() {
         Member member = memberService.findCurrentMember();

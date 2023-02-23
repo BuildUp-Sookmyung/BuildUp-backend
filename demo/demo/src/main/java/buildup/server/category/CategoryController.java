@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -24,5 +24,11 @@ public class CategoryController {
     @GetMapping
     public List<CategoryResponse> listCategoriesByMember() {
         return categoryService.readCategories();
+    }
+
+    @DeleteMapping("/{id}")
+    public StringResponse deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return new StringResponse("해당 카테고리를 삭제했습니다.");
     }
 }
