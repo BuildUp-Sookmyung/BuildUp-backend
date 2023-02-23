@@ -3,6 +3,7 @@ package buildup.server.member.service;
 import buildup.server.entity.Interest;
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
+import buildup.server.member.dto.ProfileHomeResponse;
 import buildup.server.member.dto.ProfilePageResponse;
 import buildup.server.member.dto.ProfileSaveRequest;
 import buildup.server.member.repository.InterestRepository;
@@ -47,6 +48,12 @@ public class ProfileService {
     public ProfilePageResponse showProfilePage() {
         Member member = findCurrentMember();
         return ProfilePageResponse.of(profileRepository.findById(member.getId()).get());
+    }
+
+    @Transactional(readOnly = true)
+    public ProfileHomeResponse showProfileHome() {
+        Member member = findCurrentMember();
+        return ProfileHomeResponse.toDto(profileRepository.findById(member.getId()).get());
     }
 
     @Transactional

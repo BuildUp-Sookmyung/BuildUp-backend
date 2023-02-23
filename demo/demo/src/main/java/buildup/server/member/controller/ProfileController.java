@@ -1,6 +1,7 @@
 package buildup.server.member.controller;
 
 import buildup.server.common.response.StringResponse;
+import buildup.server.member.dto.ProfileHomeResponse;
 import buildup.server.member.dto.ProfilePageResponse;
 import buildup.server.member.dto.ProfileSaveRequest;
 import buildup.server.member.service.ProfileService;
@@ -15,9 +16,14 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @GetMapping
+    @GetMapping("/me")
     public ProfilePageResponse showProfilePage() {
         return profileService.showProfilePage();
+    }
+
+    @GetMapping("/home")
+    public ProfileHomeResponse showProfileHome() {
+        return profileService.showProfileHome();
     }
 
     @PutMapping()
