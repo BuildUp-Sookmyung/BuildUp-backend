@@ -14,6 +14,7 @@ public class CategoryException extends RuntimeException{
     public CategoryException(CategoryErrorCode errorCode) {
         super(errorCode.getDefaultErrorMessage());
         this.errorCode = errorCode;
+        this.errorMessage = errorCode.getDefaultErrorMessage();
     }
 
     public CategoryException(CategoryErrorCode errorCode, String errorMessage) {
