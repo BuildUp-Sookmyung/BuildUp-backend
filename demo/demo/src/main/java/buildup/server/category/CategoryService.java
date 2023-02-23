@@ -1,11 +1,17 @@
 package buildup.server.category;
 
+import buildup.server.category.dto.CategoryResponse;
+import buildup.server.category.dto.CategorySaveRequest;
+import buildup.server.category.exception.CategoryErrorCode;
+import buildup.server.category.exception.CategoryException;
 import buildup.server.member.domain.Member;
 import buildup.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -18,8 +24,21 @@ public class CategoryService {
     @Transactional
     public Category createCategory(CategorySaveRequest request) {
         Member member = memberService.findCurrentMember();
-        // Todo: 해당 멤버가 만든 카테고리 중 같은 이름이 없는지 확인
-
+        checkDuplicateCategory(member, request.getCategoryName());
         return categoryRepository.save(new Category(request.getCategoryName(), member));
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryResponse> readCategories() {
+        Member member = memberService.findCurrentMember();
+        return CategoryResponse.toDtoList(categoryRepository.findAllByMember(member));
+    }
+
+    private void checkDuplicateCategory(Member member, String categoryName) {
+        List<Category> categories = categoryRepository.findAllByMember(member);
+        for (Category category : categories) {
+            if (categoryName.equals(category.getName()))
+                throw new CategoryException(CategoryErrorCode.CATEGORY_DUPLICATED);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package buildup.server.category;
+package buildup.server.category.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
