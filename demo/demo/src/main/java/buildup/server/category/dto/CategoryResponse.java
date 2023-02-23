@@ -16,12 +16,13 @@ public class CategoryResponse {
 
     private Long categoryId;
     private String categoryName;
+    private Long iconId;
 
     public static List<CategoryResponse> toDtoList(List<Category> entities) {
         List<CategoryResponse> dtos = new ArrayList<>();
 
         for (Category entity : entities)
-            dtos.add(new CategoryResponse(entity.getId(), entity.getName()));
+            dtos.add(new CategoryResponse(entity.getId(),entity.getName(), entity.getIconId()));
 
         return dtos;
     }

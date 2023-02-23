@@ -28,7 +28,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public StringResponse deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategoryById(id);
         return new StringResponse("해당 카테고리를 삭제했습니다.");
     }
 }

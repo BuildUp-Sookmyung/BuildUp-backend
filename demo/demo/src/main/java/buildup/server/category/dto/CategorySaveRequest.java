@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class CategorySaveRequest {
 
     private String categoryName;
+    private Long iconId;
 }

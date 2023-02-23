@@ -18,12 +18,16 @@ public class Category {
     @Column(name = "category_name")
     private String name;
 
+    @Column(name = "icon_id")
+    private Long iconId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Category(String name, Member member) {
+    public Category(String name, Long iconId, Member member) {
         this.name = name;
+        this.iconId = iconId;
         this.member = member;
     }
 }

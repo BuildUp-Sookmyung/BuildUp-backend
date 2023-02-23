@@ -25,11 +25,11 @@ public class CategoryService {
     public Category createCategory(CategorySaveRequest request) {
         Member member = memberService.findCurrentMember();
         checkDuplicateCategory(member, request.getCategoryName());
-        return categoryRepository.save(new Category(request.getCategoryName(), member));
+        return categoryRepository.save(new Category(request.getCategoryName(), request.getIconId(), member));
     }
 
     @Transactional
-    public void deleteCategory(Long id) {
+    public void deleteCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         categoryRepository.delete(category);
