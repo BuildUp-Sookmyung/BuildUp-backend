@@ -1,4 +1,4 @@
-package buildup.server.entity;
+package buildup.server.category;
 
 import buildup.server.member.domain.Member;
 import jakarta.persistence.*;
