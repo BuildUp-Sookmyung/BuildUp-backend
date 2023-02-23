@@ -21,4 +21,9 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public Category(String name, Member member) {
+        this.name = name;
+        this.member = member;
+    }
 }
