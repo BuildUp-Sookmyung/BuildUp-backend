@@ -3,6 +3,7 @@ package buildup.server.member.service;
 import buildup.server.entity.Interest;
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
+import buildup.server.member.dto.ProfilePageResponse;
 import buildup.server.member.dto.ProfileSaveRequest;
 import buildup.server.member.repository.InterestRepository;
 import buildup.server.member.repository.ProfileRepository;
@@ -22,6 +23,7 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final InterestRepository interestRepository;
     private final S3Service s3Service;
+    private final MemberService memberService;
 
     @Transactional
     public Long saveProfile(ProfileSaveRequest request, Member member, MultipartFile img) throws IOException {
@@ -36,5 +38,11 @@ public class ProfileService {
         profile.setMember(member);
         profile.setImgUrl(url);
         return profileRepository.save(profile).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public ProfilePageResponse showProfilePage() {
+        Member member = memberService.findCurrentMember();
+        return ProfilePageResponse.of(profileRepository.findById(member.getId()).get());
     }
 }
