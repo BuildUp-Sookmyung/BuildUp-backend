@@ -30,8 +30,10 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategoryById(Long id) {
+        Member member = memberService.findCurrentMember();
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        checkCategoryAuth(member, category);
         categoryRepository.delete(category);
     }
 
@@ -47,5 +49,14 @@ public class CategoryService {
             if (categoryName.equals(category.getName()))
                 throw new CategoryException(CategoryErrorCode.CATEGORY_DUPLICATED);
         }
+    }
+
+    private void checkCategoryAuth(Member member, Category target) {
+        List<Category> categories = categoryRepository.findAllByMember(member);
+        for (Category category : categories) {
+            if (category.equals(target))
+                return;
+        }
+        throw new CategoryException(CategoryErrorCode.CATEGORY_NO_AUTH);
     }
 }
