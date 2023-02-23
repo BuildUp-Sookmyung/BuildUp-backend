@@ -6,9 +6,12 @@ import buildup.server.member.domain.Profile;
 import buildup.server.member.dto.ProfilePageResponse;
 import buildup.server.member.dto.ProfileSaveRequest;
 import buildup.server.member.repository.InterestRepository;
+import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,17 +23,17 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ProfileService {
 
+    private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
     private final InterestRepository interestRepository;
     private final S3Service s3Service;
-    private final MemberService memberService;
 
     @Transactional
-    public Long saveProfile(ProfileSaveRequest request, Member member, MultipartFile img) throws IOException {
+    public Long saveProfile(ProfileSaveRequest request, Member member, MultipartFile img) {
         Profile profile = request.toProfile();
         String url = null;
         if (! img.isEmpty())
-            url = s3Service.uploadProfile(profile, img);
+            url = s3Service.uploadProfile(profile, member.getId(), img);
         for (String interest : request.getInterests()) {
             Interest select = interestRepository.save(new Interest(profile, interest));
             profile.getInterests().add(select);
@@ -42,7 +45,31 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public ProfilePageResponse showProfilePage() {
-        Member member = memberService.findCurrentMember();
+        Member member = findCurrentMember();
         return ProfilePageResponse.of(profileRepository.findById(member.getId()).get());
+    }
+
+    @Transactional
+    public void updateProfile(ProfileSaveRequest request, MultipartFile img) {
+        Member member = findCurrentMember();
+        Profile profile = profileRepository.findById(member.getId()).get();
+        request.updateProfile(profile);
+
+        if (! img.isEmpty()) {
+            // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
+            String url = s3Service.uploadProfile(profile, member.getId(), img);
+            profile.setImgUrl(url);
+        } else if (profile.getImgUrl()!=null) {
+            // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제
+            s3Service.deleteProfile(profile.getImgUrl());
+            profile.setImgUrl(null);
+        }
+    }
+
+    // TODO: 로그인한 사용자
+    private Member findCurrentMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Member user = memberRepository.findByUsername(authentication.getName()).get();
+        return user;
     }
 }
