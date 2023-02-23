@@ -2,6 +2,7 @@ package buildup.server.category;
 
 import buildup.server.category.dto.CategoryResponse;
 import buildup.server.category.dto.CategorySaveRequest;
+import buildup.server.category.dto.CategoryUpdateRequest;
 import buildup.server.common.response.StringResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,12 @@ public class CategoryController {
     @GetMapping
     public List<CategoryResponse> listCategoriesByMember() {
         return categoryService.readCategories();
+    }
+
+    @PutMapping
+    public StringResponse updateCategory(@RequestBody CategoryUpdateRequest request) {
+        categoryService.updateCategory(request);
+        return new StringResponse("카테고리를 수정했습니다.");
     }
 
     @DeleteMapping("/{id}")

@@ -30,4 +30,9 @@ public class Category {
         this.iconId = iconId;
         this.member = member;
     }
+
+    public void updateCategory(String name, Long iconId) {
+        this.name = name;
+        this.iconId = iconId;
+    }
 }

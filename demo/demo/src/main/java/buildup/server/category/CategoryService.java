@@ -2,6 +2,7 @@ package buildup.server.category;
 
 import buildup.server.category.dto.CategoryResponse;
 import buildup.server.category.dto.CategorySaveRequest;
+import buildup.server.category.dto.CategoryUpdateRequest;
 import buildup.server.category.exception.CategoryErrorCode;
 import buildup.server.category.exception.CategoryException;
 import buildup.server.member.domain.Member;
@@ -26,6 +27,15 @@ public class CategoryService {
         Member member = memberService.findCurrentMember();
         checkDuplicateCategory(member, request.getCategoryName());
         return categoryRepository.save(new Category(request.getCategoryName(), request.getIconId(), member));
+    }
+
+    @Transactional
+    public void updateCategory(CategoryUpdateRequest request) {
+        Member member = memberService.findCurrentMember();
+        Category category = categoryRepository.findById(request.getId())
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        checkCategoryAuth(member, category);
+        category.updateCategory(request.getCategoryName(), request.getIconId());
     }
 
     @Transactional
