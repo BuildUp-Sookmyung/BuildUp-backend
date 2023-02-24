@@ -26,6 +26,10 @@ public class Activity {
     private String role;
     private String url;
 
+    private String percentage;
+
+    private String imgurl;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
 

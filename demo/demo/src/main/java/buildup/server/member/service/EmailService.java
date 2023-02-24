@@ -134,7 +134,7 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("code", code);
         context.setVariable("name", name);
-        return templateEngine.process("mail2", context); //mail2.html
+        return templateEngine.process("mail3", context); //mail3.html
     }
 
     @Transactional
