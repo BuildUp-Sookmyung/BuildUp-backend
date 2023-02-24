@@ -1,5 +1,6 @@
 package buildup.server.entity;
 
+import buildup.server.category.Category;
 import buildup.server.member.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 public class Activity {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "activity_id")
     private Long id;
 

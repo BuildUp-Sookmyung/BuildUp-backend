@@ -44,8 +44,8 @@ public class MemberService {
         return "인증정보="+currentMember.getUsername();
     }
 
-    private Member findCurrentMember() {
-        // TODO: 쿼리 날리지 않고 사용자 정보 가져오기
+    // TODO: 로그인한 사용자
+    public Member findCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member user = memberRepository.findByUsername(authentication.getName()).get();
         return user;

@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 public class Profile {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "profile_id")
     private Long id;
 
@@ -45,5 +45,15 @@ public class Profile {
         this.major = major;
         this.grade = grade;
         this.schoolPublicYn = schoolPublicYn;
+    }
+
+    public Profile updateProfile(String nickname, String school, String major, String grade, String schoolPublicYn) {
+        this.nickname = nickname;
+        this.school = school;
+        this.major = major;
+        this.grade = grade;
+        this.schoolPublicYn = schoolPublicYn;
+
+        return this;
     }
 }
