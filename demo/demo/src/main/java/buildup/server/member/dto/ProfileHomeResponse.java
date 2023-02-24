@@ -19,12 +19,10 @@ public class ProfileHomeResponse {
     private String major;
     private String grade;
     private String schoolPublicYn;
-    private String imgUrl;
+    private String profileImg;
     private List<String> interests;
 
     public static ProfileHomeResponse toDto(Profile profile) {
-        List<String> fieldList = profile.getInterests().stream()
-                .map(Interest::getField).collect(Collectors.toList());
         return new ProfileHomeResponse(
                 profile.getNickname(),
                 profile.getSchool(),
@@ -32,7 +30,8 @@ public class ProfileHomeResponse {
                 profile.getGrade(),
                 profile.getSchoolPublicYn(),
                 profile.getImgUrl(),
-                fieldList
+                profile.getInterests().stream()
+                        .map(Interest::getField).collect(Collectors.toList())
         );
     }
 
