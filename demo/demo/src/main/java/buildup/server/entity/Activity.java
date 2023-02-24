@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 public class Activity {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "activity_id")
     private Long id;
 
