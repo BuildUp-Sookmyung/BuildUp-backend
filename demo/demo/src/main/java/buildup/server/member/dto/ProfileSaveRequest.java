@@ -37,4 +37,8 @@ public class ProfileSaveRequest {
                 .build();
     }
 
+    public void updateProfile(Profile profile) {
+        profile.updateProfile(this.nickname, this.school, this.major, this.grade, this.schoolPublicYn);
+    }
+
 }
