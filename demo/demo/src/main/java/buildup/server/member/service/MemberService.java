@@ -45,8 +45,7 @@ public class MemberService {
     }
 
     // TODO: 로그인한 사용자
-    private Member findCurrentMember() {
-        // TODO: 쿼리 날리지 않고 사용자 정보 가져오기
+    public Member findCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member user = memberRepository.findByUsername(authentication.getName()).get();
         return user;

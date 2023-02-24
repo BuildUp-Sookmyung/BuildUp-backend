@@ -1,5 +1,6 @@
 package buildup.server.entity;
 
+import buildup.server.category.Category;
 import buildup.server.member.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
