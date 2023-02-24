@@ -14,7 +14,7 @@ public class MemberRefreshToken {
 
     @Id
     @Column(name = "refresh_token_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long refreshTokenId;
 
     @Column(name="username", unique = true)
