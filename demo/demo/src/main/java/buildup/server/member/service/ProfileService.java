@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -35,10 +36,7 @@ public class ProfileService {
         String url = null;
         if (! img.isEmpty())
             url = s3Service.uploadProfile(profile, member.getId(), img);
-        for (String interest : request.getInterests()) {
-            Interest select = interestRepository.save(new Interest(profile, interest));
-            profile.getInterests().add(select);
-        }
+        saveInterests(request.getInterests(), profile);
         profile.setMember(member);
         profile.setImgUrl(url);
         return profileRepository.save(profile).getId();
@@ -62,6 +60,7 @@ public class ProfileService {
         Profile profile = profileRepository.findById(member.getId()).get();
         request.updateProfile(profile);
 
+        // 1. 프로필 이미지 수정
         if (! img.isEmpty()) {
             // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
             String url = s3Service.uploadProfile(profile, member.getId(), img);
@@ -70,6 +69,20 @@ public class ProfileService {
             // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제
             s3Service.deleteProfile(profile.getImgUrl());
             profile.setImgUrl(null);
+        }
+
+        // 2. 관심분야 리스트 수정 - 기존 Interest 모두 삭제하고 다시 저장
+        for (Interest interest : profile.getInterests()) {
+            interestRepository.delete(interest);
+        }
+        profile.getInterests().clear();
+        saveInterests(request.getInterests(), profile);
+    }
+
+    private void saveInterests(List<String> requestList, Profile profile) {
+        for (String interest : requestList) {
+            Interest select = interestRepository.save(new Interest(profile, interest));
+            profile.getInterests().add(select);
         }
     }
 
