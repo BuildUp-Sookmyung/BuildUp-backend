@@ -116,7 +116,7 @@ public class EmailService {
 
         code = createCode();//인증 코드 생성
         String setFrom = "buildupbackend0204@gmail.com"; //email-config에 설정한 자신의 이메일 주소(보내는 사람)
-        String title = "BuildUp 회원가입 인증 번호"; //제목
+        String title = "BuildUp 인증 번호 메일"; //제목
 
         MimeMessage message = emailSender.createMimeMessage();
 
