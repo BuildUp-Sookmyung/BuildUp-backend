@@ -55,28 +55,35 @@ public class ProfileService {
     }
 
     @Transactional
-    public void updateProfile(ProfileSaveRequest request, MultipartFile img) {
+    public void updateProfile(ProfileSaveRequest request) {
         Member member = findCurrentMember();
         Profile profile = profileRepository.findById(member.getId()).get();
         request.updateProfile(profile);
 
-        // 1. 프로필 이미지 수정
-        if (! img.isEmpty()) {
-            // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
-            String url = s3Service.uploadProfile(profile, member.getId(), img);
-            profile.setImgUrl(url);
-        } else if (profile.getImgUrl()!=null) {
-            // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제
-            s3Service.deleteProfile(profile.getImgUrl());
-            profile.setImgUrl(null);
-        }
-
-        // 2. 관심분야 리스트 수정 - 기존 Interest 모두 삭제하고 다시 저장
+        // 관심분야 리스트 수정 - 기존 Interest 모두 삭제하고 다시 저장
         for (Interest interest : profile.getInterests()) {
             interestRepository.delete(interest);
         }
         profile.getInterests().clear();
         saveInterests(request.getInterests(), profile);
+    }
+
+    @Transactional
+    public void updateProfileImage( MultipartFile img) {
+        Member member = findCurrentMember();
+        Profile profile = profileRepository.findById(member.getId()).get();
+
+        String imgUrl = profile.getImgUrl();
+
+        if (! img.isEmpty()) {
+            // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
+            String url = s3Service.uploadProfile(profile, member.getId(), img);
+            profile.setImgUrl(url);
+        } else if (imgUrl!=null) {
+            // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제
+            s3Service.deleteProfile(imgUrl);
+            profile.setImgUrl(null);
+        }
     }
 
     private void saveInterests(List<String> requestList, Profile profile) {

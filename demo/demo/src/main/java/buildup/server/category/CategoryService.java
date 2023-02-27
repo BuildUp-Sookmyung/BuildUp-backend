@@ -34,7 +34,7 @@ public class CategoryService {
         Member member = memberService.findCurrentMember();
         Category category = categoryRepository.findById(request.getId())
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        checkCategoryAuth(member, category);
+        checkCategoryAuthForWrite(member, category);
         category.updateCategory(request.getCategoryName(), request.getIconId());
     }
 
@@ -43,14 +43,16 @@ public class CategoryService {
         Member member = memberService.findCurrentMember();
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        checkCategoryAuth(member, category);
+        checkCategoryAuthForWrite(member, category);
         categoryRepository.delete(category);
     }
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> readCategories() {
         Member member = memberService.findCurrentMember();
-        return CategoryResponse.toDtoList(categoryRepository.findAllByMember(member));
+        List<Category> categories = categoryRepository.findAllByIdLessThan(7L);
+        categories.addAll(categoryRepository.findAllByMember(member));
+        return CategoryResponse.toDtoList(categories);
     }
 
     private void checkDuplicateCategory(Member member, String categoryName) {
@@ -61,7 +63,19 @@ public class CategoryService {
         }
     }
 
-    private void checkCategoryAuth(Member member, Category target) {
+    // TODO: 추후 필요 없으면 제거할 예정
+    private void checkCategoryAuthForRead(Member member, Category target) {
+        if (target.getMember() == null)
+            return;
+        List<Category> categories = categoryRepository.findAllByMember(member);
+        for (Category category : categories) {
+            if (category.equals(target))
+                return;
+        }
+        throw new CategoryException(CategoryErrorCode.CATEGORY_NO_AUTH);
+    }
+
+    private void checkCategoryAuthForWrite(Member member, Category target) {
         List<Category> categories = categoryRepository.findAllByMember(member);
         for (Category category : categories) {
             if (category.equals(target))
