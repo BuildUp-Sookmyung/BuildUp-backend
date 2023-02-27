@@ -42,4 +42,4 @@ out/
 ### VS Code ###
 .vscode/
 
-demo/demo/src/main/java/buildup/server/common/InitCategory.java
+**/src/main/java/buildup/server/common/InitCategory.java
