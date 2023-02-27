@@ -1,12 +1,10 @@
-package buildup.server.entity;
+package buildup.server.activity.domain;
 
 import buildup.server.category.Category;
 import buildup.server.member.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -28,8 +26,8 @@ public class Activity {
     private String url;
 
     private String percentage;
-
-    private String imgurl;
+    @Setter
+    private String activityimg;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
@@ -37,11 +35,34 @@ public class Activity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+    @Builder
+    public Activity(String name, String host, String role, String url, String percentage, String activity_img, LocalDate startDate, LocalDate endDate, Category category, Member member) {
+        this.name = name;
+        this.host = host;
+        this.role = role;
+        this.url = url;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.category = category;
+        this.member = member;
+    }
+
+    public void updateActivity(String name, String host, String role, String url, String percentage, String activity_img, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.host = host;
+        this.role = role;
+        this.url = url;
+        this.percentage = percentage;
+        this.activityimg = activity_img;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }
