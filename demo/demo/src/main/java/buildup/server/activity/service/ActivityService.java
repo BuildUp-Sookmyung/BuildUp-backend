@@ -84,11 +84,14 @@ public class ActivityService {
         Activity activity = activityRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
-        activity.updateActivity(requestDto.getCategoryId(), requestDto.getActivityName(), requestDto.getHostName(), requestDto.getRoleName(),
+        Category category = categoryRepository.findById(requestDto.getCategoryId())
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        activity.updateActivity(category, requestDto.getActivityName(), requestDto.getHostName(), requestDto.getRoleName(),
                 requestDto.getStartDate(), requestDto.getEndDate(),requestDto.getUrlName());
     }
+
     @Transactional
-    public void updateActivityImageS(MultipartFile img) {
+    public void updateActivityImages(MultipartFile img) {
         Member member = findCurrentMember();
         Activity activity = activityRepository.findById(member.getId()).get();
 
@@ -104,9 +107,10 @@ public class ActivityService {
     }
 
     @Transactional
-    public void deleteActivityS(Long id) {
+    public void deleteActivity(Long id) {
         Activity activity= activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
+        checkActivityAuth(activity, memberService.findCurrentMember());
         activityRepository.delete(activity);
     }
 
@@ -115,6 +119,7 @@ public class ActivityService {
         Member member = memberRepository.findByUsername(authentication.getName()).get();
         return member;
     }
+
     private void checkDuplicateActivity(Member member, String activityName) {
         List<Activity> activities = activityRepository.findAllByMember(member);
         for (Activity activity : activities) {

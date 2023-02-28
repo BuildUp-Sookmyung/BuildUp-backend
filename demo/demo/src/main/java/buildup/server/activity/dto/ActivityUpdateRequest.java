@@ -15,7 +15,7 @@ public class ActivityUpdateRequest {
 
     private Long id;
 
-    private Category categoryId;
+    private Long categoryId;
 
     private String activityName;
 
