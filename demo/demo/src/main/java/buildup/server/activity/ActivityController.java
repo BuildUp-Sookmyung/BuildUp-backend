@@ -30,9 +30,14 @@ public class ActivityController {
         return activityService.readMyActivities();
     }
 
+    @GetMapping("/{activityId}")
+    public ActivityResponse readActivity(@PathVariable Long activityId) {
+        return activityService.readOneActivity(activityId);
+    }
+
     @PutMapping
-    public StringResponse updateActivity(@RequestBody ActivityUpdateRequest requestdto) {
-        activityService.updateActivityS(requestdto);
+    public StringResponse updateActivity(@RequestBody ActivityUpdateRequest requestDto) {
+        activityService.updateActivities(requestDto);
         return new StringResponse("활동 수정 완료되었습니다");
     }
 

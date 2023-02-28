@@ -64,13 +64,20 @@ public class ActivityService {
         return readActivitiesByMember(me);
     }
 
-    @Transactional
-    public void updateActivityS(ActivityUpdateRequest requestdto) {
-//        Member member = memberService.findCurrentMember();
-        Activity activity = activityRepository.findById(requestdto.getId())
+    @Transactional(readOnly = true)
+    public ActivityResponse readOneActivity(Long activityId) {
+        Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        activity.updateActivity(requestdto.getCategoryId(), requestdto.getActivityName(), requestdto.getHostName(), requestdto.getRoleName(),
-                requestdto.getStartDate(), requestdto.getEndDate(),requestdto.getUrlName());
+        return ActivityResponse.toDto(activity);
+    }
+
+    @Transactional
+    public void updateActivities(ActivityUpdateRequest requestDto) {
+        Activity activity = activityRepository.findById(requestDto.getId())
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
+        checkActivityAuth(activity, memberService.findCurrentMember());
+        activity.updateActivity(requestDto.getCategoryId(), requestDto.getActivityName(), requestDto.getHostName(), requestDto.getRoleName(),
+                requestDto.getStartDate(), requestDto.getEndDate(),requestDto.getUrlName());
     }
     @Transactional
     public void updateActivityImageS(MultipartFile img) {
@@ -106,6 +113,11 @@ public class ActivityService {
             if (activityName.equals(activity.getName()))
                 throw new ActivityException(ActivityErrorCode.ACTIVITY_DUPLICATED);
         }
+    }
+
+    private void checkActivityAuth(Activity activity, Member member) {
+        if (! activity.getMember().equals(member))
+            throw new ActivityException(ActivityErrorCode.ACTIVITY_NO_AUTH);
     }
 
     private List<ActivityResponse> readActivitiesByMember(Member member) {
