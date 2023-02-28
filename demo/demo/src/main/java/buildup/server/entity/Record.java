@@ -1,5 +1,6 @@
 package buildup.server.entity;
 
+import buildup.server.activity.domain.Activity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
