@@ -5,6 +5,7 @@ import buildup.server.member.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -29,10 +30,10 @@ public class Activity {
     @Setter
     private String activityimg;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
 
@@ -45,14 +46,14 @@ public class Activity {
     private Member member;
 
     @Builder
-    public Activity(String name, String host, String role, String url, LocalDate startDate, LocalDate endDate,Category category, Member member) {
+    public Activity(String name, String host, String role, String url, LocalDate startDate, LocalDate endDate,String percentage,Category category, Member member) {
         this.name = name;
         this.host = host;
         this.role = role;
         this.url = url;
         this.startDate = startDate;
         this.endDate = endDate;
-//        this.percentage = percentage;
+        this.percentage = percentage;
         this.category = category;
         this.member = member;
     }
