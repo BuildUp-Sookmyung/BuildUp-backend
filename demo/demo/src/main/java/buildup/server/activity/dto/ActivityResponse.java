@@ -39,8 +39,8 @@ public class ActivityResponse {
     private LocalDate endDate;
     private String urlName;
 
-//    private String percentage;
-
+    private Integer percentage;
+/**
     public static List<ActivityResponse> toDtoList(List<Activity> entities) {
         List<ActivityResponse> dtos = new ArrayList<>();
 
@@ -58,6 +58,6 @@ public class ActivityResponse {
                 activity.getHost(), activity.getActivityimg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
                 activity.getUrl());
     }
-
+*/
 
 }

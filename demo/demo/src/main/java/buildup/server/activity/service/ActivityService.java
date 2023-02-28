@@ -71,7 +71,7 @@ public class ActivityService {
     public ActivityResponse readOneActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        return ActivityResponse.toDto(activity);
+        return toActivityResponse(activity, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
     }
 
     @Transactional(readOnly = true)
@@ -130,19 +130,17 @@ public class ActivityService {
                 throw new ActivityException(ActivityErrorCode.ACTIVITY_DUPLICATED);
         }
     }
-    private String calculatePercentage(LocalDate startDate, LocalDate endDate){
+    private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){
 
         LocalDate readnowDate = LocalDate.now(); //현재시간
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        String formatedNow = readnowDate.format(formatter);
 
-        Duration duration = Duration.between(startDate, endDate);
+        Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
         int betweendays = (int) duration.toDays(); //간격(일기준)
 
-        Duration duration1 = Duration.between(startDate, readnowDate);
+        Duration duration1 = Duration.between(startDate.atStartOfDay(), readnowDate.atStartOfDay());
         int startandnow = (int) duration1.toDays();
 
-        String percentage = (startandnow - betweendays) / (betweendays) + "%";
+        Integer percentage = (startandnow - betweendays) / betweendays;
 
         return percentage;
 
@@ -161,6 +159,11 @@ public class ActivityService {
         return ActivityListResponse.toDtoList(activityRepository.findAllByMemberAndCategory(member, category));
     }
 
+    private ActivityResponse toActivityResponse(Activity activity, Integer percentage) {
+        return new ActivityResponse(activity.getId(), activity.getCategory().getName(), activity.getName(),
+                activity.getHost(), activity.getActivityimg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
+                activity.getUrl(), percentage);
+    }
 
 
 }
