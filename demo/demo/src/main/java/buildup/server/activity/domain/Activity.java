@@ -43,26 +43,27 @@ public class Activity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
     @Builder
-    public Activity(String name, String host, String role, String url, String percentage, String activity_img, LocalDate startDate, LocalDate endDate, Category category, Member member) {
+    public Activity(String name, String host, String role, String url, LocalDate startDate, LocalDate endDate,Category category, Member member) {
         this.name = name;
         this.host = host;
         this.role = role;
         this.url = url;
         this.startDate = startDate;
         this.endDate = endDate;
+//        this.percentage = percentage;
         this.category = category;
         this.member = member;
     }
 
-    public void updateActivity(String name, String host, String role, String url, String percentage, String activity_img, LocalDate startDate, LocalDate endDate) {
+    public void updateActivity(String name, String host, String role, LocalDate startDate, LocalDate endDate,String url) {
         this.name = name;
         this.host = host;
         this.role = role;
-        this.url = url;
-        this.percentage = percentage;
-        this.activityimg = activity_img;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.url = url;
     }
+
 }

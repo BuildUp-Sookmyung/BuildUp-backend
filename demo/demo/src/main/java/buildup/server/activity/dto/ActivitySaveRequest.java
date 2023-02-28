@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityRequest {
+public class ActivitySaveRequest {
 
     private String categoryName;
 
@@ -22,21 +22,30 @@ public class ActivityRequest {
 
     private String roleName;
 
+    private String urlName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
-    private String urlName;
+
+
+    private String percentage;
 
     public Activity toActivity() {
         return Activity.builder()
                 .name(activityName)
                 .host(hostName)
                 .role(roleName)
+                .url(urlName)
                 .startDate(startDate)
                 .endDate(endDate)
                 .build();
     }
+
+//    public Activity toActivity(){
+//        return new Activity(categoryName, activityName, hostName, roleName, urlName,startDate, endDate, percentage);
+//    }
+
 
 }

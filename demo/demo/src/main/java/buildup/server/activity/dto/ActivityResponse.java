@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ActivityResponse {
 
     private Long activityId;
-    private String categoryName;
+//    private String categoryName;
 
     private String activityName;
 
@@ -40,27 +40,33 @@ public class ActivityResponse {
     private LocalDate endDate;
     private String urlName;
 
-//    public static List<ActivityResponse> toDtoActList(List<Activity> entities) {
-//        List<ActivityResponse> dtos = new ArrayList<>();
-//
-//        for (Activity entity : entities)
-//            dtos.add(new ActivityResponse(entity.getId(),entity.getCategory().getName(), entity.getName(), entity.getHost(),
-//                    entity.getActivity_img(), entity.getRole(), entity.getStartDate(), entity.getEndDate(), entity.getUrl()));
-//
-//        return dtos;
+    private String percentage;
+
+
+//    public static List<ActivityResponse> toDtoActList(List<ActivityResponse> activity) {
+//        return new ActivityResponse(
+//                activity.getId(),
+//                activity.getName(),
+//                activity.getHost(),
+//                activity.getActivityimg(),
+//                activity.getRole(),
+//                activity.getStartDate(),
+//                activity.getEndDate(),
+//                activity.getUrl(),
+//                activity.getPercentage()
+//        );
 //    }
 
-    public static ActivityResponse toDtoActList(Activity activity) {
-        return new ActivityResponse(
-                activity.getId(),
-                activity.getCategory().getName(),
-                activity.getName(),
-                activity.getHost(),
-                activity.getActivityimg(),
-                activity.getRole(),
-                activity.getStartDate(),
-                activity.getEndDate(),
-                activity.getUrl()
-        );
+    public static List<ActivityResponse> toDtoList(List<Activity> entities) {
+        List<ActivityResponse> dtos = new ArrayList<>();
+
+        for (Activity entity : entities)
+            dtos.add(new ActivityResponse(entity.getId(),entity.getName(),entity.getHost(),
+                    entity.getActivityimg(),entity.getRole(),entity.getStartDate(), entity.getEndDate(),
+                    entity.getUrl(),entity.getPercentage()));
+
+        return dtos;
     }
+
+
 }

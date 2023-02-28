@@ -22,10 +22,15 @@ public class ActivityUpdateRequest {
 
     private String roleName;
 
+
+    private String urlName;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
-    private String urlName;
+
+
+    private String percentage;
 }

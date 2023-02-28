@@ -10,4 +10,6 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     List<Activity> findAllByMember(Member member);
+
+    List<Activity> findAllById(Long activityId);
 }
