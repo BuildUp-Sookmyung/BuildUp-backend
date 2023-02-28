@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ActivityListResponse {
 
@@ -19,7 +18,15 @@ public class ActivityListResponse {
     private String activityName;
     private LocalDate startDate;
     private LocalDate endDate;
-//    private String percentage;
+
+    private String percentage;
+
+    public ActivityListResponse(Long activityId, String activityName, LocalDate startDate, LocalDate endDate) {
+        this.activityId = activityId;
+        this.activityName = activityName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 
     public static List<ActivityListResponse> toDtoList(List<Activity> entities) {
         List<ActivityListResponse> dtos = new ArrayList<>();
