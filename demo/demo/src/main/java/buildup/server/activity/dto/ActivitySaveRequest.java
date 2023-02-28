@@ -33,8 +33,6 @@ public class ActivitySaveRequest {
     private LocalDate endDate;
 
 
-    private String percentage;
-
     public Activity toActivity() {
         return Activity.builder()
                 .name(activityName)
@@ -43,7 +41,6 @@ public class ActivitySaveRequest {
                 .url(urlName)
                 .startDate(startDate)
                 .endDate(endDate)
-                .percentage(percentage)
                 .build();
     }
 

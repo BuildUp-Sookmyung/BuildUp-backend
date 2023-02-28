@@ -51,12 +51,12 @@ public class ActivityService {
     private final S3Service s3Service;
 
     @Transactional
-    public Long createActivity(ActivitySaveRequest requestdto, MultipartFile img) {
+    public Long createActivity(ActivitySaveRequest requestDto, MultipartFile img) {
         Member member = memberService.findCurrentMember();
-        checkDuplicateActivity(member, requestdto.getActivityName());
+        checkDuplicateActivity(member, requestDto.getActivityName());
 
-        Activity activity = requestdto.toActivity();
-        Category category = categoryRepository.findById(requestdto.getCategoryId())
+        Activity activity = requestDto.toActivity();
+        Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         activity.setCategory(category);
 
