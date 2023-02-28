@@ -1,5 +1,6 @@
 package buildup.server.member.service;
 
+import buildup.server.activity.domain.Activity;
 import buildup.server.member.domain.Profile;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -50,6 +51,38 @@ public class S3Service {
 
     @Transactional
     public void deleteProfile(String key) {
+        try{
+            amazonS3Client.deleteObject(bucket, key.substring(59));
+        } catch (Exception ex) {
+            log.error("S3 Delete Error: {}", ex.getMessage());
+            throw new RuntimeException();
+        }
+    }
+
+    @Transactional
+    public String uploadActivity(Activity activity, Long memberId, MultipartFile multipartFile) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(multipartFile.getContentType());
+        objectMetadata.setContentLength(multipartFile.getSize());
+
+        String originalFilename = multipartFile.getOriginalFilename();
+        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        String storeFileName = "activity" + memberId.toString() + "." + ext;
+        String key = "acitivties/" + storeFileName;
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (IOException ex) {
+            log.error("이미지 업로드 IOExcpetion");
+            throw new RuntimeException();
+        }
+
+        return amazonS3Client.getUrl(bucket, key).toString();
+    }
+
+    @Transactional
+    public void deleteActivity(String key) {
         try{
             amazonS3Client.deleteObject(bucket, key.substring(59));
         } catch (Exception ex) {
