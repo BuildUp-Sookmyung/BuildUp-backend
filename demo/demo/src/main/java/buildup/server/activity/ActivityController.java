@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/activites")
+@RequestMapping("/activities")
 @RequiredArgsConstructor
 public class ActivityController {
 

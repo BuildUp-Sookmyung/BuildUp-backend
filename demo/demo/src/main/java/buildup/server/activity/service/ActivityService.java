@@ -56,6 +56,9 @@ public class ActivityService {
         checkDuplicateActivity(member, requestdto.getActivityName());
 
         Activity activity = requestdto.toActivity();
+        Category category = categoryRepository.findById(requestdto.getCategoryId())
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        activity.setCategory(category);
 
         String activity_url = null;
         if (! img.isEmpty())

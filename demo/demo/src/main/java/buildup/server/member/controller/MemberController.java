@@ -129,7 +129,7 @@ public class MemberController {
 
     // 소셜로그인 접근 시 신규 회원일 때 프로필 입력 후 토큰 반환
     @PostMapping("/social-profile")
-    public TokenDto joinBySocialAccount(@Valid @RequestPart SocialJoinRequest request,
+    public TokenDto joinBySocialAccount(@RequestPart SocialJoinRequest request,
                                         @RequestPart MultipartFile img) throws IOException {
         Provider.toProvider(request.getProvider());
         AuthInfo info = memberService.join(request, img);

@@ -1,5 +1,6 @@
 package buildup.server.member.exception;
 
+import buildup.server.common.exception.DtoValidationErrorCode;
 import buildup.server.common.response.ErrorEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,17 +22,5 @@ public class MemberExceptionAdvice {
     public ErrorEntity handleAuthException(MemberException e) {
         log.error("Member Exception({})={}", e.getErrorCode(), e.getErrorMessage());
         return new ErrorEntity(e.getErrorCode().toString(), e.getErrorMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorEntity dtoValidationException(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors()
-                .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
-        log.error("Dto Validation Exception({}) - {}", DtoValidationErrorCode.BAD_INPUT, DtoValidationErrorCode.BAD_INPUT.getDefaultMessage());
-        return new ErrorEntity(DtoValidationErrorCode.BAD_INPUT.toString(),
-                DtoValidationErrorCode.BAD_INPUT.getDefaultMessage(),
-                errors);
     }
 }
