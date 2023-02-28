@@ -1,5 +1,6 @@
 package buildup.server.activity;
 
+import buildup.server.activity.dto.ActivityListResponse;
 import buildup.server.activity.dto.ActivityResponse;
 import buildup.server.activity.dto.ActivitySaveRequest;
 import buildup.server.activity.dto.ActivityUpdateRequest;
@@ -26,8 +27,13 @@ public class ActivityController {
         return new StringResponse("활동을 생성했습니다. id: " + id);
     }
     @GetMapping
-    public List<ActivityResponse> listMyActivities() {
+    public List<ActivityListResponse> listMyActivities() {
         return activityService.readMyActivities();
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public List<ActivityListResponse> listMyActivitiesByCategory(@PathVariable Long categoryId) {
+        return activityService.readMyActivitiesByCategory(categoryId);
     }
 
     @GetMapping("/{activityId}")

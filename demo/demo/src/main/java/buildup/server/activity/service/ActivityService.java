@@ -1,6 +1,7 @@
 package buildup.server.activity.service;
 
 import buildup.server.activity.domain.Activity;
+import buildup.server.activity.dto.ActivityListResponse;
 import buildup.server.activity.dto.ActivitySaveRequest;
 import buildup.server.activity.dto.ActivityResponse;
 import buildup.server.activity.dto.ActivityUpdateRequest;
@@ -9,6 +10,7 @@ import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
 import buildup.server.category.Category;
 import buildup.server.category.CategoryRepository;
+import buildup.server.category.CategoryService;
 import buildup.server.category.exception.CategoryErrorCode;
 import buildup.server.category.exception.CategoryException;
 import buildup.server.member.domain.Member;
@@ -31,13 +33,10 @@ import java.util.List;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
-
     private final MemberRepository memberRepository;
-
     private final MemberService memberService;
-
     private final CategoryRepository categoryRepository;
-
+    private final CategoryService categoryService;
     private final S3Service s3Service;
 
     @Transactional
@@ -59,7 +58,7 @@ public class ActivityService {
     }
 
     @Transactional(readOnly = true)
-    public List<ActivityResponse> readMyActivities() {
+    public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
         return readActivitiesByMember(me);
     }
@@ -69,6 +68,15 @@ public class ActivityService {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         return ActivityResponse.toDto(activity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
+        Member me = memberService.findCurrentMember();
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        categoryService.checkCategoryAuthForRead(me, category);
+        return readActivitiesByMemberAndCategory(me, category);
     }
 
     @Transactional
@@ -120,8 +128,12 @@ public class ActivityService {
             throw new ActivityException(ActivityErrorCode.ACTIVITY_NO_AUTH);
     }
 
-    private List<ActivityResponse> readActivitiesByMember(Member member) {
-        return ActivityResponse.toDtoList(activityRepository.findAllByMember(member));
+    private List<ActivityListResponse> readActivitiesByMember(Member member) {
+        return ActivityListResponse.toDtoList(activityRepository.findAllByMember(member));
+    }
+
+    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category) {
+        return ActivityListResponse.toDtoList(activityRepository.findAllByMemberAndCategory(member, category));
     }
 
 
