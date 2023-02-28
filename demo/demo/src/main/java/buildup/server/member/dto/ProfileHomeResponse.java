@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProfileHomeResponse {
 
+    private Long profileId;
     private String nickname;
     private String school;
     private String major;
@@ -24,6 +25,7 @@ public class ProfileHomeResponse {
 
     public static ProfileHomeResponse toDto(Profile profile) {
         return new ProfileHomeResponse(
+                profile.getId(),
                 profile.getNickname(),
                 profile.getSchool(),
                 profile.getMajor(),

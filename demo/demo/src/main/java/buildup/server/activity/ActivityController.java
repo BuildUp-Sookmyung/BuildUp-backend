@@ -26,8 +26,8 @@ public class ActivityController {
         return new StringResponse("활동을 생성했습니다. id: " + id);
     }
     @GetMapping
-    public List<ActivityResponse> listActivities() {
-        return activityService.readActivities();
+    public List<ActivityResponse> listMyActivities() {
+        return activityService.readMyActivities();
     }
 
     @PutMapping
