@@ -22,6 +22,7 @@ import buildup.server.member.dto.ProfileSaveRequest;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -53,14 +54,13 @@ public class ActivityService {
     public Long createActivity(ActivitySaveRequest requestdto, MultipartFile img) {
         Member member = memberService.findCurrentMember();
         checkDuplicateActivity(member, requestdto.getActivityName());
-        Optional<Category> findcategoryname = categoryRepository.findById(member.getId());
+
         Activity activity = requestdto.toActivity();
 
         String activity_url = null;
         if (! img.isEmpty())
             activity_url = s3Service.uploadActivity(activity, member.getId(), img);
         activity.setMember(member);
-        activity.setCategory(findcategoryname.get());
         activity.setActivityimg(activity_url);
         return activityRepository.save(activity).getId();
     }
@@ -92,7 +92,7 @@ public class ActivityService {
 //        Member member = memberService.findCurrentMember();
         Activity activity = activityRepository.findById(requestdto.getId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        activity.updateActivity(requestdto.getActivityName(), requestdto.getHostName(), requestdto.getRoleName(),
+        activity.updateActivity(requestdto.getCategoryId(), requestdto.getActivityName(), requestdto.getHostName(), requestdto.getRoleName(),
                 requestdto.getStartDate(), requestdto.getEndDate(),requestdto.getUrlName());
     }
     @Transactional
@@ -130,5 +130,6 @@ public class ActivityService {
                 throw new ActivityException(ActivityErrorCode.ACTIVITY_DUPLICATED);
         }
     }
+
 
 }

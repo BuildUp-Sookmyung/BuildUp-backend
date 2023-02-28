@@ -1,6 +1,7 @@
 package buildup.server.activity.dto;
 
 import buildup.server.activity.domain.Activity;
+import buildup.server.category.Category;
 import buildup.server.member.domain.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ActivitySaveRequest {
 
-    private String categoryName;
+    private Category categoryId;
 
     private String activityName;
 
@@ -34,6 +35,7 @@ public class ActivitySaveRequest {
 
     public Activity toActivity() {
         return Activity.builder()
+                .category(categoryId)
                 .name(activityName)
                 .host(hostName)
                 .role(roleName)

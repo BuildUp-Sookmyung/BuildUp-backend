@@ -35,7 +35,7 @@ public class Activity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
 
-    @Setter
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -57,7 +57,8 @@ public class Activity {
         this.member = member;
     }
 
-    public void updateActivity(String name, String host, String role, LocalDate startDate, LocalDate endDate,String url) {
+    public void updateActivity(Category category, String name, String host, String role, LocalDate startDate, LocalDate endDate,String url) {
+        this.category = category;
         this.name = name;
         this.host = host;
         this.role = role;

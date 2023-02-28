@@ -1,5 +1,6 @@
 package buildup.server.activity.dto;
 
+import buildup.server.category.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,7 @@ public class ActivityUpdateRequest {
 
     private Long id;
 
-    private String categoryName;
+    private Category categoryId;
 
     private String activityName;
 
