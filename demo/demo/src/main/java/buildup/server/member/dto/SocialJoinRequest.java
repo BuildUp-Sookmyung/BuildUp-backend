@@ -2,6 +2,7 @@ package buildup.server.member.dto;
 
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Provider;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,8 +14,10 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SocialJoinRequest {
 
+    @NotBlank
     private String provider;
     private ProfileSaveRequest profile;
+    @NotBlank
     private String emailAgreeYn;
     public static Member toEntity(SocialJoinRequest request, String pw) {
         return Member.builder()
