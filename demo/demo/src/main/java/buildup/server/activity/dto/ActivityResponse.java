@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 public class ActivityResponse {
 
     private Long activityId;
-//    private String categoryName;
+
+    private String categoryName;
 
     private String activityName;
 
@@ -33,39 +34,29 @@ public class ActivityResponse {
 
     private String roleName;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
     private String urlName;
 
-    private String percentage;
-
-
-//    public static List<ActivityResponse> toDtoActList(List<ActivityResponse> activity) {
-//        return new ActivityResponse(
-//                activity.getId(),
-//                activity.getName(),
-//                activity.getHost(),
-//                activity.getActivityimg(),
-//                activity.getRole(),
-//                activity.getStartDate(),
-//                activity.getEndDate(),
-//                activity.getUrl(),
-//                activity.getPercentage()
-//        );
-//    }
+//    private String percentage;
 
     public static List<ActivityResponse> toDtoList(List<Activity> entities) {
         List<ActivityResponse> dtos = new ArrayList<>();
 
         for (Activity entity : entities)
-            dtos.add(new ActivityResponse(entity.getId(),entity.getName(),entity.getHost(),
-                    entity.getActivityimg(),entity.getRole(),entity.getStartDate(), entity.getEndDate(),
-                    entity.getUrl(),entity.getPercentage()));
+            dtos.add(new ActivityResponse(entity.getId(),entity.getCategory().getName(),
+                    entity.getName(),entity.getHost(), entity.getActivityimg(),
+                    entity.getRole(), entity.getStartDate(), entity.getEndDate(),
+                    entity.getUrl()));
 
         return dtos;
+    }
+
+    public static ActivityResponse toDto(Activity activity) {
+        return new ActivityResponse(activity.getId(), activity.getCategory().getName(), activity.getName(),
+                activity.getHost(), activity.getActivityimg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
+                activity.getUrl());
     }
 
 

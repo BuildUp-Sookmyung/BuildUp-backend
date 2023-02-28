@@ -26,7 +26,6 @@ public class Activity {
     private String role;
     private String url;
 
-    private String percentage;
     @Setter
     private String activityimg;
 
@@ -35,7 +34,6 @@ public class Activity {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
-
 
     @Setter
     @ManyToOne
@@ -47,14 +45,13 @@ public class Activity {
     private Member member;
 
     @Builder
-    public Activity(String name, String host, String role, String url, LocalDate startDate, LocalDate endDate,String percentage,Category category, Member member) {
+    public Activity(String name, String host, String role, String url, LocalDate startDate, LocalDate endDate, Category category, Member member) {
         this.name = name;
         this.host = host;
         this.role = role;
         this.url = url;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.percentage = percentage;
         this.category = category;
         this.member = member;
     }
