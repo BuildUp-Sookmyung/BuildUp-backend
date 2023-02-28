@@ -25,6 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -105,7 +109,6 @@ public class ActivityService {
             activity.setActivityimg(null);
         }
     }
-
     @Transactional
     public void deleteActivity(Long id) {
         Activity activity= activityRepository.findById(id)
@@ -126,6 +129,23 @@ public class ActivityService {
             if (activityName.equals(activity.getName()))
                 throw new ActivityException(ActivityErrorCode.ACTIVITY_DUPLICATED);
         }
+    }
+    private String calculatePercentage(LocalDate startDate, LocalDate endDate){
+
+        LocalDate readnowDate = LocalDate.now(); //현재시간
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//        String formatedNow = readnowDate.format(formatter);
+
+        Duration duration = Duration.between(startDate, endDate);
+        int betweendays = (int) duration.toDays(); //간격(일기준)
+
+        Duration duration1 = Duration.between(startDate, readnowDate);
+        int startandnow = (int) duration1.toDays();
+
+        String percentage = (startandnow - betweendays) / (betweendays) + "%";
+
+        return percentage;
+
     }
 
     private void checkActivityAuth(Activity activity, Member member) {
