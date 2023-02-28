@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ActivitySaveRequest {
 
-    private Category categoryId;
+    private Long categoryId;
 
     private String activityName;
 
@@ -37,7 +37,6 @@ public class ActivitySaveRequest {
 
     public Activity toActivity() {
         return Activity.builder()
-                .category(categoryId)
                 .name(activityName)
                 .host(hostName)
                 .role(roleName)
