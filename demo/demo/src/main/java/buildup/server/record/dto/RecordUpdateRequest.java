@@ -1,18 +1,20 @@
-package buildup.server.record;
+package buildup.server.record.dto;
 
-import buildup.server.activity.domain.Activity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecordSaveRequest {
+public class RecordUpdateRequest {
 
+    private Long id;
     private String recordTitle;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
@@ -27,17 +29,6 @@ public class RecordSaveRequest {
 
     private String urlName;
 
-    public Record toRecord() {
-        return Record.builder()
-                .title(recordTitle)
-                .date(date)
-                .experience(experienceName)
-                .concept(conceptName)
-                .result(resultName)
-                .content(content)
-                .url(urlName)
-                .build();
-    }
 
 
 }

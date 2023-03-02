@@ -1,9 +1,7 @@
-package buildup.server.record;
+package buildup.server.record.dto;
 
-import buildup.server.category.Category;
-import buildup.server.category.dto.CategoryResponse;
+import buildup.server.record.domain.Record;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,6 +1,6 @@
-package buildup.server.record;
+package buildup.server.record.domain;
 
-import buildup.server.record.Record;
+import buildup.server.record.domain.Record;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;

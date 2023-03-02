@@ -1,7 +1,7 @@
-package buildup.server.record;
+package buildup.server.record.exception;
 
 import buildup.server.common.response.ErrorEntity;
-import buildup.server.member.exception.MemberException;
+import buildup.server.record.exception.RecordException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,4 +1,4 @@
-package buildup.server.record;
+package buildup.server.record.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

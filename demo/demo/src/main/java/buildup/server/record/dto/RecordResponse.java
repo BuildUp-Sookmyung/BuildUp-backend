@@ -1,5 +1,6 @@
-package buildup.server.record;
+package buildup.server.record.dto;
 
+import buildup.server.record.domain.Record;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

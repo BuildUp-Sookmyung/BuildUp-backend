@@ -1,5 +1,7 @@
-package buildup.server.record;
+package buildup.server.record.repository;
 
+import buildup.server.record.domain.Record;
+import buildup.server.record.domain.RecordImg;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

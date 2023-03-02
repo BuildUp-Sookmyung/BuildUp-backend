@@ -1,35 +1,33 @@
-package buildup.server.record;
+package buildup.server.record.service;
 
 import buildup.server.activity.domain.Activity;
-import buildup.server.activity.dto.ActivityListResponse;
-import buildup.server.activity.dto.ActivityResponse;
-import buildup.server.activity.dto.ActivitySaveRequest;
-import buildup.server.activity.dto.ActivityUpdateRequest;
 import buildup.server.activity.exception.ActivityErrorCode;
 import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
-import buildup.server.category.Category;
 import buildup.server.category.CategoryRepository;
 import buildup.server.category.CategoryService;
-import buildup.server.category.dto.CategoryResponse;
-import buildup.server.category.exception.CategoryErrorCode;
-import buildup.server.category.exception.CategoryException;
-import buildup.server.member.domain.Member;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
+import buildup.server.record.exception.RecordErrorCode;
+import buildup.server.record.exception.RecordException;
+import buildup.server.record.dto.RecordUpdateRequest;
+import buildup.server.record.domain.Record;
+import buildup.server.record.domain.RecordImg;
+import buildup.server.record.dto.RecordImageUpdateRequest;
+import buildup.server.record.dto.RecordListResponse;
+import buildup.server.record.dto.RecordResponse;
+import buildup.server.record.dto.RecordSaveRequest;
+import buildup.server.record.repository.RecordImgRepository;
+import buildup.server.record.repository.RecordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
