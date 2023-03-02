@@ -1,11 +1,15 @@
 package buildup.server.member.service;
 
+import buildup.server.activity.domain.Activity;
+import buildup.server.activity.repository.ActivityRepository;
 import buildup.server.entity.Interest;
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
 import buildup.server.member.dto.ProfileHomeResponse;
 import buildup.server.member.dto.ProfilePageResponse;
 import buildup.server.member.dto.ProfileSaveRequest;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.InterestRepository;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.repository.ProfileRepository;
@@ -17,7 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -27,6 +35,7 @@ public class ProfileService {
     private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
     private final InterestRepository interestRepository;
+    private final ActivityRepository activityRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -83,6 +92,32 @@ public class ProfileService {
             s3Service.deleteProfile(imgUrl);
             profile.setImgUrl(null);
         }
+    }
+
+    @Transactional
+    public List<ProfileHomeResponse> searchProfilesByKeyword(String keyword) {
+        List<Profile> profilesByInterest = interestRepository.findAllByFieldContaining(keyword).stream()
+                .map(Interest::getProfile).distinct().collect(Collectors.toList());
+        List<Profile> profilesByActivity = findProfilesById(activityRepository.findAllByNameContaining(keyword).stream()
+                .map(Activity::getMember).map(Member::getId).distinct().collect(Collectors.toList()));
+
+        List<Profile> list = Stream.of(profilesByInterest, profilesByActivity)
+                .flatMap(Collection::stream).distinct().collect(Collectors.toList());
+
+        List<ProfileHomeResponse> result = new ArrayList<>();
+        for (Profile profile : list)
+            result.add(ProfileHomeResponse.toDto(profile));
+        return result;
+    }
+
+    private List<Profile> findProfilesById(List<Long> idList) {
+        ArrayList<Profile> profiles = new ArrayList<>();
+        for (Long id: idList) {
+            Profile profile = profileRepository.findById(id)
+                    .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+            profiles.add(profile);
+        }
+        return profiles;
     }
 
     private void saveInterests(List<String> requestList, Profile profile) {
