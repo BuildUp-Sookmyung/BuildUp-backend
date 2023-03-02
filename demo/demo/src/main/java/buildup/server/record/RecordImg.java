@@ -1,5 +1,6 @@
-package buildup.server.entity;
+package buildup.server.record;
 
+import buildup.server.record.Record;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class RecordImg {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String storeUrl;

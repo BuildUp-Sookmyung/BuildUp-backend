@@ -1,4 +1,4 @@
-package buildup.server.entity;
+package buildup.server.record;
 
 import buildup.server.activity.domain.Activity;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,17 +22,16 @@ public class Record {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "record_id")
     private Long id;
-
     private String title;
-
     private String experience;
     private String concept;
     private String result;
     private String content;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
+    private String url;
     @ManyToOne
     @JoinColumn
     private Activity activity;
@@ -40,13 +40,14 @@ public class Record {
     private List<RecordImg> images = new ArrayList<>();
 
     @Builder
-    public Record(String title, String experience, String concept, String result, String content, LocalDate date, Activity activity) {
+    public Record(String title, String experience, String concept, String result, String content, LocalDate date, String url, Activity activity) {
         this.title = title;
         this.experience = experience;
         this.concept = concept;
         this.result = result;
         this.content = content;
         this.date = date;
+        this.url = url;
         this.activity = activity;
     }
 }
