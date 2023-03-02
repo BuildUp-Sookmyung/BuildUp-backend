@@ -112,7 +112,7 @@ public class ActivityService {
             String url = s3Service.uploadActivity(activity, member.getId(), img);
             activity.setActivityimg(url);
         } else if (activity_url!=null) {
-            s3Service.deleteProfile(activity_url);
+            s3Service.deleteActivity(activity_url);
             activity.setActivityimg(null);
         }
     }

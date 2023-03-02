@@ -1,6 +1,7 @@
 package buildup.server.record;
 
 import buildup.server.activity.domain.Activity;
+import buildup.server.category.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,7 +36,7 @@ public class Record {
     @ManyToOne
     @JoinColumn
     private Activity activity;
-
+    @Transient
     @OneToMany(mappedBy = "record")
     private List<RecordImg> images = new ArrayList<>();
 
@@ -49,5 +50,15 @@ public class Record {
         this.date = date;
         this.url = url;
         this.activity = activity;
+    }
+
+    public void updateRecord(String title, String experience, String concept, String result, String content, LocalDate date, String url) {
+        this.title = title;
+        this.experience = experience;
+        this.concept = concept;
+        this.result = result;
+        this.content = content;
+        this.date = date;
+        this.url = url;
     }
 }

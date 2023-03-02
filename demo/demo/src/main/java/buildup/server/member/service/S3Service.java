@@ -2,6 +2,8 @@ package buildup.server.member.service;
 
 import buildup.server.activity.domain.Activity;
 import buildup.server.member.domain.Profile;
+import buildup.server.record.RecordErrorCode;
+import buildup.server.record.RecordException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -15,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -90,4 +95,57 @@ public class S3Service {
             throw new RuntimeException();
         }
     }
+
+    public List<String> uploadRecord(List<MultipartFile> multipartFiles) {
+        List<String> fileUrls = new ArrayList<>();
+
+        // 파일 업로드 갯수 3개 이하
+        for (MultipartFile file : multipartFiles) {
+            if (fileUrls.size() > 3) {
+                throw new RecordException(RecordErrorCode.FILE_COUNT_EXCEED);
+            }
+
+            String fileName = createFileName(file.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentLength(file.getSize());
+
+            String key = "records/" + fileName;
+
+            try (InputStream inputStream = file.getInputStream()) {
+                amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                fileUrls.add(amazonS3Client.getUrl(bucket,key).toString());
+            } catch (IOException ex) {
+                log.error("이미지 업로드 IOExcpetion");
+                throw new RecordException(RecordErrorCode.IMAGE_UPLOAD_ERROR);
+            }
+        }
+
+        return fileUrls;
+    }
+
+
+    private String createFileName(String fileName) {
+        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+    }//이미지 파일명 중복 안되게
+
+    private String getFileExtension(String fileName) {
+        if (fileName.length() == 0) {
+            throw new RecordException(RecordErrorCode.WRONG_INPUT_IMAGE);
+        }
+        ArrayList<String> fileValidate = new ArrayList<>();
+        fileValidate.add(".jpg");
+        fileValidate.add(".jpeg");
+        fileValidate.add(".png");
+        fileValidate.add(".JPG");
+        fileValidate.add(".JPEG");
+        fileValidate.add(".PNG");
+        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
+        if (!fileValidate.contains(idxFileName)) {
+            throw new RecordException(RecordErrorCode.WRONG_IMAGE_FORMAT);
+        }
+        return fileName.substring(fileName.lastIndexOf("."));
+    } // TODO : 파일 유효성 검사 (해줘야 한다는데 해야할지 말지 모르겠음)
+
 }
