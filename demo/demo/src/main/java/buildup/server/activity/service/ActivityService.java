@@ -19,6 +19,7 @@ import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,8 @@ public class ActivityService {
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
     private final S3Service s3Service;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate nowDate;
 
     @Transactional
     public Long createActivity(ActivitySaveRequest requestDto, MultipartFile img) {
@@ -64,23 +67,27 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
-        return readActivitiesByMember(me);
+        Activity activity = activityRepository.findById(me.getId())
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
+        return readActivitiesByMember(me, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
     }
 
     @Transactional(readOnly = true)
     public ActivityResponse readOneActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        return toActivityResponse(activity, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
+        return toActivityResponse(activity);
     }
 
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
         Member me = memberService.findCurrentMember();
+        Activity activity = activityRepository.findById(me.getId())
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         categoryService.checkCategoryAuthForRead(me, category);
-        return readActivitiesByMemberAndCategory(me, category);
+        return readActivitiesByMemberAndCategory(me, category, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
     }
 
     @Transactional
@@ -132,18 +139,23 @@ public class ActivityService {
     }
     private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){
 
-        LocalDate readnowDate = LocalDate.now(); //현재시간
+        nowDate = LocalDate.now(); //현재시간
 
         Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
-        int betweendays = (int) duration.toDays(); //간격(일기준)
+        double betweendays = (double) duration.toDays(); //간격(일기준)
 
-        Duration duration1 = Duration.between(startDate.atStartOfDay(), readnowDate.atStartOfDay());
-        int startandnow = (int) duration1.toDays();
+        Duration duration1 = Duration.between(startDate.atStartOfDay(), nowDate.atStartOfDay());
+        double startandnow = (double) duration1.toDays();
 
-        Integer percentage = (startandnow - betweendays) / betweendays;
+        Integer percentage = (int) (((startandnow + 1) / (betweendays + 1)) * 100);
+
+        if (percentage >= 100){
+            percentage = 100;
+        } else if (percentage <= 0) {
+            percentage = 0;
+        }
 
         return percentage;
-
     }
 
     private void checkActivityAuth(Activity activity, Member member) {
@@ -151,18 +163,18 @@ public class ActivityService {
             throw new ActivityException(ActivityErrorCode.ACTIVITY_NO_AUTH);
     }
 
-    private List<ActivityListResponse> readActivitiesByMember(Member member) {
-        return ActivityListResponse.toDtoList(activityRepository.findAllByMember(member));
+    private List<ActivityListResponse> readActivitiesByMember(Member member, Integer percentage) {
+        return ActivityListResponse.toDtoList(activityRepository.findAllByMember(member), percentage);
     }
 
-    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category) {
-        return ActivityListResponse.toDtoList(activityRepository.findAllByMemberAndCategory(member, category));
+    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category, Integer percentage) {
+        return ActivityListResponse.toDtoList(activityRepository.findAllByMemberAndCategory(member, category), percentage);
     }
 
-    private ActivityResponse toActivityResponse(Activity activity, Integer percentage) {
+    private ActivityResponse toActivityResponse(Activity activity) {
         return new ActivityResponse(activity.getId(), activity.getCategory().getName(), activity.getName(),
                 activity.getHost(), activity.getActivityimg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
-                activity.getUrl(), percentage);
+                activity.getUrl());
     }
 
 

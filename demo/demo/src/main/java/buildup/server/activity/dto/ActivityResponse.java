@@ -39,25 +39,6 @@ public class ActivityResponse {
     private LocalDate endDate;
     private String urlName;
 
-    private Integer percentage;
-/**
-    public static List<ActivityResponse> toDtoList(List<Activity> entities) {
-        List<ActivityResponse> dtos = new ArrayList<>();
-
-        for (Activity entity : entities)
-            dtos.add(new ActivityResponse(entity.getId(),entity.getCategory().getName(),
-                    entity.getName(),entity.getHost(), entity.getActivityimg(),
-                    entity.getRole(), entity.getStartDate(), entity.getEndDate(),
-                    entity.getUrl()));
-
-        return dtos;
-    }
-
-    public static ActivityResponse toDto(Activity activity) {
-        return new ActivityResponse(activity.getId(), activity.getCategory().getName(), activity.getName(),
-                activity.getHost(), activity.getActivityimg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
-                activity.getUrl());
-    }
-*/
+//    private Integer percentage;
 
 }
