@@ -59,4 +59,11 @@ public class Record {
         this.date = date;
         this.url = url;
     }
+
+    public void updateRecordImage(List<RecordImg> images){
+        this.images = images;
+//        for (RecordImg img : images) {
+//            img.setRecord(this);
+//        }
+    }
 }

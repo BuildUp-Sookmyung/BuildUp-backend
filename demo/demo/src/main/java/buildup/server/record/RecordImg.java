@@ -2,13 +2,10 @@ package buildup.server.record;
 
 import buildup.server.record.Record;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -20,7 +17,7 @@ public class RecordImg {
     private Long id;
 
     private String storeUrl;
-//    private String originalName;
+    private String originalName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")

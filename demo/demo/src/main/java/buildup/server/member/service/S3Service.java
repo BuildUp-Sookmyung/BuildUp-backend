@@ -101,7 +101,7 @@ public class S3Service {
             throw new RuntimeException();
         }
     }
-
+    @Transactional
     public List<String> uploadRecord(List<MultipartFile> multipartFiles) {
 
         Member member = findCurrentMember();
@@ -116,8 +116,8 @@ public class S3Service {
 
             String originalFilename = file.getOriginalFilename();
             String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            String storeFileName = "activity" + member.getId().toString() + "." + ext;
-            String key = "acitivties/" + storeFileName;
+            String storeFileName = "record" + member.getId().toString() + "." + ext;
+            String key = "records/" + storeFileName;
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
@@ -135,6 +135,38 @@ public class S3Service {
         }
 
         return fileUrls;
+    }
+    @Transactional
+    public String uploadOneRecord(MultipartFile multipartFile) {
+        Member member = findCurrentMember();
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(multipartFile.getContentType());
+        objectMetadata.setContentLength(multipartFile.getSize());
+
+        String originalFilename = multipartFile.getOriginalFilename();
+        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        String storeFileName = "record" + member.getId().toString() + "." + ext;
+        String key = "records/" + storeFileName;
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (IOException ex) {
+            log.error("이미지 업로드 IOExcpetion");
+            throw new RecordException(RecordErrorCode.IMAGE_UPLOAD_ERROR);
+        }
+
+        return amazonS3Client.getUrl(bucket, key).toString();
+    }
+
+    @Transactional
+    public void deleteOneRecord(String key) {
+        try{
+            amazonS3Client.deleteObject(bucket, key.substring(59));
+        } catch (Exception ex) {
+            log.error("S3 Delete Error: {}", ex.getMessage());
+            throw new RuntimeException();
+        }
     }
 
     private Member findCurrentMember() {

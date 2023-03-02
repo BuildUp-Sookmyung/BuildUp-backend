@@ -3,6 +3,7 @@ package buildup.server.record;
 import buildup.server.activity.dto.ActivityListResponse;
 import buildup.server.activity.dto.ActivityResponse;
 import buildup.server.activity.dto.ActivitySaveRequest;
+import buildup.server.activity.dto.ActivityUpdateRequest;
 import buildup.server.category.Category;
 import buildup.server.common.response.StringResponse;
 import buildup.server.member.domain.Member;
@@ -49,6 +50,20 @@ public class RecordController {
     public List<RecordListResponse> readAllRecordByActivity(@PathVariable Long activityId){
         return recordService.readAllRecordByActivity(activityId);
     }
+
+    @PutMapping
+    public StringResponse updateRecord(@Valid @RequestBody RecordUpdateRequest requestDto) {
+        recordService.updateRecords(requestDto);
+        return new StringResponse("기록 수정 완료되었습니다");
+    }
+
+    @PutMapping("/imgs")
+    public StringResponse updateActivityImg(@RequestPart RecordImageUpdateRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
+        recordService.updateRecordImages(request, multipartFiles);
+        return new StringResponse("기록 이미지 수정이 완료되었습니다");
+    }
+
+
 
 
 }

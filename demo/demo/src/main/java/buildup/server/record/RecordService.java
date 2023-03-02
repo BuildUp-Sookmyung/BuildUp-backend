@@ -4,6 +4,7 @@ import buildup.server.activity.domain.Activity;
 import buildup.server.activity.dto.ActivityListResponse;
 import buildup.server.activity.dto.ActivityResponse;
 import buildup.server.activity.dto.ActivitySaveRequest;
+import buildup.server.activity.dto.ActivityUpdateRequest;
 import buildup.server.activity.exception.ActivityErrorCode;
 import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
@@ -47,12 +48,7 @@ public class RecordService {
     @Transactional
     public Long createRecord(RecordSaveRequest requestDto, List<String> imgUrls) {
         recordBlankCheck(imgUrls);
-
-//        Member member = memberService.findCurrentMember();
-
         Record record = requestDto.toRecord();
-//        recordRepository.save(record);
-
         List<String> images = new ArrayList<>();
 
         for (String imgUrl : imgUrls) {
@@ -83,6 +79,31 @@ public class RecordService {
         List<Record> records = recordRepository.findAll();
         records.addAll(recordRepository.findAllByActivity(activity));
         return RecordListResponse.toDtoList(records);
+
+    }
+    @Transactional
+    public void updateRecords(RecordUpdateRequest requestDto) {
+        Record record = recordRepository.findById(requestDto.getId())
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+        record.updateRecord(requestDto.getRecordTitle(), requestDto.getExperienceName(), requestDto.getConceptName(),
+                requestDto.getResultName(), requestDto.getContent(), requestDto.getDate(), requestDto.getUrlName());
+    }
+    @Transactional
+    public void updateRecordImages(RecordImageUpdateRequest requestimagedto, List<MultipartFile> multipartFiles) {
+
+        RecordImg recordImg = recordImgRepository.findById(requestimagedto.getId())
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD_IMG));
+        String recordimg_url = recordImg.getStoreUrl();
+
+        for(MultipartFile img : multipartFiles){
+            if (! img.isEmpty()) {
+                String url = s3Service.uploadOneRecord(img);
+                recordImg.setStoreUrl(url);
+            } else if (recordimg_url!=null) {
+                s3Service.deleteOneRecord(recordimg_url);
+                recordImg.setStoreUrl(null);
+            }
+        }
 
     }
 
