@@ -103,7 +103,7 @@ public class ProfileService {
                 .map(Activity::getMember).map(Member::getId).distinct().collect(Collectors.toList()));
 
         List<Profile> list = Stream.of(profilesByInterest, profilesByActivity)
-                .flatMap(Collection::stream).distinct().collect(Collectors.toList());
+                .flatMap(Collection::stream).distinct().toList();
 
         List<ProfileHomeResponse> result = new ArrayList<>();
         for (Profile profile : list)
