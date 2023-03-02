@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -107,6 +108,7 @@ public class ProfileService {
         List<ProfileHomeResponse> result = new ArrayList<>();
         for (Profile profile : list)
             result.add(ProfileHomeResponse.toDto(profile));
+        Collections.sort(result);
         return result;
     }
 
