@@ -1,18 +1,25 @@
 package buildup.server.record;
 
+import buildup.server.activity.dto.ActivityListResponse;
+import buildup.server.activity.dto.ActivityResponse;
 import buildup.server.activity.dto.ActivitySaveRequest;
+import buildup.server.category.Category;
 import buildup.server.common.response.StringResponse;
+import buildup.server.member.domain.Member;
 import buildup.server.member.service.S3Service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/records")
@@ -22,12 +29,25 @@ public class RecordController {
 
     private final S3Service s3Service;
 
+
     @PostMapping
-    public StringResponse createRecord(@RequestPart RecordSaveRequest request, @RequestPart List<MultipartFile> multipartFiles) {
+    public StringResponse createRecord(@RequestPart RecordSaveRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
+        if (multipartFiles == null) {
+            throw new RecordException(RecordErrorCode.WRONG_INPUT_CONTENT);
+        }
         List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
-        System.out.println(imgUrls);
         Long id = recordService.createRecord(request, imgUrls);
         return new StringResponse("기록을 생성했습니다. id: " + id);
+    }
+
+    @GetMapping("/{recordId}")
+    public RecordResponse readoneRecord(@PathVariable Long recordId) {
+        return recordService.readOneRecord(recordId);
+    }
+
+    @GetMapping("/activity/{activityId}")
+    public List<RecordListResponse> readAllRecordByActivity(@PathVariable Long activityId){
+        return recordService.readAllRecordByActivity(activityId);
     }
 
 

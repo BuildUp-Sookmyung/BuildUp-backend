@@ -4,10 +4,7 @@ import buildup.server.activity.domain.Activity;
 import buildup.server.category.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -33,8 +30,9 @@ public class Record {
     private LocalDate date;
 
     private String url;
+
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "activity_id")
     private Activity activity;
     @Transient
     @OneToMany(mappedBy = "record")

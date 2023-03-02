@@ -1,11 +1,16 @@
 package buildup.server.record;
 
 import buildup.server.activity.domain.Activity;
+import buildup.server.activity.dto.ActivityListResponse;
+import buildup.server.activity.dto.ActivityResponse;
 import buildup.server.activity.dto.ActivitySaveRequest;
+import buildup.server.activity.exception.ActivityErrorCode;
+import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
 import buildup.server.category.Category;
 import buildup.server.category.CategoryRepository;
 import buildup.server.category.CategoryService;
+import buildup.server.category.dto.CategoryResponse;
 import buildup.server.category.exception.CategoryErrorCode;
 import buildup.server.category.exception.CategoryException;
 import buildup.server.member.domain.Member;
@@ -21,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,36 +43,15 @@ public class RecordService {
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
     private final S3Service s3Service;
-//    @Transactional
-//    public Long createRecord(RecordSaveRequest requestDto, List<MultipartFile> recordimgs) {
-//        Member member = memberService.findCurrentMember();
-//        Record record = requestDto.toRecord();
-//
-//        List<String> fileUrls = new ArrayList<>();
-//
-//        // 파일 업로드 갯수 3개 이하
-//        for (MultipartFile multipartFile : recordimgs) {
-//            if (fileUrls.size() > 3) {
-//                throw new RecordException(RecordErrorCode.FILE_COUNT_EXCEED);
-//            }
-//
-//
-//        String record_url = null;
-//        if (! img.isEmpty())
-//            record_url = s3Service.uploadRecord(record, member.getId(), img);
-//        activity.setMember(member);
-//        activity.setActivityimg(activity_url);
-//        return activityRepository.save(activity).getId();
-//    }
 
     @Transactional
     public Long createRecord(RecordSaveRequest requestDto, List<String> imgUrls) {
         recordBlankCheck(imgUrls);
 
-        Member member = memberService.findCurrentMember();
+//        Member member = memberService.findCurrentMember();
 
         Record record = requestDto.toRecord();
-        recordRepository.save(record);
+//        recordRepository.save(record);
 
         List<String> images = new ArrayList<>();
 
@@ -75,15 +62,34 @@ public class RecordService {
         }
         return recordRepository.save(record).getId();
     }
+    @Transactional(readOnly = true)
+    public RecordResponse readOneRecord(Long recordId) {
+        Record record = recordRepository.findById(recordId)
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+
+        List<String> imgUrls = recordImgRepository.findAllByRecord(record)
+                .stream()
+                .map(RecordImg::getStoreUrl)
+                .collect(Collectors.toList());
+
+        return new RecordResponse(recordId, record, imgUrls);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RecordListResponse> readAllRecordByActivity(Long activityId) {
+
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
+        List<Record> records = recordRepository.findAll();
+        records.addAll(recordRepository.findAllByActivity(activity));
+        return RecordListResponse.toDtoList(records);
+
+    }
+
     private void recordBlankCheck(List<String> imgUrls) {
         if(imgUrls == null || imgUrls.isEmpty()){
             throw new RecordException(RecordErrorCode.WRONG_INPUT_IMAGE);
         }
     }
 
-    private Member findCurrentMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = memberRepository.findByUsername(authentication.getName()).get();
-        return member;
-    }
 }

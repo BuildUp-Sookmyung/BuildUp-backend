@@ -1,7 +1,9 @@
 package buildup.server.member.service;
 
 import buildup.server.activity.domain.Activity;
+import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
+import buildup.server.member.repository.MemberRepository;
 import buildup.server.record.RecordErrorCode;
 import buildup.server.record.RecordException;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -11,6 +13,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +30,8 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class S3Service {
+
+    private final MemberRepository memberRepository;
 
     private final AmazonS3Client amazonS3Client;
 
@@ -97,6 +103,9 @@ public class S3Service {
     }
 
     public List<String> uploadRecord(List<MultipartFile> multipartFiles) {
+
+        Member member = findCurrentMember();
+
         List<String> fileUrls = new ArrayList<>();
 
         // 파일 업로드 갯수 3개 이하
@@ -105,12 +114,15 @@ public class S3Service {
                 throw new RecordException(RecordErrorCode.FILE_COUNT_EXCEED);
             }
 
-            String fileName = createFileName(file.getOriginalFilename());
+            String originalFilename = file.getOriginalFilename();
+            String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            String storeFileName = "activity" + member.getId().toString() + "." + ext;
+            String key = "acitivties/" + storeFileName;
+
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             objectMetadata.setContentLength(file.getSize());
 
-            String key = "records/" + fileName;
 
             try (InputStream inputStream = file.getInputStream()) {
                 amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
@@ -125,27 +137,35 @@ public class S3Service {
         return fileUrls;
     }
 
+    private Member findCurrentMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Member member = memberRepository.findByUsername(authentication.getName()).get();
+        return member;
+    }
 
-    private String createFileName(String fileName) {
-        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
-    }//이미지 파일명 중복 안되게
+//  TODO :입니다
 
-    private String getFileExtension(String fileName) {
-        if (fileName.length() == 0) {
-            throw new RecordException(RecordErrorCode.WRONG_INPUT_IMAGE);
-        }
-        ArrayList<String> fileValidate = new ArrayList<>();
-        fileValidate.add(".jpg");
-        fileValidate.add(".jpeg");
-        fileValidate.add(".png");
-        fileValidate.add(".JPG");
-        fileValidate.add(".JPEG");
-        fileValidate.add(".PNG");
-        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
-        if (!fileValidate.contains(idxFileName)) {
-            throw new RecordException(RecordErrorCode.WRONG_IMAGE_FORMAT);
-        }
-        return fileName.substring(fileName.lastIndexOf("."));
-    } // TODO : 파일 유효성 검사 (해줘야 한다는데 해야할지 말지 모르겠음)
+//    private String createFileName(String fileName) {
+//        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+//    }//이미지 파일명 중복 안되게
+//
+//    private String getFileExtension(String fileName) {
+//        if (fileName.length() == 0) {
+//            throw new RecordException(RecordErrorCode.WRONG_INPUT_IMAGE);
+//        }
+//        ArrayList<String> fileValidate = new ArrayList<>();
+//        fileValidate.add("");
+//        fileValidate.add(".jpg");
+//        fileValidate.add(".jpeg");
+//        fileValidate.add(".png");
+//        fileValidate.add(".JPG");
+//        fileValidate.add(".JPEG");
+//        fileValidate.add(".PNG");
+//        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
+//        if (!fileValidate.contains(idxFileName)) {
+//            throw new RecordException(RecordErrorCode.WRONG_IMAGE_FORMAT);
+//        }
+//        return fileName.substring(fileName.lastIndexOf("."));
+//    } // TODO : 파일 유효성 검사 (해줘야 한다는데 해야할지 말지 모르겠음)
 
 }
