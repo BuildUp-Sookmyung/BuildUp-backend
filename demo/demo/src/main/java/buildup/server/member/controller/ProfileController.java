@@ -4,15 +4,18 @@ import buildup.server.common.response.StringResponse;
 import buildup.server.member.dto.ProfileHomeResponse;
 import buildup.server.member.dto.ProfilePageResponse;
 import buildup.server.member.dto.ProfileSaveRequest;
+import buildup.server.member.dto.SearchDto;
 import buildup.server.member.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController
+import java.util.List;
+
 @RequestMapping("/profiles")
 @RequiredArgsConstructor
+@RestController
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -27,7 +30,12 @@ public class ProfileController {
         return profileService.showProfileHome();
     }
 
-    @PutMapping()
+    @PostMapping("/search")
+    public List<ProfileHomeResponse> searchProfiles(@RequestBody @Valid SearchDto dto) {
+        return profileService.searchProfilesByKeyword(dto.getKeyword());
+    }
+
+    @PutMapping
     public StringResponse updateProfile(@Valid @RequestBody ProfileSaveRequest request) {
         profileService.updateProfile(request);
         return new StringResponse("프로필을 수정하였습니다.");
