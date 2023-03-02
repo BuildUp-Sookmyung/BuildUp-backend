@@ -106,6 +106,12 @@ public class RecordService {
         }
 
     }
+    @Transactional
+    public void deleteRecord(Long id) {
+        Record record = recordRepository.findById(id)
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+        recordRepository.delete(record);
+    }
 
     private void recordBlankCheck(List<String> imgUrls) {
         if(imgUrls == null || imgUrls.isEmpty()){

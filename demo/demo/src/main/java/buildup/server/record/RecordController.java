@@ -58,9 +58,15 @@ public class RecordController {
     }
 
     @PutMapping("/imgs")
-    public StringResponse updateActivityImg(@RequestPart RecordImageUpdateRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
+    public StringResponse updateRecordImg(@RequestPart RecordImageUpdateRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
         recordService.updateRecordImages(request, multipartFiles);
         return new StringResponse("기록 이미지 수정이 완료되었습니다");
+    }
+
+    @DeleteMapping("/{id}")
+    public StringResponse deleteRecord(@PathVariable Long id) {
+        recordService.deleteRecord(id);
+        return new StringResponse("선택 기록 삭제 완료했습니다.");
     }
 
 
