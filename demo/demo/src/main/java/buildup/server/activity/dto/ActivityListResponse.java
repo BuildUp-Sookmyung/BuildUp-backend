@@ -19,21 +19,23 @@ public class ActivityListResponse {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private String percentage;
+    private Integer percentage;
 
-    public ActivityListResponse(Long activityId, String activityName, LocalDate startDate, LocalDate endDate) {
+    public ActivityListResponse(Long activityId, String activityName, LocalDate startDate, LocalDate endDate, Integer percentage) {
         this.activityId = activityId;
         this.activityName = activityName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.percentage = percentage;
     }
 
-    public static List<ActivityListResponse> toDtoList(List<Activity> entities) {
+    public static List<ActivityListResponse> toDtoList(List<Activity> entities, Integer percentage) {
         List<ActivityListResponse> dtos = new ArrayList<>();
 
         for (Activity entity : entities)
             dtos.add(new ActivityListResponse(entity.getId(),
-                    entity.getName(),entity.getStartDate(), entity.getEndDate()));
+                    entity.getName(),entity.getStartDate(), entity.getEndDate(), percentage));
+
         return dtos;
     }
 }
