@@ -1,8 +1,6 @@
-package buildup.server.record;
+package buildup.server.record.domain;
 
 import buildup.server.activity.domain.Activity;
-import buildup.server.category.Category;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

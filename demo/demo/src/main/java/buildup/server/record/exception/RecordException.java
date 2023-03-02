@@ -1,6 +1,5 @@
-package buildup.server.record;
+package buildup.server.record.exception;
 
-import buildup.server.member.exception.MemberErrorCode;
 import lombok.Getter;
 
 @Getter

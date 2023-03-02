@@ -12,5 +12,5 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     List<Activity> findAllByMember(Member member);
     List<Activity> findAllByMemberAndCategory(Member member, Category category);
-    Optional<Activity> findByName(String activityName);
+    List<Activity> findAllByNameContaining(String keyword);
 }

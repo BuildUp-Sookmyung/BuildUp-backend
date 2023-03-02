@@ -1,23 +1,18 @@
-package buildup.server.record;
+package buildup.server.record.controller;
 
-import buildup.server.activity.dto.ActivityListResponse;
-import buildup.server.activity.dto.ActivityResponse;
-import buildup.server.activity.dto.ActivitySaveRequest;
-import buildup.server.activity.dto.ActivityUpdateRequest;
-import buildup.server.category.Category;
 import buildup.server.common.response.StringResponse;
-import buildup.server.member.domain.Member;
 import buildup.server.member.service.S3Service;
+import buildup.server.record.dto.*;
+import buildup.server.record.exception.RecordErrorCode;
+import buildup.server.record.exception.RecordException;
+import buildup.server.record.service.RecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 
 @Slf4j

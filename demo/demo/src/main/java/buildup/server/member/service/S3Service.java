@@ -4,8 +4,8 @@ import buildup.server.activity.domain.Activity;
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
 import buildup.server.member.repository.MemberRepository;
-import buildup.server.record.RecordErrorCode;
-import buildup.server.record.RecordException;
+import buildup.server.record.exception.RecordErrorCode;
+import buildup.server.record.exception.RecordException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 
 @Service
