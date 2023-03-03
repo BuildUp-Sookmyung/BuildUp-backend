@@ -135,12 +135,12 @@ public class ActivityService {
         nowDate = LocalDate.now(); //현재시간
 
         Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
-        double betweendays = (double) duration.toDays(); //간격(일기준)
+        double betweenDays = (double) duration.toDays(); //간격(일기준)
 
         Duration duration1 = Duration.between(startDate.atStartOfDay(), nowDate.atStartOfDay());
-        double startandnow = (double) duration1.toDays();
+        double startAndNow = (double) duration1.toDays();
 
-        Integer percentage = (int) (((startandnow + 1) / (betweendays + 1)) * 100);
+        Integer percentage = (int) (((startAndNow + 1) / (betweenDays + 1)) * 100);
 
         if (percentage >= 100){
             percentage = 100;

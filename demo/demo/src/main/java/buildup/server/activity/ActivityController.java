@@ -22,7 +22,7 @@ public class ActivityController {
     private final ActivityService activityService;
 
     @PostMapping
-    public StringResponse createActivity(@RequestPart ActivitySaveRequest request, @RequestPart MultipartFile img) {
+    public StringResponse createActivity(@Valid @RequestPart ActivitySaveRequest request, @RequestPart MultipartFile img) {
         Long id = activityService.createActivity(request, img);
         return new StringResponse("활동을 생성했습니다. id: " + id);
     }
