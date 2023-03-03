@@ -98,7 +98,7 @@ public class MemberService {
 
     @Transactional
     public AuthInfo join(SocialJoinRequest request, MultipartFile img) throws IOException {
-        if (memberRepository.findByUsername(request.getProvider()+request.getProfile().getEmail())!=null)
+        if (memberRepository.findByUsername(request.getProvider()+request.getProfile().getEmail()).isPresent())
             throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
         Member saveMember = saveMember(request, SOCIAL_PW);
         profileService.saveProfile(request.getProfile(), saveMember, img);
