@@ -69,8 +69,6 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
-        Activity activity = activityRepository.findById(me.getId())
-                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         return readActivitiesByMember(me);
     }
 
