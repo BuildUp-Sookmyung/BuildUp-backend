@@ -49,11 +49,12 @@ public class ActivityService {
     @Transactional
     public Long createActivity(ActivitySaveRequest requestDto, MultipartFile img) {
         Member member = memberService.findCurrentMember();
-        checkDuplicateActivity(member, requestDto.getActivityName());
 
-        Activity activity = requestDto.toActivity();
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        categoryService.checkCategoryAuthForRead(member, category);
+
+        Activity activity = requestDto.toActivity();
         activity.setCategory(category);
 
         String activity_url = null;
@@ -94,7 +95,6 @@ public class ActivityService {
     public void updateActivities(ActivityUpdateRequest requestDto) {
         Activity activity = activityRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        checkActivityAuth(activity, memberService.findCurrentMember());
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         activity.updateActivity(category, requestDto.getActivityName(), requestDto.getHostName(), requestDto.getRoleName(),
@@ -130,13 +130,6 @@ public class ActivityService {
         return member;
     }
 
-    private void checkDuplicateActivity(Member member, String activityName) {
-        List<Activity> activities = activityRepository.findAllByMember(member);
-        for (Activity activity : activities) {
-            if (activityName.equals(activity.getName()))
-                throw new ActivityException(ActivityErrorCode.ACTIVITY_DUPLICATED);
-        }
-    }
     private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){
 
         nowDate = LocalDate.now(); //현재시간

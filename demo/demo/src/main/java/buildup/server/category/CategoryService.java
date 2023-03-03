@@ -63,7 +63,6 @@ public class CategoryService {
         }
     }
 
-    // TODO: 추후 필요 없으면 제거할 예정
     public void checkCategoryAuthForRead(Member member, Category target) {
         if (target.getMember() == null)
             return;
