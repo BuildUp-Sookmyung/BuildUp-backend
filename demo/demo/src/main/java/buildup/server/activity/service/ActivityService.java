@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -70,7 +71,7 @@ public class ActivityService {
         Member me = memberService.findCurrentMember();
         Activity activity = activityRepository.findById(me.getId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        return readActivitiesByMember(me, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
+        return readActivitiesByMember(me);
     }
 
     @Transactional(readOnly = true)
@@ -88,7 +89,7 @@ public class ActivityService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         categoryService.checkCategoryAuthForRead(me, category);
-        return readActivitiesByMemberAndCategory(me, category, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
+        return readActivitiesByMemberAndCategory(me, category);
     }
 
     @Transactional
@@ -156,12 +157,28 @@ public class ActivityService {
             throw new ActivityException(ActivityErrorCode.ACTIVITY_NO_AUTH);
     }
 
-    private List<ActivityListResponse> readActivitiesByMember(Member member, Integer percentage) {
-        return ActivityListResponse.toDtoList(activityRepository.findAllByMember(member), percentage);
+    private List<ActivityListResponse> readActivitiesByMember(Member member) {
+        return toDtoList(activityRepository.findAllByMember(member));
     }
 
-    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category, Integer percentage) {
-        return ActivityListResponse.toDtoList(activityRepository.findAllByMemberAndCategory(member, category), percentage);
+    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category) {
+        return toDtoList(activityRepository.findAllByMemberAndCategory(member, category));
+    }
+
+    private List<ActivityListResponse> toDtoList(List<Activity> entities) {
+        List<ActivityListResponse> dtos = new ArrayList<>();
+
+        for (Activity entity : entities)
+            dtos.add(new ActivityListResponse(
+                    entity.getId(),
+                    entity.getName(),
+                    entity.getStartDate(),
+                    entity.getEndDate(),
+                    calculatePercentage(entity.getStartDate(), entity.getEndDate())
+                    )
+            );
+
+        return dtos;
     }
 
     private ActivityResponse toActivityResponse(Activity activity) {
