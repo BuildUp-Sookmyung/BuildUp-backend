@@ -38,47 +38,7 @@ public class EmailService {
     private String code;
 
     @Transactional
-    public Long verifyCodeByRdb(String email, String input) {
-        Code data = codeRepository.findTopByEmailOrderByIdDesc(email)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
-        if (data.getCode() == null)
-            return null;
-        if (data.getCode().equals(input)) {
-
-//            codeRepository.delete(data);
-
-
-            data.setAuthYn("Y");
-            return data.getId();
-
-        }
-        return null;
-    }
-
-    @Transactional
-    public boolean verifyCodeByRedis(String email, String code) {
-        String data = redisUtil.getData(email);
-        if (data == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
-            throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
-        }
-        // 해당 email로 user를 꺼낸다.
-        return data.equals(code);
-    }
-
-    @Transactional
-    public boolean deleteCode(CodeDto codeDto) {
-        Code code = codeRepository.findByCode(codeDto.getCode())
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_CODE_NOT_FOUND));
-        code.setExpiredYn("Y");
-        return true;
-    }
-
-    @Transactional
     public String sendEmail(String name, String toEmail) throws MessagingException {
-
-         Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
-         if (optionalCode.isPresent())
-            codeRepository.delete(optionalCode.get());
 
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(name, toEmail);
@@ -124,8 +84,6 @@ public class EmailService {
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(name, code), "utf-8", "html");
-        
-        codeRepository.save(new Code(toEmail, code));
         return message;
     }
 

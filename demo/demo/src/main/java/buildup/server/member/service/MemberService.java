@@ -53,12 +53,6 @@ public class MemberService {
     // 일반 회원가입 후 자동 로그인
     @Transactional
     public AuthInfo join(@Valid LocalJoinRequest request, MultipartFile img) throws IOException {
-        // 이메일 인증 거쳤는지 확인
-        if (! verifyAuthYn(request.getCode()))
-// TODO: Redis                String data = redisUtil.getData(request.getProfile().getEmail());
-//        if (data==null || !data.equals(request.getCode()))
-            throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
-
         // 기존 회원 확인
         if (memberRepository.findByUsername(request.getUsername()).isPresent())
             throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
@@ -118,13 +112,6 @@ public class MemberService {
                 authService.setRefreshToken(loginRequest)
         );
 
-    }
-
-    private boolean verifyAuthYn(String code) {
-        Optional<Code> optionalCode = codeRepository.findByCode(code);
-        if (optionalCode.isPresent())
-            return true;
-        return false;
     }
 
     private Member saveMember(LocalJoinRequest request) {

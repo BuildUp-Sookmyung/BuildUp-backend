@@ -14,6 +14,8 @@ import buildup.server.category.CategoryService;
 import buildup.server.category.exception.CategoryErrorCode;
 import buildup.server.category.exception.CategoryException;
 import buildup.server.member.domain.Member;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
@@ -82,12 +84,27 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
         Member me = memberService.findCurrentMember();
-        Activity activity = activityRepository.findById(me.getId())
-                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         categoryService.checkCategoryAuthForRead(me, category);
         return readActivitiesByMemberAndCategory(me, category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId, Long categoryId) {
+        Member member = memberRepository.findById(profileId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        categoryService.checkCategoryAuthForRead(member, category);
+        return readActivitiesByMember(member);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId) {
+        Member member = memberRepository.findById(profileId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        return readActivitiesByMember(member);
     }
 
     @Transactional

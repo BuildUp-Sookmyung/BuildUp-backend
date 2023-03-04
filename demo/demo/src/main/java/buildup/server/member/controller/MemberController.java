@@ -45,16 +45,6 @@ public class MemberController {
         return new StringResponse("인증코드 메일을 전송했습니다. 인증코드: " + str);
     }
 
-    @PostMapping("/code")
-    public StringResponse verifyCode(@RequestBody EmailCodeRequest codeDto) {
-        Long codeId = emailService.verifyCodeByRdb(codeDto.getEmail(), codeDto.getInput());
-        if (codeId != null) {
-            log.info("이메일 인증 성공");
-            return new StringResponse("인증에 성공하였습니다.");
-        }
-        throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
-    }
-
 
     @PostMapping("/find-id")
     public IdResponse findIdAndDate(@RequestBody EmailAuthRequest codeDto) {
@@ -86,17 +76,6 @@ public class MemberController {
 
 
     }
-
-
-    //TODO: 시간 체크 받을 엔드포인트
-    @PostMapping("/time")
-    public StringResponse deleteCode(@RequestBody CodeDto code) {
-        if (emailService.deleteCode(code)) {
-            return new StringResponse("만료처리");
-        }
-        throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
-    }
-
 
     @PostMapping("/local")
     public TokenDto joinByLocalAccount(@RequestPart LocalJoinRequest request,

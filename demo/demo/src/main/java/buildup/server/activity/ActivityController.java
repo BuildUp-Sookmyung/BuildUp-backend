@@ -36,10 +36,17 @@ public class ActivityController {
         return activityService.readMyActivitiesByCategory(categoryId);
     }
 
+    @GetMapping("/profiles/{profileId}")
+    public List<ActivityListResponse> listActivitiesByProfile(@PathVariable Long profileId) {
+        return activityService.readActivitiesByProfileAndCategory(profileId);
+    }
+
     @GetMapping("/{activityId}")
     public ActivityResponse readActivity(@PathVariable Long activityId) {
         return activityService.readOneActivity(activityId);
     }
+
+ //   public List<ActivityListResponse> filterActivityByCategory(Long categoryId) {}
 
     @PutMapping
     public StringResponse updateActivity(@Valid @RequestBody ActivityUpdateRequest requestDto) {
