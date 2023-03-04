@@ -1,13 +1,9 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.dto.CodeDto;
-import buildup.server.common.RedisUtil;
-import buildup.server.member.domain.Code;
 import buildup.server.member.domain.Member;
 import buildup.server.member.dto.NewLoginRequest;
 import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;
-import buildup.server.member.repository.CodeRepository;
 import buildup.server.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -30,55 +26,13 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
-    private final CodeRepository codeRepository;
-    private final RedisUtil redisUtil;
 
     private final MemberRepository memberRepository;
 
     private String code;
 
     @Transactional
-    public Long verifyCodeByRdb(String email, String input) {
-        Code data = codeRepository.findTopByEmailOrderByIdDesc(email)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED));
-        if (data.getCode() == null)
-            return null;
-        if (data.getCode().equals(input)) {
-
-//            codeRepository.delete(data);
-
-
-            data.setAuthYn("Y");
-            return data.getId();
-
-        }
-        return null;
-    }
-
-    @Transactional
-    public boolean verifyCodeByRedis(String email, String code) {
-        String data = redisUtil.getData(email);
-        if (data == null) { // email이 존재하지 않으면, 유효 기간 만료이거나 코드 잘못 입력
-            throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
-        }
-        // 해당 email로 user를 꺼낸다.
-        return data.equals(code);
-    }
-
-    @Transactional
-    public boolean deleteCode(CodeDto codeDto) {
-        Code code = codeRepository.findByCode(codeDto.getCode())
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_CODE_NOT_FOUND));
-        code.setExpiredYn("Y");
-        return true;
-    }
-
-    @Transactional
     public String sendEmail(String name, String toEmail) throws MessagingException {
-
-         Optional<Code> optionalCode = codeRepository.findByEmail(toEmail);
-         if (optionalCode.isPresent())
-            codeRepository.delete(optionalCode.get());
 
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(name, toEmail);
@@ -116,7 +70,7 @@ public class EmailService {
 
         code = createCode();//인증 코드 생성
         String setFrom = "buildupbackend0204@gmail.com"; //email-config에 설정한 자신의 이메일 주소(보내는 사람)
-        String title = "BuildUp 회원가입 인증 번호"; //제목
+        String title = "BuildUp 인증 번호 메일"; //제목
 
         MimeMessage message = emailSender.createMimeMessage();
 
@@ -124,8 +78,6 @@ public class EmailService {
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
         message.setText(setContext(name, code), "utf-8", "html");
-        
-        codeRepository.save(new Code(toEmail, code));
         return message;
     }
 
@@ -133,8 +85,8 @@ public class EmailService {
     private String setContext(String name, String code) {
         Context context = new Context();
         context.setVariable("code", code);
-
-        return templateEngine.process("mail2", context); //mail2.html
+        context.setVariable("name", name);
+        return templateEngine.process("mail3", context); //mail3.html
     }
 
     @Transactional

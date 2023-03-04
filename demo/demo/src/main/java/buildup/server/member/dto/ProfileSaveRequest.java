@@ -1,8 +1,8 @@
 package buildup.server.member.dto;
 
-import buildup.server.entity.Interest;
 import buildup.server.member.domain.Profile;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ProfileSaveRequest {
 
@@ -35,6 +35,10 @@ public class ProfileSaveRequest {
                 .major(major)
                 .schoolPublicYn(schoolPublicYn)
                 .build();
+    }
+
+    public void updateProfile(Profile profile) {
+        profile.updateProfile(this.nickname, this.school, this.major, this.grade, this.schoolPublicYn);
     }
 
 }

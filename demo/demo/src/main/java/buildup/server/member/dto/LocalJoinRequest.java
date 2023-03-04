@@ -12,8 +12,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 public class LocalJoinRequest {
 
     @NotBlank
-    private String code;
-    @NotBlank
     private String username;
     @NotBlank
     private String password;
