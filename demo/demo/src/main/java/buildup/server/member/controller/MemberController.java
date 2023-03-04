@@ -37,7 +37,7 @@ public class MemberController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/email")
-    public StringResponse sendMail(@RequestBody EmailAuthRequest emailDto) throws MessagingException {
+    public StringResponse sendMail(@Valid @RequestBody EmailAuthRequest emailDto) throws MessagingException {
         String name = emailDto.getName();
         String email = emailDto.getEmail();
         String str = emailService.sendEmail(name, email);
@@ -47,7 +47,7 @@ public class MemberController {
 
 
     @PostMapping("/find-id")
-    public IdResponse findIdAndDate(@RequestBody EmailAuthRequest codeDto) {
+    public IdResponse findIdAndDate(@Valid @RequestBody EmailAuthRequest codeDto) {
         String[] result = emailService.findIdAndDate(codeDto.getEmail());
         String username = result[0];
         String createdAt = result[1];
@@ -60,7 +60,7 @@ public class MemberController {
     }
 
     @PostMapping("/find-pw")
-    public StringResponse findPw(@RequestBody NewLoginRequest dto) {
+    public StringResponse findPw(@Valid @RequestBody NewLoginRequest dto) {
         emailService.updatePw(dto);
 
 //        Authentication authentication = authenticationManager.authenticate(
@@ -78,9 +78,8 @@ public class MemberController {
     }
 
     @PostMapping("/local")
-    public TokenDto joinByLocalAccount(@RequestPart LocalJoinRequest request,
-                                       @RequestPart MultipartFile img) throws IOException {
-        AuthInfo info = memberService.join(request, img);
+    public TokenDto joinByLocalAccount(@Valid @RequestBody LocalJoinRequest request) throws IOException {
+        AuthInfo info = memberService.join(request);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
@@ -108,10 +107,9 @@ public class MemberController {
 
     // 소셜로그인 접근 시 신규 회원일 때 프로필 입력 후 토큰 반환
     @PostMapping("/social-profile")
-    public TokenDto joinBySocialAccount(@Valid @RequestPart SocialJoinRequest request,
-                                        MultipartFile img) throws IOException {
+    public TokenDto joinBySocialAccount(@Valid @RequestBody SocialJoinRequest request ) throws IOException {
         Provider.toProvider(request.getProvider());
-        AuthInfo info = memberService.join(request, img);
+        AuthInfo info = memberService.join(request);
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 

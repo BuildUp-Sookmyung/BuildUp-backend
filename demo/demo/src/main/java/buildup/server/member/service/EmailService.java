@@ -1,13 +1,9 @@
 package buildup.server.member.service;
 
-import buildup.server.auth.dto.CodeDto;
-import buildup.server.common.RedisUtil;
-import buildup.server.member.domain.Code;
 import buildup.server.member.domain.Member;
 import buildup.server.member.dto.NewLoginRequest;
 import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;
-import buildup.server.member.repository.CodeRepository;
 import buildup.server.member.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -30,8 +26,6 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final SpringTemplateEngine templateEngine;
-    private final CodeRepository codeRepository;
-    private final RedisUtil redisUtil;
 
     private final MemberRepository memberRepository;
 
