@@ -37,12 +37,12 @@ public class RecordController {
     }
 
     @GetMapping("/{recordId}")
-    public RecordResponse readoneRecord(@PathVariable Long recordId) {
+    public RecordResponse readOneRecord(@PathVariable Long recordId) {
         return recordService.readOneRecord(recordId);
     }
 
     @GetMapping("/activities/{activityId}")
-    public List<RecordListResponse> readAllRecordByActivity(@PathVariable Long activityId){
+    public List<RecordListResponse> readAllRecordsByActivity(@PathVariable Long activityId){
         return recordService.readAllRecordByActivity(activityId);
     }
 
