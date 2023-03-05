@@ -56,21 +56,25 @@ public class ActivityService {
 
         Activity activity = requestDto.toActivity();
         activity.setCategory(category);
+        activity.setMember(member);
+        activityRepository.save(activity);
 
         String activity_url = null;
         if (! img.isEmpty())
-            activity_url = s3Service.uploadActivity(activity, member.getId(), img);
-        activity.setMember(member);
+            activity_url = s3Service.uploadActivity(activity.getId(), img);
         activity.setActivityimg(activity_url);
-        return activityRepository.save(activity).getId();
+
+        return activity.getId();
     }
 
+    // 기록(메인) - 전체
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
         return readActivitiesByMember(me);
     }
 
+    // 활동 상세
     @Transactional(readOnly = true)
     public ActivityResponse readOneActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
@@ -78,6 +82,7 @@ public class ActivityService {
         return toActivityResponse(activity);
     }
 
+    // 기록(메인) - 카테고리별
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
         Member me = memberService.findCurrentMember();
@@ -87,21 +92,17 @@ public class ActivityService {
         return readActivitiesByMemberAndCategory(me, category);
     }
 
+    // 프로필 검색 상세(약력)
     @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId, Long categoryId) {
+    public List<SearchResult> readActivitiesByProfile(Long profileId) {
         Member member = memberRepository.findById(profileId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        categoryService.checkCategoryAuthForRead(member, category);
-        return readActivitiesByMember(member);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId) {
-        Member member = memberRepository.findById(profileId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        return readActivitiesByMember(member);
+        List<SearchResult> results = new ArrayList<>();
+        for (Long id=1L; id<7L; id++) {
+            Category category = categoryRepository.findById(id).get();
+            results.add(new SearchResult(category.getName(), readActivitiesByMemberAndCategory(member, category)));
+        }
+        return results;
     }
 
     @Transactional
@@ -123,7 +124,7 @@ public class ActivityService {
         String activity_url = activity.getActivityimg();
 
         if (! img.isEmpty()) {
-            String url = s3Service.uploadActivity(activity, member.getId(), img);
+            String url = s3Service.uploadActivity(activity.getId(), img);
             activity.setActivityimg(url);
         } else if (activity_url!=null) {
             s3Service.deleteActivity(activity_url);
@@ -136,6 +137,7 @@ public class ActivityService {
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
         activityRepository.delete(activity);
+        // TODO: 활동에 포함된 기록들까지 모두 삭제
     }
 
     private Member findCurrentMember() {

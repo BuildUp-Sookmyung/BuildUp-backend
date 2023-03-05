@@ -42,17 +42,21 @@ public class RecordService {
     @Transactional
     public Long createRecord(RecordSaveRequest requestDto, List<MultipartFile> multipartFiles) {
 
+        Activity activity = activityRepository.findById(requestDto.getActivityId())
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         Record record = requestDto.toRecord();
+        record.setActivity(activity);
 
         if (multipartFiles == null) {throw new RecordException(RecordErrorCode.WRONG_INPUT_CONTENT);}
 
-        List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
+        recordRepository.save(record);
 
+        List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
         for (String imgUrl : imgUrls) {
             RecordImg recordImg = new RecordImg(imgUrl, record);
             recordImgRepository.save(recordImg);
         }
-        return recordRepository.save(record).getId();
+        return record.getId();
     }
 
 
@@ -75,9 +79,7 @@ public class RecordService {
 
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        List<Record> records = recordRepository.findAll();
-        records.addAll(recordRepository.findAllByActivity(activity));
-        return RecordListResponse.toDtoList(records);
+        return RecordListResponse.toDtoList(recordRepository.findAllByActivity(activity));
 
     }
     @Transactional
