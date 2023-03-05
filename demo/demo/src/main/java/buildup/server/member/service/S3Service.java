@@ -97,14 +97,13 @@ public class S3Service {
             String key = "records/" + storeFileName;
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentType("image/png");
             objectMetadata.setContentLength(file.getSize());
 
 
             try (InputStream inputStream = file.getInputStream()) {
                 amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
-                log.info("content-type: {}", amazonS3Client.getObject(bucket, key).getObjectMetadata().getContentType());
                 fileUrls.add(amazonS3Client.getUrl(bucket, key).toString());
             } catch (IOException ex) {
                 log.error("이미지 업로드 IOExcpetion");
@@ -124,7 +123,7 @@ public class S3Service {
 
         String originalFilename = multipartFile.getOriginalFilename();
         String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-        String storeFileName = "record/" + originalFilename;
+        String storeFileName = UUID.randomUUID() + "." + ext;
         String key = "records/" + storeFileName;
 
         return putObject(multipartFile, key);
@@ -148,7 +147,6 @@ public class S3Service {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-            log.info("content-type: {}", amazonS3Client.getObject(bucket, key).getObjectMetadata().getContentType());
         } catch (IOException ex) {
             log.error("이미지 업로드 IOExcpetion");
             throw new S3Exception(S3ErrorCode.IMAGE_UPLOAD_FAILED);
