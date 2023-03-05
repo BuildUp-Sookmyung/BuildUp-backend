@@ -96,7 +96,20 @@ public class S3Service {
             String storeFileName = UUID.randomUUID() + "." + ext;
             String key = "records/" + storeFileName;
 
-            fileUrls.add(putObject(file,key));
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(file.getContentType());
+            objectMetadata.setContentLength(file.getSize());
+
+
+            try (InputStream inputStream = file.getInputStream()) {
+                amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                log.info("content-type: {}", amazonS3Client.getObject(bucket, key).getObjectMetadata().getContentType());
+                fileUrls.add(amazonS3Client.getUrl(bucket, key).toString());
+            } catch (IOException ex) {
+                log.error("이미지 업로드 IOExcpetion");
+                throw new S3Exception(S3ErrorCode.IMAGE_UPLOAD_FAILED);
+            }
         }
 
         return fileUrls;
@@ -135,6 +148,7 @@ public class S3Service {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
+            log.info("content-type: {}", amazonS3Client.getObject(bucket, key).getObjectMetadata().getContentType());
         } catch (IOException ex) {
             log.error("이미지 업로드 IOExcpetion");
             throw new S3Exception(S3ErrorCode.IMAGE_UPLOAD_FAILED);
