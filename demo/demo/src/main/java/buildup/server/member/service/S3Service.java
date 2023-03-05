@@ -96,6 +96,7 @@ public class S3Service {
             String storeFileName = UUID.randomUUID() + "." + ext;
             String key = "records/" + storeFileName;
 
+            log.info("original file content-type: {}", file.getContentType());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             objectMetadata.setContentLength(file.getSize());
@@ -144,6 +145,8 @@ public class S3Service {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
         objectMetadata.setContentLength(multipartFile.getSize());
+
+        log.info("original file content-type: {}", multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
