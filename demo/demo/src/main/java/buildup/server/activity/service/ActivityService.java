@@ -92,6 +92,15 @@ public class ActivityService {
         return readActivitiesByMemberAndCategory(me, category);
     }
 
+    @Transactional(readOnly = true)
+    public void readActivitiesByFilter(FilterVO filter) {
+        LocalDate startDate = convertLocalDate(filter.getStart());
+        LocalDate endDate = convertLocalDate(filter.getEnd());
+        endDate = endDate.withDayOfMonth(endDate.lengthOfMonth());
+
+        log.info("date:[{}]-[{}]", startDate, endDate);
+    }
+
     // 프로필 검색 상세(약력)
     @Transactional(readOnly = true)
     public List<SearchResult> readActivitiesByProfile(Long profileId) {
@@ -144,6 +153,12 @@ public class ActivityService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = memberRepository.findByUsername(authentication.getName()).get();
         return member;
+    }
+
+    private LocalDate convertLocalDate(String value) {
+        return LocalDate.of(Integer.valueOf(value.substring(0,4)),
+                Integer.valueOf(value.substring(5)),
+                1);
     }
 
     private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){

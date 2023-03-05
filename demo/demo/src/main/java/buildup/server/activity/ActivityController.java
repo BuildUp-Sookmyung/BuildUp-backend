@@ -43,6 +43,11 @@ public class ActivityController {
         return activityService.readMyActivitiesByCategory(categoryId);
     }
 
+    @PostMapping("/filter")
+    public void listMyActivitiesByFilter(@Valid @RequestBody FilterVO filter) {
+        activityService.readActivitiesByFilter(filter);
+    }
+
     // 활동 상세
     @GetMapping("/{activityId}")
     public ActivityResponse readActivity(@PathVariable Long activityId) {
