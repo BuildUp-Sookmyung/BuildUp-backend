@@ -1,10 +1,7 @@
 package buildup.server.activity.service;
 
 import buildup.server.activity.domain.Activity;
-import buildup.server.activity.dto.ActivityListResponse;
-import buildup.server.activity.dto.ActivitySaveRequest;
-import buildup.server.activity.dto.ActivityResponse;
-import buildup.server.activity.dto.ActivityUpdateRequest;
+import buildup.server.activity.dto.*;
 import buildup.server.activity.exception.ActivityErrorCode;
 import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
@@ -91,20 +88,15 @@ public class ActivityService {
     }
 
     @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId, Long categoryId) {
+    public List<SearchResult> readActivitiesByProfile(Long profileId) {
         Member member = memberRepository.findById(profileId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        categoryService.checkCategoryAuthForRead(member, category);
-        return readActivitiesByMember(member);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId) {
-        Member member = memberRepository.findById(profileId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        return readActivitiesByMember(member);
+        List<SearchResult> results = new ArrayList<>();
+        for (Long id=1L; id<7L; id++) {
+            Category category = categoryRepository.findById(id).get();
+            results.add(new SearchResult(category.getName(), readActivitiesByMemberAndCategory(member, category)));
+        }
+        return results;
     }
 
     @Transactional
