@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class RecordSaveRequest {
 
+    private Long activityId;
     private String recordTitle;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;

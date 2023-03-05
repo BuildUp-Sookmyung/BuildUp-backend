@@ -56,13 +56,15 @@ public class ActivityService {
 
         Activity activity = requestDto.toActivity();
         activity.setCategory(category);
+        activity.setMember(member);
+        activityRepository.save(activity);
 
         String activity_url = null;
         if (! img.isEmpty())
-            activity_url = s3Service.uploadActivity(activity, member.getId(), img);
-        activity.setMember(member);
+            activity_url = s3Service.uploadActivity(activity.getId(), img);
         activity.setActivityimg(activity_url);
-        return activityRepository.save(activity).getId();
+
+        return activity.getId();
     }
 
     // 기록(메인) - 전체
@@ -122,7 +124,7 @@ public class ActivityService {
         String activity_url = activity.getActivityimg();
 
         if (! img.isEmpty()) {
-            String url = s3Service.uploadActivity(activity, member.getId(), img);
+            String url = s3Service.uploadActivity(activity.getId(), img);
             activity.setActivityimg(url);
         } else if (activity_url!=null) {
             s3Service.deleteActivity(activity_url);

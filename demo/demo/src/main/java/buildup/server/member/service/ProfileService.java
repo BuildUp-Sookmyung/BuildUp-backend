@@ -84,7 +84,7 @@ public class ProfileService {
 
         if (! img.isEmpty()) {
             // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
-            String url = s3Service.uploadProfile(profile, member.getId(), img);
+            String url = s3Service.uploadProfile(member.getId(), img);
             profile.setImgUrl(url);
         } else if (imgUrl!=null) {
             // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제

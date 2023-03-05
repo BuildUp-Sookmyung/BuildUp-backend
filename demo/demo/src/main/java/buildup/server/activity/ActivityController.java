@@ -65,8 +65,8 @@ public class ActivityController {
     }
 
     @PutMapping("/img")
-    public StringResponse updateActivityImg(@Valid @RequestPart ActivityImageUpdateRequest requestDto, @RequestPart MultipartFile img) {
-        activityService.updateActivityImages(requestDto, img);
+    public StringResponse updateActivityImg(@Valid @RequestPart ActivityImageUpdateRequest request, @RequestPart MultipartFile img) {
+        activityService.updateActivityImages(request, img);
         return new StringResponse("활동 이미지 수정 완료되었습니다");
     }
 
