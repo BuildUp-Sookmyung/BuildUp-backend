@@ -19,7 +19,7 @@ public class ActivityController {
     private final ActivityService activityService;
 
     @PostMapping
-    public StringResponse createActivity(@RequestPart ActivitySaveRequest request, @RequestPart MultipartFile img) {
+    public StringResponse createActivity(@Valid @RequestPart ActivitySaveRequest request, @RequestPart MultipartFile img) {
         Long id = activityService.createActivity(request, img);
         return new StringResponse("활동을 생성했습니다. id: " + id);
     }
@@ -33,10 +33,17 @@ public class ActivityController {
         return activityService.readMyActivitiesByCategory(categoryId);
     }
 
+    @GetMapping("/profiles/{profileId}")
+    public List<ActivityListResponse> listActivitiesByProfile(@PathVariable Long profileId) {
+        return activityService.readActivitiesByProfileAndCategory(profileId);
+    }
+
     @GetMapping("/{activityId}")
     public ActivityResponse readActivity(@PathVariable Long activityId) {
         return activityService.readOneActivity(activityId);
     }
+
+ //   public List<ActivityListResponse> filterActivityByCategory(Long categoryId) {}
 
     @PutMapping
     public StringResponse updateActivity(@Valid @RequestBody ActivityUpdateRequest requestDto) {

@@ -28,14 +28,4 @@ public class ActivityListResponse {
         this.endDate = endDate;
         this.percentage = percentage;
     }
-
-    public static List<ActivityListResponse> toDtoList(List<Activity> entities, Integer percentage) {
-        List<ActivityListResponse> dtos = new ArrayList<>();
-
-        for (Activity entity : entities)
-            dtos.add(new ActivityListResponse(entity.getId(),
-                    entity.getName(),entity.getStartDate(), entity.getEndDate(), percentage));
-
-        return dtos;
-    }
 }

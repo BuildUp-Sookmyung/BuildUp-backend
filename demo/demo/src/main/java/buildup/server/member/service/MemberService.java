@@ -7,7 +7,6 @@ import buildup.server.auth.exception.AuthException;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.RedisUtil;
-import buildup.server.member.domain.Code;
 import buildup.server.member.domain.Member;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
@@ -15,7 +14,6 @@ import buildup.server.member.dto.SocialJoinRequest;
 import buildup.server.member.dto.SocialLoginRequest;
 import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;
-import buildup.server.member.repository.CodeRepository;
 import buildup.server.member.repository.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final CodeRepository codeRepository;
     private final AuthService authService;
     private final ProfileService profileService;
     private final RedisUtil redisUtil;
@@ -57,20 +52,14 @@ public class MemberService {
 
     // 일반 회원가입 후 자동 로그인
     @Transactional
-    public AuthInfo join(@Valid LocalJoinRequest request, MultipartFile img) throws IOException {
-        // 이메일 인증 거쳤는지 확인
-        if (! verifyAuthYn(request.getCode()))
-// TODO: Redis                String data = redisUtil.getData(request.getProfile().getEmail());
-//        if (data==null || !data.equals(request.getCode()))
-            throw new MemberException(MemberErrorCode.MEMBER_NOT_AUTHENTICATED);
-
+    public AuthInfo join(LocalJoinRequest request) throws IOException {
         // 기존 회원 확인
         if (memberRepository.findByUsername(request.getUsername()).isPresent())
             throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
 
         // 신규 회원이면 멤버 엔티티 db에 저장, 프로필 저장
         Member saveMember = saveMember(request);
-        profileService.saveProfile(request.getProfile(), saveMember, img);
+        profileService.saveProfile(request.getProfile(), saveMember);
 
         // 자동 로그인
         LoginRequest loginRequest = LoginRequest.toLoginRequest(request);
@@ -102,11 +91,11 @@ public class MemberService {
     }
 
     @Transactional
-    public AuthInfo join(SocialJoinRequest request, MultipartFile img) throws IOException {
+    public AuthInfo join(SocialJoinRequest request) throws IOException {
         if (memberRepository.findByUsername(request.getProvider()+request.getProfile().getEmail()).isPresent())
             throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
         Member saveMember = saveMember(request, SOCIAL_PW);
-        profileService.saveProfile(request.getProfile(), saveMember, img);
+        profileService.saveProfile(request.getProfile(), saveMember);
         LoginRequest loginRequest = LoginRequest.toLoginRequest(request, SOCIAL_PW);
         return new AuthInfo(
                 authService.createAuth(loginRequest),
@@ -123,13 +112,6 @@ public class MemberService {
                 authService.setRefreshToken(loginRequest)
         );
 
-    }
-
-    private boolean verifyAuthYn(String code) {
-        Optional<Code> optionalCode = codeRepository.findByCode(code);
-        if (optionalCode.isPresent())
-            return true;
-        return false;
     }
 
     private Member saveMember(LocalJoinRequest request) {

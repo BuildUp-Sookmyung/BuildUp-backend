@@ -11,6 +11,8 @@ import buildup.server.category.CategoryService;
 import buildup.server.category.exception.CategoryErrorCode;
 import buildup.server.category.exception.CategoryException;
 import buildup.server.member.domain.Member;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
@@ -27,6 +29,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -46,11 +49,12 @@ public class ActivityService {
     @Transactional
     public Long createActivity(ActivitySaveRequest requestDto, MultipartFile img) {
         Member member = memberService.findCurrentMember();
-        checkDuplicateActivity(member, requestDto.getActivityName());
 
-        Activity activity = requestDto.toActivity();
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        categoryService.checkCategoryAuthForRead(member, category);
+
+        Activity activity = requestDto.toActivity();
         activity.setCategory(category);
 
         String activity_url = null;
@@ -64,9 +68,7 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
-        Activity activity = activityRepository.findById(me.getId())
-                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        return readActivitiesByMember(me, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
+        return readActivitiesByMember(me);
     }
 
     @Transactional(readOnly = true)
@@ -79,19 +81,33 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
         Member me = memberService.findCurrentMember();
-        Activity activity = activityRepository.findById(me.getId())
-                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         categoryService.checkCategoryAuthForRead(me, category);
-        return readActivitiesByMemberAndCategory(me, category, calculatePercentage(activity.getStartDate(), activity.getEndDate()));
+        return readActivitiesByMemberAndCategory(me, category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId, Long categoryId) {
+        Member member = memberRepository.findById(profileId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+        categoryService.checkCategoryAuthForRead(member, category);
+        return readActivitiesByMember(member);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId) {
+        Member member = memberRepository.findById(profileId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        return readActivitiesByMember(member);
     }
 
     @Transactional
     public void updateActivities(ActivityUpdateRequest requestDto) {
         Activity activity = activityRepository.findById(requestDto.getId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        checkActivityAuth(activity, memberService.findCurrentMember());
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         activity.updateActivity(category, requestDto.getActivityName(), requestDto.getHostName(), requestDto.getRoleName(),
@@ -128,24 +144,17 @@ public class ActivityService {
         return member;
     }
 
-    private void checkDuplicateActivity(Member member, String activityName) {
-        List<Activity> activities = activityRepository.findAllByMember(member);
-        for (Activity activity : activities) {
-            if (activityName.equals(activity.getName()))
-                throw new ActivityException(ActivityErrorCode.ACTIVITY_DUPLICATED);
-        }
-    }
     private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){
 
         nowDate = LocalDate.now(); //현재시간
 
         Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
-        double betweendays = (double) duration.toDays(); //간격(일기준)
+        double betweenDays = (double) duration.toDays(); //간격(일기준)
 
         Duration duration1 = Duration.between(startDate.atStartOfDay(), nowDate.atStartOfDay());
-        double startandnow = (double) duration1.toDays();
+        double startAndNow = (double) duration1.toDays();
 
-        Integer percentage = (int) (((startandnow + 1) / (betweendays + 1)) * 100);
+        Integer percentage = (int) (((startAndNow + 1) / (betweenDays + 1)) * 100);
 
         if (percentage >= 100){ percentage = 100; }
         else if (percentage <= 0) { percentage = 0; }
@@ -158,12 +167,28 @@ public class ActivityService {
             throw new ActivityException(ActivityErrorCode.ACTIVITY_NO_AUTH);
     }
 
-    private List<ActivityListResponse> readActivitiesByMember(Member member, Integer percentage) {
-        return ActivityListResponse.toDtoList(activityRepository.findAllByMember(member), percentage);
+    private List<ActivityListResponse> readActivitiesByMember(Member member) {
+        return toDtoList(activityRepository.findAllByMember(member));
     }
 
-    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category, Integer percentage) {
-        return ActivityListResponse.toDtoList(activityRepository.findAllByMemberAndCategory(member, category), percentage);
+    private List<ActivityListResponse> readActivitiesByMemberAndCategory(Member member, Category category) {
+        return toDtoList(activityRepository.findAllByMemberAndCategory(member, category));
+    }
+
+    private List<ActivityListResponse> toDtoList(List<Activity> entities) {
+        List<ActivityListResponse> dtos = new ArrayList<>();
+
+        for (Activity entity : entities)
+            dtos.add(new ActivityListResponse(
+                    entity.getId(),
+                    entity.getName(),
+                    entity.getStartDate(),
+                    entity.getEndDate(),
+                    calculatePercentage(entity.getStartDate(), entity.getEndDate())
+                    )
+            );
+
+        return dtos;
     }
 
     private ActivityResponse toActivityResponse(Activity activity) {

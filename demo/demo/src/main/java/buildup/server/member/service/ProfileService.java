@@ -43,14 +43,11 @@ public class ProfileService {
     private final S3Service s3Service;
 
     @Transactional
-    public Long saveProfile(ProfileSaveRequest request, Member member, MultipartFile img) {
+    public Long saveProfile(ProfileSaveRequest request, Member member) {
         Profile profile = request.toProfile();
         String url = null;
-        if (! img.isEmpty())
-            url = s3Service.uploadProfile(profile, member.getId(), img);
         saveInterests(request.getInterests(), profile);
         profile.setMember(member);
-        profile.setImgUrl(url);
         return profileRepository.save(profile).getId();
     }
 
@@ -73,9 +70,7 @@ public class ProfileService {
         request.updateProfile(profile);
 
         // 관심분야 리스트 수정 - 기존 Interest 모두 삭제하고 다시 저장
-        for (Interest interest : profile.getInterests()) {
-            interestRepository.delete(interest);
-        }
+        interestRepository.deleteAll(profile.getInterests());
         profile.getInterests().clear();
         saveInterests(request.getInterests(), profile);
     }
