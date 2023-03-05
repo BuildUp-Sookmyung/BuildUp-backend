@@ -11,6 +11,8 @@ public enum RecordErrorCode {
 
     FILE_COUNT_EXCEED("파일 개수가 초과되었습니다 (3개 초과)"),
 
+    NO_FILE("no file "), //test
+
     WRONG_INPUT_IMAGE("잘못된 img 경로입니다."),
 
     WRONG_IMAGE_FORMAT("잘못된 img 형식입니다."),

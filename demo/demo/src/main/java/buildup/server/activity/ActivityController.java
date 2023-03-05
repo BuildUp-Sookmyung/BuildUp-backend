@@ -1,9 +1,6 @@
 package buildup.server.activity;
 
-import buildup.server.activity.dto.ActivityListResponse;
-import buildup.server.activity.dto.ActivityResponse;
-import buildup.server.activity.dto.ActivitySaveRequest;
-import buildup.server.activity.dto.ActivityUpdateRequest;
+import buildup.server.activity.dto.*;
 import buildup.server.activity.service.ActivityService;
 import buildup.server.category.dto.CategorySaveRequest;
 import buildup.server.common.response.StringResponse;
@@ -48,8 +45,8 @@ public class ActivityController {
     }
 
     @PutMapping("/img")
-    public StringResponse updateActivityImg(MultipartFile img) {
-        activityService.updateActivityImages(img);
+    public StringResponse updateActivityImg(@Valid @RequestPart ActivityImageUpdateRequest requestDto, @RequestPart MultipartFile img) {
+        activityService.updateActivityImages(requestDto, img);
         return new StringResponse("활동 이미지 수정 완료되었습니다");
     }
 

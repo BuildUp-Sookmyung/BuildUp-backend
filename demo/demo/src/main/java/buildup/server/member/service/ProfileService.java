@@ -2,6 +2,11 @@ package buildup.server.member.service;
 
 import buildup.server.activity.domain.Activity;
 import buildup.server.activity.repository.ActivityRepository;
+import buildup.server.auth.domain.MemberRefreshToken;
+import buildup.server.auth.dto.TokenRequestDto;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
+import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.entity.Interest;
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
@@ -21,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +39,7 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final InterestRepository interestRepository;
     private final ActivityRepository activityRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -135,4 +138,15 @@ public class ProfileService {
         Member user = memberRepository.findByUsername(authentication.getName()).get();
         return user;
     }
+
+    @Transactional
+    public void deleteRefreshToken(TokenRequestDto tokenRequestDto) {
+        String memberId = findCurrentMember().getUsername();
+        MemberRefreshToken memberRefreshToken = refreshTokenRepository.findByUsernameAndRefreshToken(memberId, tokenRequestDto.getRefreshToken());
+        if (memberRefreshToken == null) {
+            throw new AuthException(AuthErrorCode.INVALID_REFRESH_TOKEN, "가입되지 않은 회원이거나 유효하지 않은 리프레시 토큰입니다.");
+        }
+        refreshTokenRepository.deleteById(memberRefreshToken.getRefreshTokenId());
+    }
+
 }

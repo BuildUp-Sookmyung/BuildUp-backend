@@ -1,6 +1,10 @@
 package buildup.server.member.service;
 
 import buildup.server.auth.domain.*;
+import buildup.server.auth.dto.TokenRequestDto;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
+import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Code;
@@ -30,6 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final CodeRepository codeRepository;
     private final AuthService authService;
     private final ProfileService profileService;
@@ -136,6 +141,9 @@ public class MemberService {
                 SocialJoinRequest.toEntity(request, pw)
         );
     }
+
+
+
 
 
 }

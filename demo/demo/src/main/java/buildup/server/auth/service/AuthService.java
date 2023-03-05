@@ -2,12 +2,17 @@ package buildup.server.auth.service;
 
 import buildup.server.auth.domain.*;
 import buildup.server.auth.dto.TokenDto;
+import buildup.server.auth.dto.TokenRequestDto;
 import buildup.server.auth.exception.AuthErrorCode;
 import buildup.server.auth.exception.AuthException;
 import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.common.AppProperties;
+import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Role;
 import buildup.server.member.dto.LoginRequest;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
+import buildup.server.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +31,7 @@ import java.util.Date;
 @Service
 public class AuthService {
 
+    private final MemberRepository memberRepository;
     private final AuthTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AppProperties appProperties;
@@ -142,5 +148,6 @@ public class AuthService {
 
         return new AuthInfo(newAccessToken, memberRefreshToken);
     }
+
 
 }

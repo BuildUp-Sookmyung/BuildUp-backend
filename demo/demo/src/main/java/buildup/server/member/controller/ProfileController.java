@@ -1,5 +1,7 @@
 package buildup.server.member.controller;
 
+import buildup.server.auth.dto.TokenRequestDto;
+import buildup.server.common.response.StatusResponse;
 import buildup.server.common.response.StringResponse;
 import buildup.server.member.dto.ProfileHomeResponse;
 import buildup.server.member.dto.ProfilePageResponse;
@@ -45,5 +47,11 @@ public class ProfileController {
     public StringResponse updateProfileImage(MultipartFile img) {
         profileService.updateProfileImage(img);
         return new StringResponse("프로필 이미지를 수정하였습니다.");
+    }
+
+    @PostMapping("/logout")
+    public StatusResponse logout(@RequestBody TokenRequestDto tokenRequestDto) {
+        profileService.deleteRefreshToken(tokenRequestDto);
+        return new StatusResponse("로그아웃 성공", "");
     }
 }
