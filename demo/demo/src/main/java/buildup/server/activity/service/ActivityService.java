@@ -31,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -92,13 +93,30 @@ public class ActivityService {
         return readActivitiesByMemberAndCategory(me, category);
     }
 
+    // 홈 - 기록 필터링
     @Transactional(readOnly = true)
-    public void readActivitiesByFilter(FilterVO filter) {
-        LocalDate startDate = convertLocalDate(filter.getStart());
-        LocalDate endDate = convertLocalDate(filter.getEnd());
-        endDate = endDate.withDayOfMonth(endDate.lengthOfMonth());
+    public List<ActivityListResponse> readActivitiesByFilter(FilterVO filter) {
+        List<Activity> activities = activityRepository.findAllByMember(findCurrentMember());
 
-        log.info("date:[{}]-[{}]", startDate, endDate);
+        if (!filter.getStart().isEmpty()) {
+            LocalDate startDate = convertLocalDate(filter.getStart());
+            activities = activities.stream().filter(a -> a.getStartDate().isAfter(startDate))
+                    .collect(Collectors.toList());
+        }
+
+        // TODO: end가 start보다 과거이면 exception
+        if (!filter.getEnd().isEmpty()) {
+            LocalDate end = convertLocalDate(filter.getEnd());
+            LocalDate endDate = end.withDayOfMonth(end.lengthOfMonth());
+            activities = activities.stream().filter(a -> a.getEndDate().isBefore(endDate))
+                    .collect(Collectors.toList());
+        }
+
+        List<String> categories = filter.getCategories();
+        activities = activities.stream().filter(a -> categories.contains(a.getCategory().getName()))
+                .collect(Collectors.toList());
+
+        return toDtoList(activities);
     }
 
     // 프로필 검색 상세(약력)
