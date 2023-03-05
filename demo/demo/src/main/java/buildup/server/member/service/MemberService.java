@@ -1,6 +1,10 @@
 package buildup.server.member.service;
 
 import buildup.server.auth.domain.*;
+import buildup.server.auth.dto.TokenRequestDto;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
+import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Member;
@@ -119,6 +123,9 @@ public class MemberService {
                 SocialJoinRequest.toEntity(request, pw)
         );
     }
+
+
+
 
 
 }

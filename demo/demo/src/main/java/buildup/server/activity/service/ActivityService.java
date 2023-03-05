@@ -1,10 +1,7 @@
 package buildup.server.activity.service;
 
 import buildup.server.activity.domain.Activity;
-import buildup.server.activity.dto.ActivityListResponse;
-import buildup.server.activity.dto.ActivitySaveRequest;
-import buildup.server.activity.dto.ActivityResponse;
-import buildup.server.activity.dto.ActivityUpdateRequest;
+import buildup.server.activity.dto.*;
 import buildup.server.activity.exception.ActivityErrorCode;
 import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
@@ -118,9 +115,10 @@ public class ActivityService {
     }
 
     @Transactional
-    public void updateActivityImages(MultipartFile img) {
+    public void updateActivityImages(ActivityImageUpdateRequest requestDto, MultipartFile img) {
         Member member = findCurrentMember();
-        Activity activity = activityRepository.findById(member.getId()).get();
+        Activity activity = activityRepository.findById(requestDto.getActivityId())
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
 
         String activity_url = activity.getActivityimg();
 
@@ -158,11 +156,8 @@ public class ActivityService {
 
         Integer percentage = (int) (((startAndNow + 1) / (betweenDays + 1)) * 100);
 
-        if (percentage >= 100){
-            percentage = 100;
-        } else if (percentage <= 0) {
-            percentage = 0;
-        }
+        if (percentage >= 100){ percentage = 100; }
+        else if (percentage <= 0) { percentage = 0; }
 
         return percentage;
     }

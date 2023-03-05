@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -29,5 +30,9 @@ public class RecordImg {
     public RecordImg(String storeUrl, Record record) {
         this.storeUrl = storeUrl;
         this.record = record;
+    }
+
+    public void RecordImgUpdate(String storeUrl){
+        this.storeUrl = storeUrl;
     }
 }

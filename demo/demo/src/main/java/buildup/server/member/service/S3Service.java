@@ -103,19 +103,18 @@ public class S3Service {
     @Transactional
     public List<String> uploadRecord(List<MultipartFile> multipartFiles) {
 
-        Member member = findCurrentMember();
+        if (multipartFiles.size() > 3) { throw new RecordException(RecordErrorCode.FILE_COUNT_EXCEED);} // 파일 업로드 갯수 3개 이하
 
         List<String> fileUrls = new ArrayList<>();
 
-        // 파일 업로드 갯수 3개 이하
+
         for (MultipartFile file : multipartFiles) {
-            if (fileUrls.size() > 3) {
-                throw new RecordException(RecordErrorCode.FILE_COUNT_EXCEED);
-            }
+
+            if (file.isEmpty()) { break;}
 
             String originalFilename = file.getOriginalFilename();
             String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            String storeFileName = "record" + member.getId().toString() + "." + ext;
+            String storeFileName = "record/" + originalFilename;
             String key = "records/" + storeFileName;
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -131,20 +130,22 @@ public class S3Service {
                 log.error("이미지 업로드 IOExcpetion");
                 throw new RecordException(RecordErrorCode.IMAGE_UPLOAD_ERROR);
             }
+
         }
 
         return fileUrls;
     }
+
     @Transactional
     public String uploadOneRecord(MultipartFile multipartFile) {
-        Member member = findCurrentMember();
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
         objectMetadata.setContentLength(multipartFile.getSize());
 
         String originalFilename = multipartFile.getOriginalFilename();
         String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-        String storeFileName = "record" + member.getId().toString() + "." + ext;
+        String storeFileName = "record/" + originalFilename;
         String key = "records/" + storeFileName;
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
