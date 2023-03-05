@@ -9,15 +9,11 @@ import buildup.server.category.CategoryService;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
+import buildup.server.record.dto.*;
 import buildup.server.record.exception.RecordErrorCode;
 import buildup.server.record.exception.RecordException;
-import buildup.server.record.dto.RecordUpdateRequest;
 import buildup.server.record.domain.Record;
 import buildup.server.record.domain.RecordImg;
-import buildup.server.record.dto.RecordImageUpdateRequest;
-import buildup.server.record.dto.RecordListResponse;
-import buildup.server.record.dto.RecordResponse;
-import buildup.server.record.dto.RecordSaveRequest;
 import buildup.server.record.repository.RecordImgRepository;
 import buildup.server.record.repository.RecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,18 +40,23 @@ public class RecordService {
     private final S3Service s3Service;
 
     @Transactional
-    public Long createRecord(RecordSaveRequest requestDto, List<String> imgUrls) {
-        recordBlankCheck(imgUrls);
+    public Long createRecord(RecordSaveRequest requestDto, List<MultipartFile> multipartFiles) {
+
         Record record = requestDto.toRecord();
-        List<String> images = new ArrayList<>();
+
+        if (multipartFiles == null) {throw new RecordException(RecordErrorCode.WRONG_INPUT_CONTENT);}
+
+        List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
 
         for (String imgUrl : imgUrls) {
             RecordImg recordImg = new RecordImg(imgUrl, record);
             recordImgRepository.save(recordImg);
-            images.add(recordImg.getStoreUrl());
         }
         return recordRepository.save(record).getId();
     }
+
+
+
     @Transactional(readOnly = true)
     public RecordResponse readOneRecord(Long recordId) {
         Record record = recordRepository.findById(recordId)
@@ -86,24 +87,38 @@ public class RecordService {
         record.updateRecord(requestDto.getRecordTitle(), requestDto.getExperienceName(), requestDto.getConceptName(),
                 requestDto.getResultName(), requestDto.getContent(), requestDto.getDate(), requestDto.getUrlName());
     }
-    @Transactional
-    public void updateRecordImages(RecordImageUpdateRequest requestimagedto, List<MultipartFile> multipartFiles) {
 
-        RecordImg recordImg = recordImgRepository.findById(requestimagedto.getId())
-                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD_IMG));
-        String recordimg_url = recordImg.getStoreUrl();
+//    @Transactional
+//    public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
+//        Record record = recordRepository.findById(requestDto.getRecordid())
+//                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+//        List<RecordImg> recordImgList = record.getImages();
+//        List<RecordImgRequest> recordImgRequestList = new ArrayList<>();
+//        List<RecordImg> removeRecordImgList = new ArrayList<>();
+//
+//        //수정할 이미지 삭제
+//        for(RecordImg recordImg : recordImgList){
+//            s3Service.deleteOneRecord(recordImg.getStoreUrl());
+//            recordImgRepository.deleteById(recordImg.getId());
+//            removeRecordImgList.add(recordImg);
+//        }
+//        for(RecordImg recordImg : removeRecordImgList){
+//            recordImgList.remove(recordImg);
+//        }
+//
+//        //추가 이미지 s3저장
+//        if(multipartFiles != null){
+//            for(MultipartFile file : multipartFiles){
+//                if(!file.isEmpty()){
+//                    RecordImgRequest recordImgRequest = updateoneImage(file);
+//                    recordImgRequestList.add(recordImgRequest);
+//                }
+//            }
+//        }
+//        putRequestParser(recordImgList, recordImgRequestList);
+//        record.updateRecordImage(recordImgList);
+//    }
 
-        for(MultipartFile img : multipartFiles){
-            if (! img.isEmpty()) {
-                String url = s3Service.uploadOneRecord(img);
-                recordImg.setStoreUrl(url);
-            } else if (recordimg_url!=null) {
-                s3Service.deleteOneRecord(recordimg_url);
-                recordImg.setStoreUrl(null);
-            }
-        }
-
-    }
     @Transactional
     public void deleteRecord(Long id) {
         Record record = recordRepository.findById(id)
@@ -111,10 +126,21 @@ public class RecordService {
         recordRepository.delete(record);
     }
 
-    private void recordBlankCheck(List<String> imgUrls) {
-        if(imgUrls == null || imgUrls.isEmpty()){
-            throw new RecordException(RecordErrorCode.WRONG_INPUT_IMAGE);
+    private RecordImgRequest updateoneImage(MultipartFile multipartFile){
+        return RecordImgRequest.builder()
+                .storeUrl(s3Service.uploadOneRecord(multipartFile))
+                .build();
+    }
+
+    private void putRequestParser(List<RecordImg> recordImgList, List<RecordImgRequest> recordImgRequestList){
+        for (RecordImgRequest recordImgRequest : recordImgRequestList){
+            RecordImg recordImg = RecordImg.builder()
+                    .storeUrl(recordImgRequest.getStoreUrl())
+                    .build();
+            recordImgList.add(recordImg);
         }
     }
+
+
 
 }
