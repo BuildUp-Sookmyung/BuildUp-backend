@@ -21,8 +21,6 @@ import java.util.List;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthTokenProvider tokenProvider;
-
-    //TODO: 아이디 비밀번호 찾기 엔드포인트 추가
     private static final List<String> EXCLUDE_URL =
             List.of(
                     "/member/email",

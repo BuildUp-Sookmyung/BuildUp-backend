@@ -32,13 +32,13 @@ public class ActivityController {
      * 활동 기록 조회
      * */
     // 기록-메인(전체)
-    @GetMapping
+    @GetMapping("/me")
     public List<ActivityListResponse> listMyActivities() {
         return activityService.readMyActivities();
     }
 
     // 기록-메인(카테고리별)
-    @GetMapping("/category/{categoryId}")
+    @GetMapping("/me/{categoryId}")
     public List<ActivityListResponse> listMyActivitiesByCategory(@PathVariable Long categoryId) {
         return activityService.readMyActivitiesByCategory(categoryId);
     }

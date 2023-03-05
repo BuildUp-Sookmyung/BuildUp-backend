@@ -41,7 +41,7 @@ public class RecordController {
         return recordService.readOneRecord(recordId);
     }
 
-    @GetMapping("/activity/{activityId}")
+    @GetMapping("/activities/{activityId}")
     public List<RecordListResponse> readAllRecordByActivity(@PathVariable Long activityId){
         return recordService.readAllRecordByActivity(activityId);
     }

@@ -65,12 +65,14 @@ public class ActivityService {
         return activityRepository.save(activity).getId();
     }
 
+    // 기록(메인) - 전체
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
         return readActivitiesByMember(me);
     }
 
+    // 활동 상세
     @Transactional(readOnly = true)
     public ActivityResponse readOneActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
@@ -78,6 +80,7 @@ public class ActivityService {
         return toActivityResponse(activity);
     }
 
+    // 기록(메인) - 카테고리별
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
         Member me = memberService.findCurrentMember();
@@ -87,6 +90,7 @@ public class ActivityService {
         return readActivitiesByMemberAndCategory(me, category);
     }
 
+    // 프로필 검색 상세(약력)
     @Transactional(readOnly = true)
     public List<SearchResult> readActivitiesByProfile(Long profileId) {
         Member member = memberRepository.findById(profileId)
@@ -130,6 +134,7 @@ public class ActivityService {
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
         activityRepository.delete(activity);
+        // TODO: 활동에 포함된 기록들까지 모두 삭제
     }
 
     private Member findCurrentMember() {
