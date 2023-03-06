@@ -82,6 +82,9 @@ public class ProfileService {
 
         String imgUrl = profile.getImgUrl();
 
+        if (img==null)
+            throw new MemberException(MemberErrorCode.MEMBER_PROFILE_BAD_REQUEST);
+
         if (! img.isEmpty()) {
             // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
             String url = s3Service.uploadProfile(member.getId(), img);

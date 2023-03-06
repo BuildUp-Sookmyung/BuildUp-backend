@@ -98,25 +98,17 @@ public class ActivityService {
     public List<ActivityListResponse> readActivitiesByFilter(FilterVO filter) {
         List<Activity> activities = activityRepository.findAllByMember(memberService.findCurrentMember());
 
-        LocalDate start = null;
-        LocalDate end = null;
-        if (!filter.getStart().isEmpty()) {
-            start = convertLocalDate(filter.getStart());
-            LocalDate startDate = start;
-            activities = activities.stream().filter(a -> a.getStartDate().isAfter(startDate))
-                    .collect(Collectors.toList());
-        }
-
-        if (!filter.getEnd().isEmpty()) {
-            end = convertLocalDate(filter.getEnd());
+        if (!filter.getStart().isEmpty() && !filter.getEnd().isEmpty()) {
+            LocalDate startDate = convertLocalDate(filter.getStart());
+            LocalDate end = convertLocalDate(filter.getEnd());
             LocalDate endDate = end.withDayOfMonth(end.lengthOfMonth());
-            end = endDate;
-            activities = activities.stream().filter(a -> a.getEndDate().isBefore(endDate))
-                    .collect(Collectors.toList());
-        }
 
-        if (start!=null && end!=null && start.isAfter(end)) {
-            throw new ActivityException(ActivityErrorCode.ACTIVITY_DATE_ERROR);
+            if (startDate.isAfter(endDate))
+                throw new ActivityException(ActivityErrorCode.ACTIVITY_DATE_ERROR);
+
+            activities = activities.stream().filter(
+                    a -> a.getStartDate().isAfter(startDate) && a.getEndDate().isBefore(endDate)
+                    ).collect(Collectors.toList());
         }
 
         List<String> categories = filter.getCategories();
