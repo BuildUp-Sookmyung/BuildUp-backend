@@ -111,6 +111,16 @@ public class S3Service {
             }
         }
 
+        if(fileUrls.isEmpty()){
+            for(int i = 0;i<3;i++){
+                fileUrls.add(null);
+            }
+        }else if(fileUrls.size() < 3){
+            for(int i = 0;i<4-fileUrls.size();i++){
+                fileUrls.add(null);
+            }
+
+        }
         return fileUrls;
     }
 

@@ -91,42 +91,23 @@ public class RecordService {
         record.updateRecord(requestDto.getRecordTitle(), requestDto.getExperienceName(), requestDto.getConceptName(),
                 requestDto.getResultName(), requestDto.getContent(), requestDto.getDate(), requestDto.getUrlName());
     }
-//    @Transactional
-//    public void updatetest(Long recordid){
-//        Record record = recordRepository.findById(recordid)
-//                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-//        List<RecordImg> recordImgList = record.getImages();
-//        for(RecordImg recordImg : recordImgList){
-//            String url = recordImg.getStoreUrl();
-//            System.out.println();
-//        }
-//
-//        if (! img.isEmpty()) {
-//            // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
-//            String url = s3Service.uploadProfile(member.getId(), img);
-//            profile.setImgUrl(url);
-//        } else if (imgUrl!=null) {
-//            // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제
-//            s3Service.deleteProfile(imgUrl);
-//            profile.setImgUrl(null);
-//        }
-//    }
 
-//    @Transactional
-//    public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
-//        List<RecordImg> findrecordimg = recordImgRepository.findByRecordId(requestDto.getRecordid());
-//        List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
-//        for(RecordImg recordImg : findrecordimg){
-//            for(String imgUrl : imgUrls){
-//                if(imgUrl != null){
-//                    s3Service.deleteOneRecord(imgUrl);
-//                    recordImg.setStoreUrl(null);
-//                }
-//            }
-//            recordImg.setStoreUrl("hello");
-//        }
-//
-//    }
+    @Transactional
+    public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
+        List<RecordImg> findrecordimg = recordImgRepository.findByRecordId(requestDto.getRecordid());
+        List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
+        for(RecordImg recordImg : findrecordimg){
+            String old_url = recordImg.getStoreUrl();
+            String new_url = imgUrls.get(findrecordimg.indexOf(recordImg));
+            if(old_url == null){
+                recordImg.setStoreUrl(new_url);
+            }else{
+                s3Service.deleteOneRecord(old_url);
+                recordImg.setStoreUrl(new_url);
+            }
+        }
+
+    }
 
     @Transactional
     public void deleteRecord(Long id) {
