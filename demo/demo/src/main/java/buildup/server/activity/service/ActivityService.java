@@ -95,8 +95,9 @@ public class ActivityService {
 
     // 홈 - 기록 필터링
     @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByFilter(FilterVO filter) {
-        List<Activity> activities = activityRepository.findAllByMember(memberService.findCurrentMember());
+    public List<SearchResult> readActivitiesByFilter(FilterVO filter) {
+        Member me = memberService.findCurrentMember();
+        List<Activity> activities = activityRepository.findAllByMember(me);
 
         if (!filter.getStart().isEmpty() && !filter.getEnd().isEmpty()) {
             LocalDate startDate = convertLocalDate(filter.getStart());
@@ -112,12 +113,21 @@ public class ActivityService {
         }
 
         List<String> categories = filter.getCategories();
-        if (!categories.isEmpty()) {
-            activities = activities.stream().filter(a -> categories.contains(a.getCategory().getName()))
-                    .collect(Collectors.toList());
+        if (categories.isEmpty()) {
+            categories = List.of("대외활동", "공모전", "동아리", "프로젝트", "자격증", "교내활동");
         }
 
-        return toDtoList(activities);
+        List<SearchResult> results = new ArrayList<>();
+        for (String categoryName : categories) {
+            Category category = categoryRepository.findByName(categoryName)
+                    .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+            List<Activity> activityList = activities.stream().filter(
+                    a -> category.equals(a.getCategory())
+            ).collect(Collectors.toList());
+            results.add(new SearchResult(categoryName, toDtoList(activityList)));
+        }
+
+        return results;
     }
 
     // 프로필 검색 상세(약력)

@@ -45,7 +45,7 @@ public class ActivityController {
 
     // 홈 - 기록 필터링
     @PostMapping("/filter")
-    public List<ActivityListResponse> listMyActivitiesByFilter(@Valid @RequestBody FilterVO filter) {
+    public List<SearchResult> listMyActivitiesByFilter(@Valid @RequestBody FilterVO filter) {
         return activityService.readActivitiesByFilter(filter);
     }
 
