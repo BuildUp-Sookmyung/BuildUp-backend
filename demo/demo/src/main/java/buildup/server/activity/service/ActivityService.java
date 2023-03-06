@@ -162,11 +162,15 @@ public class ActivityService {
         String activity_url = activity.getActivityimg();
 
         if (! img.isEmpty()) {
+            if (activity_url != null)
+                s3Service.deleteActivity(activity_url);
             String url = s3Service.uploadActivity(activity.getId(), img);
             activity.setActivityimg(url);
-        } else if (activity_url!=null) {
-            s3Service.deleteActivity(activity_url);
-            activity.setActivityimg(null);
+        } else {
+            if (activity_url != null) {
+                s3Service.deleteActivity(activity_url);
+                activity.setActivityimg(null);
+            }
         }
     }
     @Transactional

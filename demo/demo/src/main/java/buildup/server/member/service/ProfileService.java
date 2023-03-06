@@ -76,7 +76,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void updateProfileImage( MultipartFile img) {
+    public void updateProfileImage(MultipartFile img) {
         Member member = findCurrentMember();
         Profile profile = profileRepository.findById(member.getId()).get();
 
@@ -92,6 +92,11 @@ public class ProfileService {
                 s3Service.deleteProfile(imgUrl);
             String url = s3Service.uploadProfile(member.getId(), img);
             profile.setImgUrl(url);
+        } else { // 입력 없으면 기존 값 삭제
+            if (imgUrl != null) {
+                s3Service.deleteProfile(imgUrl);
+                profile.setImgUrl(null);
+            }
         }
     }
 
