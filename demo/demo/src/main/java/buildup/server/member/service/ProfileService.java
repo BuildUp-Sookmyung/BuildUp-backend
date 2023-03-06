@@ -85,14 +85,13 @@ public class ProfileService {
         if (img==null)
             throw new MemberException(MemberErrorCode.MEMBER_PROFILE_BAD_REQUEST);
 
+        // 입력이 있으면 업로드
         if (! img.isEmpty()) {
-            // 일단 입력이 있으면 업로드. 기존 이미지 있어도 overwrite
+            //기존 이미지 있으면 delete
+            if (imgUrl != null)
+                s3Service.deleteProfile(imgUrl);
             String url = s3Service.uploadProfile(member.getId(), img);
             profile.setImgUrl(url);
-        } else if (imgUrl!=null) {
-            // 입력이 없는데 기존 이미지가 있었던 경우 -> 이미지 삭제
-            s3Service.deleteProfile(imgUrl);
-            profile.setImgUrl(null);
         }
     }
 
