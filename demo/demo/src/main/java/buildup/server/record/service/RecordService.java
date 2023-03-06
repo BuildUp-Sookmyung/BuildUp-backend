@@ -90,24 +90,24 @@ public class RecordService {
                 requestDto.getResultName(), requestDto.getContent(), requestDto.getDate(), requestDto.getUrlName());
     }
 
-//    @Transactional
-//    public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
-//        Record record = recordRepository.findById(requestDto.getRecordid())
-//                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-//        List<RecordImg> recordImgList = record.getImages();
-//        List<RecordImgRequest> recordImgRequestList = new ArrayList<>();
-//        List<RecordImg> removeRecordImgList = new ArrayList<>();
-//
-//        //수정할 이미지 삭제
-//        for(RecordImg recordImg : recordImgList){
-//            s3Service.deleteOneRecord(recordImg.getStoreUrl());
-//            recordImgRepository.deleteById(recordImg.getId());
-//            removeRecordImgList.add(recordImg);
-//        }
-//        for(RecordImg recordImg : removeRecordImgList){
-//            recordImgList.remove(recordImg);
-//        }
-//
+    @Transactional
+    public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
+        Record record = recordRepository.findById(requestDto.getRecordid())
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+        List<RecordImg> recordImgList = record.getImages();
+        List<RecordImgRequest> recordImgRequestList = new ArrayList<>();
+        List<RecordImg> removeRecordImgList = new ArrayList<>();
+
+        //수정할 이미지 삭제
+        for(RecordImg recordImg : recordImgList){
+            s3Service.deleteOneRecord(recordImg.getStoreUrl());
+            recordImgRepository.deleteById(recordImg.getId());
+            removeRecordImgList.add(recordImg);
+        }
+        for(RecordImg recordImg : removeRecordImgList){
+            recordImgList.remove(recordImg);
+        }
+
 //        //추가 이미지 s3저장
 //        if(multipartFiles != null){
 //            for(MultipartFile file : multipartFiles){
@@ -119,7 +119,7 @@ public class RecordService {
 //        }
 //        putRequestParser(recordImgList, recordImgRequestList);
 //        record.updateRecordImage(recordImgList);
-//    }
+    }
 
     @Transactional
     public void deleteRecord(Long id) {
