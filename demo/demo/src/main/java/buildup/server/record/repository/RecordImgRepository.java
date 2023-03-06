@@ -11,6 +11,7 @@ public interface RecordImgRepository extends JpaRepository<RecordImg, Long> {
 
     List<RecordImg> findAllByRecord(Record record);
 
+    List<RecordImg> findByRecordId(Long recordid);
 
 
 

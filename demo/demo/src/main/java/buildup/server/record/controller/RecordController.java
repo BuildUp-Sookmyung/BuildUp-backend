@@ -47,11 +47,11 @@ public class RecordController {
         recordService.updateRecords(requestDto);
         return new StringResponse("기록 수정 완료되었습니다");
     }
-//    @PutMapping("/imgs")
-//    public StringResponse updateRecordImg(@RequestPart RecordImageUpdateRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
-//        recordService.updateNewRecordImages(request, multipartFiles);
-//        return new StringResponse("기록 이미지 수정이 완료되었습니다");
-//    }
+    @PutMapping("/imgs")
+    public StringResponse updateRecordImg(@RequestPart RecordImageUpdateRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
+        recordService.updateRecordImage(request, multipartFiles);
+        return new StringResponse("기록 이미지 수정이 완료되었습니다");
+    }
 
     @DeleteMapping("/{id}")
     public StringResponse deleteRecord(@PathVariable Long id) {
