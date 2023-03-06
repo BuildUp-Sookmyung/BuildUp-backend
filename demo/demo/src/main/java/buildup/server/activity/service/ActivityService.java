@@ -107,7 +107,6 @@ public class ActivityService {
                     .collect(Collectors.toList());
         }
 
-        // TODO: end가 start보다 과거이면 exception
         if (!filter.getEnd().isEmpty()) {
             end = convertLocalDate(filter.getEnd());
             LocalDate endDate = end.withDayOfMonth(end.lengthOfMonth());
