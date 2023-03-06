@@ -130,7 +130,8 @@ public class ProfileService {
     // TODO: 로그인한 사용자
     private Member findCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member user = memberRepository.findByUsername(authentication.getName()).get();
+        Member user = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return user;
     }
 

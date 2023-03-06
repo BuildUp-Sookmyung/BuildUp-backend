@@ -96,25 +96,35 @@ public class ActivityService {
     // 홈 - 기록 필터링
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readActivitiesByFilter(FilterVO filter) {
-        List<Activity> activities = activityRepository.findAllByMember(findCurrentMember());
+        List<Activity> activities = activityRepository.findAllByMember(memberService.findCurrentMember());
 
+        LocalDate start = null;
+        LocalDate end = null;
         if (!filter.getStart().isEmpty()) {
-            LocalDate startDate = convertLocalDate(filter.getStart());
+            start = convertLocalDate(filter.getStart());
+            LocalDate startDate = start;
             activities = activities.stream().filter(a -> a.getStartDate().isAfter(startDate))
                     .collect(Collectors.toList());
         }
 
         // TODO: end가 start보다 과거이면 exception
         if (!filter.getEnd().isEmpty()) {
-            LocalDate end = convertLocalDate(filter.getEnd());
+            end = convertLocalDate(filter.getEnd());
             LocalDate endDate = end.withDayOfMonth(end.lengthOfMonth());
+            end = endDate;
             activities = activities.stream().filter(a -> a.getEndDate().isBefore(endDate))
                     .collect(Collectors.toList());
         }
 
+        if (start!=null && end!=null && start.isAfter(end)) {
+            throw new ActivityException(ActivityErrorCode.ACTIVITY_DATE_ERROR);
+        }
+
         List<String> categories = filter.getCategories();
-        activities = activities.stream().filter(a -> categories.contains(a.getCategory().getName()))
-                .collect(Collectors.toList());
+        if (!categories.isEmpty()) {
+            activities = activities.stream().filter(a -> categories.contains(a.getCategory().getName()))
+                    .collect(Collectors.toList());
+        }
 
         return toDtoList(activities);
     }
@@ -144,7 +154,7 @@ public class ActivityService {
 
     @Transactional
     public void updateActivityImages(ActivityImageUpdateRequest requestDto, MultipartFile img) {
-        Member member = findCurrentMember();
+        Member member = memberService.findCurrentMember();
         Activity activity = activityRepository.findById(requestDto.getActivityId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
 
@@ -166,13 +176,6 @@ public class ActivityService {
         activityRepository.delete(activity);
         // TODO: 활동에 포함된 기록들까지 모두 삭제
     }
-
-    private Member findCurrentMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = memberRepository.findByUsername(authentication.getName()).get();
-        return member;
-    }
-
     private LocalDate convertLocalDate(String value) {
         return LocalDate.of(Integer.valueOf(value.substring(0,4)),
                 Integer.valueOf(value.substring(5)),
