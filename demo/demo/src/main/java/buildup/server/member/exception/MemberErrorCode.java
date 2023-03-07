@@ -12,6 +12,7 @@ public enum MemberErrorCode {
     MEMBER_NOT_FOUND("회원을 찾을 수 없습니다."),
     MEMBER_CODE_NOT_FOUND("인증코드를 찾을 수 없습니다."),
     MEMBER_DUPLICATED("이미 가입된 회원입니다."),
+    MEMBER_PROFILE_BAD_REQUEST("img가 null일 수 없습니다."),
     MEMBER_PW_UPDATE_FAILED("비밀번호 재설정에 실패하였습니다.");
 
 

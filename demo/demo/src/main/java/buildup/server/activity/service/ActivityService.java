@@ -37,6 +37,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -100,6 +102,43 @@ public class ActivityService {
         return readActivitiesByMemberAndCategory(me, category);
     }
 
+    // 홈 - 기록 필터링
+    @Transactional(readOnly = true)
+    public List<SearchResult> readActivitiesByFilter(FilterVO filter) {
+        Member me = memberService.findCurrentMember();
+        List<Activity> activities = activityRepository.findAllByMember(me);
+
+        if (!filter.getStart().isEmpty() && !filter.getEnd().isEmpty()) {
+            LocalDate startDate = convertLocalDate(filter.getStart());
+            LocalDate end = convertLocalDate(filter.getEnd());
+            LocalDate endDate = end.withDayOfMonth(end.lengthOfMonth());
+
+            if (startDate.isAfter(endDate))
+                throw new ActivityException(ActivityErrorCode.ACTIVITY_DATE_ERROR);
+
+            activities = activities.stream().filter(
+                    a -> a.getStartDate().isAfter(startDate) && a.getEndDate().isBefore(endDate)
+                    ).collect(Collectors.toList());
+        }
+
+        List<String> categories = filter.getCategories();
+        if (categories.isEmpty()) {
+            categories = List.of("대외활동", "공모전", "동아리", "프로젝트", "자격증", "교내활동");
+        }
+
+        List<SearchResult> results = new ArrayList<>();
+        for (String categoryName : categories) {
+            Category category = categoryRepository.findByName(categoryName)
+                    .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+            List<Activity> activityList = activities.stream().filter(
+                    a -> category.equals(a.getCategory())
+            ).collect(Collectors.toList());
+            results.add(new SearchResult(categoryName, toDtoList(activityList)));
+        }
+
+        return results;
+    }
+
     // 프로필 검색 상세(약력)
     @Transactional(readOnly = true)
     public List<SearchResult> readActivitiesByProfile(Long profileId) {
@@ -125,18 +164,22 @@ public class ActivityService {
 
     @Transactional
     public void updateActivityImages(ActivityImageUpdateRequest requestDto, MultipartFile img) {
-        Member member = findCurrentMember();
+        Member member = memberService.findCurrentMember();
         Activity activity = activityRepository.findById(requestDto.getActivityId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
 
         String activity_url = activity.getActivityimg();
 
         if (! img.isEmpty()) {
+            if (activity_url != null)
+                s3Service.deleteActivity(activity_url);
             String url = s3Service.uploadActivity(activity.getId(), img);
             activity.setActivityimg(url);
-        } else if (activity_url!=null) {
-            s3Service.deleteActivity(activity_url);
-            activity.setActivityimg(null);
+        } else {
+            if (activity_url != null) {
+                s3Service.deleteActivity(activity_url);
+                activity.setActivityimg(null);
+            }
         }
     }
     @Transactional
@@ -152,11 +195,10 @@ public class ActivityService {
         }
         activityRepository.delete(activity);
     }
-
-    private Member findCurrentMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = memberRepository.findByUsername(authentication.getName()).get();
-        return member;
+    private LocalDate convertLocalDate(String value) {
+        return LocalDate.of(Integer.valueOf(value.substring(0,4)),
+                Integer.valueOf(value.substring(5)),
+                1);
     }
 
     private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){
