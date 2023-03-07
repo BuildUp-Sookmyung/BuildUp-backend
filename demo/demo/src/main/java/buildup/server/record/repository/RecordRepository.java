@@ -12,5 +12,6 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     List<Record> findAllByActivity(Activity activity);
 
+
     Optional<Record> findByActivity(Long activity_id);
 }
