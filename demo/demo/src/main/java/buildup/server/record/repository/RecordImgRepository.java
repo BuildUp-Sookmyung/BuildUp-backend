@@ -13,7 +13,7 @@ public interface RecordImgRepository extends JpaRepository<RecordImg, Long> {
 
     List<RecordImg> findByRecordId(Long recordid);
 
-
+    Optional<RecordImg> findByRecord(Long record_id);
 
 
 
