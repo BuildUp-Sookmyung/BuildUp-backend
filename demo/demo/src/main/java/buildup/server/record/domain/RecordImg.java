@@ -17,6 +17,7 @@ public class RecordImg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String storeUrl;
     private String originalName;
 

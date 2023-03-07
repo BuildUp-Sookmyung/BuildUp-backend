@@ -16,6 +16,11 @@ import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
+import buildup.server.record.domain.Record;
+import buildup.server.record.exception.RecordErrorCode;
+import buildup.server.record.exception.RecordException;
+import buildup.server.record.repository.RecordRepository;
+import buildup.server.record.service.RecordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,7 +36,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -43,6 +50,8 @@ public class ActivityService {
     private final MemberService memberService;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
+    private final RecordService recordService;
+    private final RecordRepository recordRepository;
     private final S3Service s3Service;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate nowDate;
@@ -178,8 +187,13 @@ public class ActivityService {
         Activity activity= activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
+//        Optional record = recordRepository.findByActivity(id);
+        if(recordRepository.findByActivity(id).isPresent()){
+            Record record = recordRepository.findById(id)
+                    .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+            recordRepository.delete(record);
+        }
         activityRepository.delete(activity);
-        // TODO: 활동에 포함된 기록들까지 모두 삭제
     }
     private LocalDate convertLocalDate(String value) {
         return LocalDate.of(Integer.valueOf(value.substring(0,4)),
