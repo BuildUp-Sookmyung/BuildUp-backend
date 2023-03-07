@@ -144,12 +144,8 @@ public class ActivityService {
         Activity activity= activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
-//        Optional record = recordRepository.findByActivity(id);
-        if(recordRepository.findByActivity(id).isPresent()){
-            Record record = recordRepository.findById(id)
-                    .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-            recordRepository.delete(record);
-        }
+        List<Record> deleterecord = recordRepository.findAllByActivity(activity);
+        recordRepository.deleteAll(deleterecord);
         activityRepository.delete(activity);
     }
 
