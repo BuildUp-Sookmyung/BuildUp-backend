@@ -113,11 +113,8 @@ public class RecordService {
     public void deleteRecord(Long id) {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-        if(recordImgRepository.findByRecord(id).isPresent()){
-            RecordImg recordImg = recordImgRepository.findByRecord(id)
-                    .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-            recordImgRepository.delete(recordImg);
-        }
+        List<RecordImg> deleterecordimg = recordImgRepository.findAllByRecord(record);
+        recordImgRepository.deleteAll(deleterecordimg);
         recordRepository.delete(record);
     }
 
