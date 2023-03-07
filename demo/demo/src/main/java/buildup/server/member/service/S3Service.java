@@ -111,6 +111,16 @@ public class S3Service {
             }
         }
 
+        if(fileUrls.isEmpty()){
+            for(int i = 0;i<3;i++){
+                fileUrls.add(null);
+            }
+        }else if(fileUrls.size() < 3){
+            for(int i = 0;i<4-fileUrls.size();i++){
+                fileUrls.add(null);
+            }
+
+        }
         return fileUrls;
     }
 
@@ -162,29 +172,6 @@ public class S3Service {
         return member;
     }
 
-//  TODO :입니다
 
-//    private String createFileName(String fileName) {
-//        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
-//    }//이미지 파일명 중복 안되게
-//
-//    private String getFileExtension(String fileName) {
-//        if (fileName.length() == 0) {
-//            throw new RecordException(RecordErrorCode.WRONG_INPUT_IMAGE);
-//        }
-//        ArrayList<String> fileValidate = new ArrayList<>();
-//        fileValidate.add("");
-//        fileValidate.add(".jpg");
-//        fileValidate.add(".jpeg");
-//        fileValidate.add(".png");
-//        fileValidate.add(".JPG");
-//        fileValidate.add(".JPEG");
-//        fileValidate.add(".PNG");
-//        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
-//        if (!fileValidate.contains(idxFileName)) {
-//            throw new RecordException(RecordErrorCode.WRONG_IMAGE_FORMAT);
-//        }
-//        return fileName.substring(fileName.lastIndexOf("."));
-//    } // TODO : 파일 유효성 검사 (해줘야 한다는데 해야할지 말지 모르겠음)
 
 }
