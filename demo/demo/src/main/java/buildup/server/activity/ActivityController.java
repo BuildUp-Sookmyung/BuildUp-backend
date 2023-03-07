@@ -43,6 +43,12 @@ public class ActivityController {
         return activityService.readMyActivitiesByCategory(categoryId);
     }
 
+    // 홈 - 기록 필터링
+    @PostMapping("/filter")
+    public List<SearchResult> listMyActivitiesByFilter(@Valid @RequestBody FilterVO filter) {
+        return activityService.readActivitiesByFilter(filter);
+    }
+
     // 활동 상세
     @GetMapping("/{activityId}")
     public ActivityResponse readActivity(@PathVariable Long activityId) {
