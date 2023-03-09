@@ -1,10 +1,7 @@
 package buildup.server.activity.service;
 
 import buildup.server.activity.domain.Activity;
-import buildup.server.activity.dto.ActivityListResponse;
-import buildup.server.activity.dto.ActivitySaveRequest;
-import buildup.server.activity.dto.ActivityResponse;
-import buildup.server.activity.dto.ActivityUpdateRequest;
+import buildup.server.activity.dto.*;
 import buildup.server.activity.exception.ActivityErrorCode;
 import buildup.server.activity.exception.ActivityException;
 import buildup.server.activity.repository.ActivityRepository;
@@ -19,6 +16,11 @@ import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
+import buildup.server.record.domain.Record;
+import buildup.server.record.exception.RecordErrorCode;
+import buildup.server.record.exception.RecordException;
+import buildup.server.record.repository.RecordRepository;
+import buildup.server.record.service.RecordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,6 +36,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -45,6 +50,8 @@ public class ActivityService {
     private final MemberService memberService;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
+    private final RecordService recordService;
+    private final RecordRepository recordRepository;
     private final S3Service s3Service;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate nowDate;
@@ -59,21 +66,25 @@ public class ActivityService {
 
         Activity activity = requestDto.toActivity();
         activity.setCategory(category);
+        activity.setMember(member);
+        activityRepository.save(activity);
 
         String activity_url = null;
         if (! img.isEmpty())
-            activity_url = s3Service.uploadActivity(activity, member.getId(), img);
-        activity.setMember(member);
+            activity_url = s3Service.uploadActivity(activity.getId(), img);
         activity.setActivityimg(activity_url);
-        return activityRepository.save(activity).getId();
+
+        return activity.getId();
     }
 
+    // 기록(메인) - 전체
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivities() {
         Member me = memberService.findCurrentMember();
         return readActivitiesByMember(me);
     }
 
+    // 활동 상세
     @Transactional(readOnly = true)
     public ActivityResponse readOneActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
@@ -81,6 +92,7 @@ public class ActivityService {
         return toActivityResponse(activity);
     }
 
+    // 기록(메인) - 카테고리별
     @Transactional(readOnly = true)
     public List<ActivityListResponse> readMyActivitiesByCategory(Long categoryId) {
         Member me = memberService.findCurrentMember();
@@ -90,21 +102,54 @@ public class ActivityService {
         return readActivitiesByMemberAndCategory(me, category);
     }
 
+    // 홈 - 기록 필터링
     @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId, Long categoryId) {
-        Member member = memberRepository.findById(profileId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        categoryService.checkCategoryAuthForRead(member, category);
-        return readActivitiesByMember(member);
+    public List<SearchResult> readActivitiesByFilter(FilterVO filter) {
+        Member me = memberService.findCurrentMember();
+        List<Activity> activities = activityRepository.findAllByMember(me);
+
+        if (!filter.getStart().isEmpty() && !filter.getEnd().isEmpty()) {
+            LocalDate startDate = convertLocalDate(filter.getStart());
+            LocalDate end = convertLocalDate(filter.getEnd());
+            LocalDate endDate = end.withDayOfMonth(end.lengthOfMonth());
+
+            if (startDate.isAfter(endDate))
+                throw new ActivityException(ActivityErrorCode.ACTIVITY_DATE_ERROR);
+
+            activities = activities.stream().filter(
+                    a -> a.getStartDate().isAfter(startDate) && a.getEndDate().isBefore(endDate)
+                    ).collect(Collectors.toList());
+        }
+
+        List<String> categories = filter.getCategories();
+        if (categories.isEmpty()) {
+            categories = List.of("대외활동", "공모전", "동아리", "프로젝트", "자격증", "교내활동");
+        }
+
+        List<SearchResult> results = new ArrayList<>();
+        for (String categoryName : categories) {
+            Category category = categoryRepository.findByName(categoryName)
+                    .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+            List<Activity> activityList = activities.stream().filter(
+                    a -> category.equals(a.getCategory())
+            ).collect(Collectors.toList());
+            results.add(new SearchResult(categoryName, toDtoList(activityList)));
+        }
+
+        return results;
     }
 
+    // 프로필 검색 상세(약력)
     @Transactional(readOnly = true)
-    public List<ActivityListResponse> readActivitiesByProfileAndCategory(Long profileId) {
+    public List<SearchResult> readActivitiesByProfile(Long profileId) {
         Member member = memberRepository.findById(profileId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        return readActivitiesByMember(member);
+        List<SearchResult> results = new ArrayList<>();
+        for (Long id=1L; id<7L; id++) {
+            Category category = categoryRepository.findById(id).get();
+            results.add(new SearchResult(category.getName(), readActivitiesByMemberAndCategory(member, category)));
+        }
+        return results;
     }
 
     @Transactional
@@ -118,18 +163,23 @@ public class ActivityService {
     }
 
     @Transactional
-    public void updateActivityImages(MultipartFile img) {
-        Member member = findCurrentMember();
-        Activity activity = activityRepository.findById(member.getId()).get();
+    public void updateActivityImages(ActivityImageUpdateRequest requestDto, MultipartFile img) {
+        Member member = memberService.findCurrentMember();
+        Activity activity = activityRepository.findById(requestDto.getActivityId())
+                .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
 
         String activity_url = activity.getActivityimg();
 
         if (! img.isEmpty()) {
-            String url = s3Service.uploadActivity(activity, member.getId(), img);
+            if (activity_url != null)
+                s3Service.deleteActivity(activity_url);
+            String url = s3Service.uploadActivity(activity.getId(), img);
             activity.setActivityimg(url);
-        } else if (activity_url!=null) {
-            s3Service.deleteActivity(activity_url);
-            activity.setActivityimg(null);
+        } else {
+            if (activity_url != null) {
+                s3Service.deleteActivity(activity_url);
+                activity.setActivityimg(null);
+            }
         }
     }
     @Transactional
@@ -137,13 +187,14 @@ public class ActivityService {
         Activity activity= activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
+        List<Record> deleterecord = recordRepository.findAllByActivity(activity);
+        recordRepository.deleteAll(deleterecord);
         activityRepository.delete(activity);
     }
-
-    private Member findCurrentMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = memberRepository.findByUsername(authentication.getName()).get();
-        return member;
+    private LocalDate convertLocalDate(String value) {
+        return LocalDate.of(Integer.valueOf(value.substring(0,4)),
+                Integer.valueOf(value.substring(5)),
+                1);
     }
 
     private Integer calculatePercentage(LocalDate startDate, LocalDate endDate){
@@ -158,11 +209,8 @@ public class ActivityService {
 
         Integer percentage = (int) (((startAndNow + 1) / (betweenDays + 1)) * 100);
 
-        if (percentage >= 100){
-            percentage = 100;
-        } else if (percentage <= 0) {
-            percentage = 0;
-        }
+        if (percentage >= 100){ percentage = 100; }
+        else if (percentage <= 0) { percentage = 0; }
 
         return percentage;
     }

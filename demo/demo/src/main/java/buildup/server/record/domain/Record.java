@@ -29,6 +29,7 @@ public class Record {
 
     private String url;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;
@@ -60,8 +61,8 @@ public class Record {
 
     public void updateRecordImage(List<RecordImg> images){
         this.images = images;
-//        for (RecordImg img : images) {
-//            img.setRecord(this);
-//        }
+        for (RecordImg img : images) {
+            img.setRecord(this);
+        }
     }
 }

@@ -27,4 +27,11 @@ public class CommonExceptionAdvice {
                 DtoValidationErrorCode.BAD_INPUT.getDefaultMessage(),
                 errors);
     }
+
+    @ExceptionHandler(S3Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorEntity s3Exception(S3Exception ex) {
+        log.error("S3 Image Exception[{}]: {}", ex.getErrorCode().toString(), ex.getErrorMessage());
+        return new ErrorEntity(ex.getErrorCode().toString(), ex.getErrorMessage());
+    }
 }

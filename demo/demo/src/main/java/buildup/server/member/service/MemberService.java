@@ -1,6 +1,10 @@
 package buildup.server.member.service;
 
 import buildup.server.auth.domain.*;
+import buildup.server.auth.dto.TokenRequestDto;
+import buildup.server.auth.exception.AuthErrorCode;
+import buildup.server.auth.exception.AuthException;
+import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Member;
@@ -42,7 +46,8 @@ public class MemberService {
     // TODO: 로그인한 사용자
     public Member findCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member user = memberRepository.findByUsername(authentication.getName()).get();
+        Member user = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return user;
     }
 
@@ -119,6 +124,9 @@ public class MemberService {
                 SocialJoinRequest.toEntity(request, pw)
         );
     }
+
+
+
 
 
 }

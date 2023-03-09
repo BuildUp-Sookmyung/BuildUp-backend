@@ -28,21 +28,17 @@ public class RecordController {
 
     @PostMapping
     public StringResponse createRecord(@RequestPart RecordSaveRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
-        if (multipartFiles == null) {
-            throw new RecordException(RecordErrorCode.WRONG_INPUT_CONTENT);
-        }
-        List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
-        Long id = recordService.createRecord(request, imgUrls);
+        Long id = recordService.createRecord(request, multipartFiles);
         return new StringResponse("기록을 생성했습니다. id: " + id);
     }
 
     @GetMapping("/{recordId}")
-    public RecordResponse readoneRecord(@PathVariable Long recordId) {
+    public RecordResponse readOneRecord(@PathVariable Long recordId) {
         return recordService.readOneRecord(recordId);
     }
 
-    @GetMapping("/activity/{activityId}")
-    public List<RecordListResponse> readAllRecordByActivity(@PathVariable Long activityId){
+    @GetMapping("/activities/{activityId}")
+    public List<RecordListResponse> readAllRecordsByActivity(@PathVariable Long activityId){
         return recordService.readAllRecordByActivity(activityId);
     }
 
@@ -51,10 +47,9 @@ public class RecordController {
         recordService.updateRecords(requestDto);
         return new StringResponse("기록 수정 완료되었습니다");
     }
-
     @PutMapping("/imgs")
     public StringResponse updateRecordImg(@RequestPart RecordImageUpdateRequest request, @RequestPart(required=false) List<MultipartFile> multipartFiles) {
-        recordService.updateRecordImages(request, multipartFiles);
+        recordService.updateRecordImage(request, multipartFiles);
         return new StringResponse("기록 이미지 수정이 완료되었습니다");
     }
 
