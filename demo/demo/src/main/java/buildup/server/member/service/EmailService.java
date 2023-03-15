@@ -94,7 +94,7 @@ public class EmailService {
 
         Optional<Member> findMemberID = memberRepository.findByEmail(email);
 
-        if (findMemberID.isPresent()) {
+        if (findMemberID.isPresent() && (findMemberID.get().getProvider().toString() == "LOCAL")) {
 
             Member member = findMemberID.get();
             String memberUsername = member.getUsername();

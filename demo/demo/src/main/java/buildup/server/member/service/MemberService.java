@@ -112,7 +112,6 @@ public class MemberService {
                 authService.createAuth(loginRequest),
                 authService.setRefreshToken(loginRequest)
         );
-
     }
 
     private Member saveMember(LocalJoinRequest request) {
