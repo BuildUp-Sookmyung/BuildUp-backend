@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -92,18 +93,19 @@ public class EmailService {
     @Transactional
     public String[] findIdAndDate(String email) throws MemberException {
 
-        Optional<Member> findMemberID = memberRepository.findByEmail(email);
+        List<Member> findMemberIDList = memberRepository.findAllByEmail(email);
 
-        if (findMemberID.isPresent()) {
-
-            Member member = findMemberID.get();
-            String memberUsername = member.getUsername();
-            String memberCreated = member.getCreatedAt().toString().substring(0, 10) + " 가입";
-            String[] result = {memberUsername, memberCreated};
-
-            return result;
-
-        } else {
+        if(!findMemberIDList.isEmpty()){
+            for(Member member : findMemberIDList){
+                if(member.getProvider().toString() == "LOCAL"){
+                    String memberUsername = member.getUsername();
+                    String memberCreated = member.getCreatedAt().toString().substring(0, 10) + " 가입";
+                    String[] result = {memberUsername, memberCreated};
+                    return result;
+                }
+            }
+            throw new MemberException(MemberErrorCode.ACCOUNT_IN_SOCIAL);
+        }else{
             throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);    // 등록된 id 없을때
         }
 
@@ -111,11 +113,15 @@ public class EmailService {
 
     @Transactional
     public void updatePw(NewLoginRequest requestDto) {
-        Optional<Member> findMemberID = memberRepository.findByEmail(requestDto.getEmail());
-        if (findMemberID.isPresent()){
-            Member member1 = findMemberID.get();
-            member1.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
-        } else{
+        List<Member> findMemberIDList = memberRepository.findAllByEmail(requestDto.getEmail());
+
+        if(!findMemberIDList.isEmpty()){
+            for(Member member : findMemberIDList){
+                if(member.getProvider().toString() == "LOCAL"){
+                    member.modifyPw(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(requestDto.getPassword()));
+                }
+            }
+        }else{
             throw new MemberException(MemberErrorCode.MEMBER_PW_UPDATE_FAILED);
         }
     }
