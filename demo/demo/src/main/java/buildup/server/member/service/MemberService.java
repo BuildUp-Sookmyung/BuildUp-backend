@@ -93,6 +93,12 @@ public class MemberService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public void verifyDuplicatedId(String username) {
+        if (memberRepository.findByUsername(username).isPresent())
+            throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
+    }
+
     // 기존 회원이면 true, 신규 회원이면 false 리턴
     @Transactional
     public boolean verifyMember(SocialLoginRequest request) {
