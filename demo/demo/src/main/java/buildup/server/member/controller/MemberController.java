@@ -51,6 +51,7 @@ public class MemberController {
 
     @PostMapping("/find-id")
     public IdResponse findIdAndDate(@Valid @RequestBody EmailAuthRequest codeDto) {
+
         String[] result = emailService.findIdAndDate(codeDto.getEmail());
         String username = result[0];
         String createdAt = result[1];
@@ -65,18 +66,10 @@ public class MemberController {
     @PostMapping("/find-pw")
     public StringResponse findPw(@Valid @RequestBody NewLoginRequest dto) {
         emailService.updatePw(dto);
-
 //        Authentication authentication = authenticationManager.authenticate(
 //                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         return new StringResponse("비밀번호 재설정이 완료되었습니다.");
-//        if (emailService.UpdatePW(newloginDto.getPassword())) {
-//            log.info("비밀번호 재설정 성공");
-//            return new StringResponse("비밀번호 재설정이 완료되었습니다.");
-//        }
-//        throw new MemberException(MemberErrorCode.MEMBER_EMAIL_AUTH_FAILED);
-
 
     }
 

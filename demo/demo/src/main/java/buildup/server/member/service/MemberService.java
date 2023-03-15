@@ -8,6 +8,7 @@ import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
 import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Member;
+import buildup.server.member.domain.Provider;
 import buildup.server.member.dto.LocalJoinRequest;
 import buildup.server.member.dto.LoginRequest;
 import buildup.server.member.dto.SocialJoinRequest;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -57,6 +60,12 @@ public class MemberService {
         // 기존 회원 확인
         if (memberRepository.findByUsername(request.getUsername()).isPresent())
             throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
+
+        List<Member> members = memberRepository.findAllByEmail(request.getProfile().getEmail());
+        for (Member member: members) {
+            if (member.getProvider() == Provider.LOCAL)
+                throw new MemberException(MemberErrorCode.MEMBER_DUPLICATED);
+        }
 
         // 신규 회원이면 멤버 엔티티 db에 저장, 프로필 저장
         Member saveMember = saveMember(request);
@@ -112,7 +121,6 @@ public class MemberService {
                 authService.createAuth(loginRequest),
                 authService.setRefreshToken(loginRequest)
         );
-
     }
 
     private Member saveMember(LocalJoinRequest request) {
