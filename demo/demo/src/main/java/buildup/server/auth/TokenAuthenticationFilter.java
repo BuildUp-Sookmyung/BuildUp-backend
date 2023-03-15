@@ -32,6 +32,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     "/member/login",
                     "/member/reissue",
                     "/member/find-id",
+                    "/member/id-check",
                     "/member/find-pw",
                     "/member/time",
                     "/health",

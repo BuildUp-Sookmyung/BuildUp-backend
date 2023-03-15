@@ -79,6 +79,12 @@ public class MemberController {
         return new TokenDto(info.getAccessToken().getToken(), info.getMemberRefreshToken().getRefreshToken());
     }
 
+    @PostMapping("/id-check")
+    public StringResponse checkUsername(@Valid @RequestBody IdDto id) {
+        memberService.verifyDuplicatedId(id.getId());
+        return new StringResponse("사용 가능한 아이디 입니다.");
+    }
+
     @PostMapping("/login")
     public TokenDto signInByLocalAccount(@Valid @RequestBody LoginRequest loginRequest) {
         AuthInfo info = memberService.signIn(loginRequest);
