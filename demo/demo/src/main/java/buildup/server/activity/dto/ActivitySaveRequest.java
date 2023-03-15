@@ -4,6 +4,8 @@ import buildup.server.activity.domain.Activity;
 import buildup.server.category.Category;
 import buildup.server.member.domain.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +18,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ActivitySaveRequest {
 
+    @NotNull
     private Long categoryId;
 
+    @NotBlank
     private String activityName;
 
     private String hostName;
@@ -26,9 +30,11 @@ public class ActivitySaveRequest {
 
     private String urlName;
 
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
