@@ -27,7 +27,8 @@ public class Activity {
     private String url;
 
     @Setter
-    private String activityimg;
+    @Column(name = "activity_img")
+    private String activityImg;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;

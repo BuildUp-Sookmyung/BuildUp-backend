@@ -72,7 +72,7 @@ public class ActivityService {
         String activity_url = null;
         if (! img.isEmpty())
             activity_url = s3Service.uploadActivity(activity.getId(), img);
-        activity.setActivityimg(activity_url);
+        activity.setActivityImg(activity_url);
 
         return activity.getId();
     }
@@ -168,17 +168,17 @@ public class ActivityService {
         Activity activity = activityRepository.findById(requestDto.getActivityId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
 
-        String activity_url = activity.getActivityimg();
+        String activity_url = activity.getActivityImg();
 
         if (! img.isEmpty()) {
             if (activity_url != null)
                 s3Service.deleteActivity(activity_url);
             String url = s3Service.uploadActivity(activity.getId(), img);
-            activity.setActivityimg(url);
+            activity.setActivityImg(url);
         } else {
             if (activity_url != null) {
                 s3Service.deleteActivity(activity_url);
-                activity.setActivityimg(null);
+                activity.setActivityImg(null);
             }
         }
     }
@@ -246,7 +246,7 @@ public class ActivityService {
 
     private ActivityResponse toActivityResponse(Activity activity) {
         return new ActivityResponse(activity.getId(), activity.getCategory().getName(), activity.getName(),
-                activity.getHost(), activity.getActivityimg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
+                activity.getHost(), activity.getActivityImg(), activity.getRole(), activity.getStartDate(), activity.getEndDate(),
                 activity.getUrl());
     }
 
