@@ -235,6 +235,7 @@ public class ActivityService {
             dtos.add(new ActivityListResponse(
                     entity.getId(),
                     entity.getName(),
+                    entity.getCategory().getName(),
                     entity.getStartDate(),
                     entity.getEndDate(),
                     calculatePercentage(entity.getStartDate(), entity.getEndDate())
