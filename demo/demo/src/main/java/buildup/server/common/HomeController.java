@@ -34,7 +34,7 @@ public class HomeController {
     }
 
     @GetMapping("/health")
-    public StringResponse healthCheck() {return new StringResponse("HealthCheck");}
+    public StringResponse healthCheck() {return new StringResponse("HealthCheck v2");}
 
     @GetMapping("/test")
     public StringResponse test() {
