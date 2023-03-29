@@ -16,14 +16,16 @@ public class ActivityListResponse {
 
     private Long activityId;
     private String activityName;
+    private String categoryName;
     private LocalDate startDate;
     private LocalDate endDate;
 
     private Integer percentage;
 
-    public ActivityListResponse(Long activityId, String activityName, LocalDate startDate, LocalDate endDate, Integer percentage) {
+    public ActivityListResponse(Long activityId, String activityName, String categoryName, LocalDate startDate, LocalDate endDate, Integer percentage) {
         this.activityId = activityId;
         this.activityName = activityName;
+        this.categoryName = categoryName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.percentage = percentage;
