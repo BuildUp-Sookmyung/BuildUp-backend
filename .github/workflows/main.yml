@@ -2,7 +2,8 @@ name: buildup
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     
 env:
   S3_BUCKET_NAME: buildup0204-bucket
