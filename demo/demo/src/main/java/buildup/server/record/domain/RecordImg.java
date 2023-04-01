@@ -15,18 +15,17 @@ public class RecordImg {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "record_img_id")
     private Long id;
 
     @Setter
+    @Column(name="store_url")
     private String storeUrl;
-    private String originalName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Record record;
-
-    private Long index;
 
     public RecordImg(String storeUrl, Record record) {
         this.storeUrl = storeUrl;
