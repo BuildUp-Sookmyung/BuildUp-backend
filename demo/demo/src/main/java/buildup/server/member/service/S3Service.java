@@ -128,7 +128,7 @@ public class S3Service {
     public String uploadOneRecord(MultipartFile multipartFile) {
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
+        objectMetadata.setContentType("image/png");
         objectMetadata.setContentLength(multipartFile.getSize());
 
         String originalFilename = multipartFile.getOriginalFilename();
@@ -151,7 +151,7 @@ public class S3Service {
 
     private String putObject(MultipartFile multipartFile, String key) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
+        objectMetadata.setContentType("image/png");
         objectMetadata.setContentLength(multipartFile.getSize());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
