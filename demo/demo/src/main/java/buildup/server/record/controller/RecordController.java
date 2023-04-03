@@ -53,9 +53,14 @@ public class RecordController {
         return new StringResponse("기록 이미지 수정이 완료되었습니다");
     }
 
-    @DeleteMapping("/{id}")
-    public StringResponse deleteRecord(@PathVariable Long id) {
-        recordService.deleteRecord(id);
+//    @DeleteMapping("/{id}")
+//    public StringResponse deleteRecord(@PathVariable Long id) {
+//        recordService.deleteRecord(id);
+//        return new StringResponse("선택 기록 삭제 완료했습니다.");
+//    }
+    @DeleteMapping
+    public StringResponse deleteRecord(@Valid @RequestBody RecordDeleteRequest request) {
+        recordService.deleteRecords(request);
         return new StringResponse("선택 기록 삭제 완료했습니다.");
     }
 
