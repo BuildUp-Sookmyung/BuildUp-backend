@@ -109,13 +109,13 @@ public class RecordService {
 
     }
 
+
+
     @Transactional
-    public void deleteRecord(Long id) {
-        Record record = recordRepository.findById(id)
-                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-        List<RecordImg> deleterecordimg = recordImgRepository.findAllByRecord(record);
-        recordImgRepository.deleteAll(deleterecordimg);
-        recordRepository.delete(record);
+    public void deleteRecords(RecordDeleteRequest request){
+        for(Long id : request.getIdList()){
+            deleteRecord(id);
+        }
     }
 
     private RecordImgRequest updateoneImage(MultipartFile multipartFile){
@@ -131,6 +131,13 @@ public class RecordService {
                     .build();
             recordImgList.add(recordImg);
         }
+    }
+    private void deleteRecord(Long id) {
+        Record record = recordRepository.findById(id)
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
+        List<RecordImg> deleterecordimg = recordImgRepository.findAllByRecord(record);
+        recordImgRepository.deleteAll(deleterecordimg);
+        recordRepository.delete(record);
     }
 
 
