@@ -96,6 +96,8 @@ public class RecordService {
 
     @Transactional
     public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
+        Record record = recordRepository.findById(requestDto.getRecordid())
+                .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
         List<RecordImg> findrecordimg = recordImgRepository.findByRecordId(requestDto.getRecordid());
         List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
         for(RecordImg recordImg : findrecordimg){
@@ -110,8 +112,6 @@ public class RecordService {
         }
 
     }
-
-
 
     @Transactional
     public void deleteRecords(List<Long> idList){
