@@ -14,5 +14,6 @@ public class RecordImageUpdateRequest {
 
     private Long recordid;
 
+    private String[] deleteUrlList;
     private List<RecordImgRequest> storeUrl;
 }

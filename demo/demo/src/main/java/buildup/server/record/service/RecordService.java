@@ -7,6 +7,8 @@ import buildup.server.activity.repository.ActivityRepository;
 import buildup.server.category.CategoryRepository;
 import buildup.server.category.CategoryService;
 import buildup.server.member.domain.Member;
+import buildup.server.member.exception.MemberErrorCode;
+import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
 import buildup.server.member.service.MemberService;
 import buildup.server.member.service.S3Service;
@@ -112,8 +114,8 @@ public class RecordService {
 
 
     @Transactional
-    public void deleteRecords(RecordDeleteRequest request){
-        for(Long id : request.getIdList()){
+    public void deleteRecords(List<Long> idList){
+        for(Long id : idList){
             deleteRecord(id);
         }
     }
