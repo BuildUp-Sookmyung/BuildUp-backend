@@ -54,8 +54,8 @@ public class RecordController {
     }
 
     @DeleteMapping("/{ids}")
-    public StringResponse deleteRecords(@PathVariable List<Long> idList) {
-        recordService.deleteRecords(idList);
+    public StringResponse deleteRecords(@PathVariable List<Long> ids) {
+        recordService.deleteRecords(ids);
         return new StringResponse("선택 기록 삭제 완료했습니다.");
     }
 
