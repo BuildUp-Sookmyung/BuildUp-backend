@@ -114,9 +114,10 @@ public class RecordService {
     }
 
     @Transactional
-    public void deleteRecords(List<Long> idList){
-        for(Long id : idList){
-            deleteRecord(id);
+    public void deleteRecords(List<String> idList){
+        log.info("try to delete records id: {}", idList.toString());
+        for(String id : idList){
+            deleteRecord(Long.parseLong(id));
         }
     }
 
