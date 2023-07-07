@@ -187,8 +187,8 @@ public class ActivityService {
         Activity activity= activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
-        List<Record> deleterecord = recordRepository.findAllByActivity(activity);
-        recordRepository.deleteAll(deleterecord);
+        List<Record> childRecords = recordRepository.findAllByActivity(activity);
+        recordRepository.deleteAll(childRecords);
         activityRepository.delete(activity);
     }
     private LocalDate convertLocalDate(String value) {
