@@ -30,6 +30,7 @@ public class ActivityResponse {
 
     private String hostName;
 
+    // TODO: 프론트랑 얘기해보기
     private String activityimg;
 
     private String roleName;

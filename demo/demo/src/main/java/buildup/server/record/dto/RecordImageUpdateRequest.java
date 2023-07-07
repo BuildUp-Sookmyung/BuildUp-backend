@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RecordImageUpdateRequest {
 
+    // TODO: 수정
     private Long recordid;
 
     private String[] deleteUrlList;

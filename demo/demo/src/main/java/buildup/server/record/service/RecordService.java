@@ -96,13 +96,14 @@ public class RecordService {
 
     @Transactional
     public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
+        // TODO: record 존재하는지만 확인하면 됨. 변수에 저장할 필요X
         Record record = recordRepository.findById(requestDto.getRecordid())
                 .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-        List<RecordImg> findrecordimg = recordImgRepository.findByRecordId(requestDto.getRecordid());
+        List<RecordImg> recordImagesByRecordId = recordImgRepository.findByRecordId(requestDto.getRecordid());
         List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
-        for(RecordImg recordImg : findrecordimg){
+        for(RecordImg recordImg : recordImagesByRecordId){
             String old_url = recordImg.getStoreUrl();
-            String new_url = imgUrls.get(findrecordimg.indexOf(recordImg));
+            String new_url = imgUrls.get(recordImagesByRecordId.indexOf(recordImg));
             if(old_url == null){
                 recordImg.setStoreUrl(new_url);
             }else{
