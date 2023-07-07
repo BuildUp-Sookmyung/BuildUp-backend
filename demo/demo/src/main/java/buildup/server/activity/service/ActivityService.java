@@ -229,10 +229,10 @@ public class ActivityService {
     }
 
     private List<ActivityListResponse> toDtoList(List<Activity> entities) {
-        List<ActivityListResponse> dtos = new ArrayList<>();
+        List<ActivityListResponse> dtoList = new ArrayList<>();
 
         for (Activity entity : entities)
-            dtos.add(new ActivityListResponse(
+            dtoList.add(new ActivityListResponse(
                     entity.getId(),
                     entity.getName(),
                     entity.getCategory().getName(),
@@ -242,7 +242,7 @@ public class ActivityService {
                     )
             );
 
-        return dtos;
+        return dtoList;
     }
 
     private ActivityResponse toActivityResponse(Activity activity) {
