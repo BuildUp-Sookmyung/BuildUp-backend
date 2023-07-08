@@ -122,7 +122,7 @@ public class RecordService {
         }
     }
 
-    private RecordImgRequest updateoneImage(MultipartFile multipartFile){
+    private RecordImgRequest updateOneImage(MultipartFile multipartFile){
         return RecordImgRequest.builder()
                 .storeUrl(s3Service.uploadOneRecord(multipartFile))
                 .build();
@@ -139,8 +139,8 @@ public class RecordService {
     private void deleteRecord(Long id) {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-        List<RecordImg> deleterecordimg = recordImgRepository.findAllByRecord(record);
-        recordImgRepository.deleteAll(deleterecordimg);
+        List<RecordImg> recordImages = recordImgRepository.findAllByRecord(record);
+        recordImgRepository.deleteAll(recordImages);
         recordRepository.delete(record);
     }
 
