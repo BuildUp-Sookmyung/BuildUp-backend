@@ -106,7 +106,7 @@ public class S3Service {
                         .withCannedAcl(CannedAccessControlList.PublicRead));
                 fileUrls.add(amazonS3Client.getUrl(bucket, key).toString());
             } catch (IOException ex) {
-                log.error("이미지 업로드 IOExcpetion");
+                log.error("이미지 업로드 IOException");
                 throw new S3Exception(S3ErrorCode.IMAGE_UPLOAD_FAILED);
             }
         }
@@ -158,7 +158,7 @@ public class S3Service {
             amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException ex) {
-            log.error("이미지 업로드 IOExcpetion");
+            log.error("이미지 업로드 IOException");
             throw new S3Exception(S3ErrorCode.IMAGE_UPLOAD_FAILED);
         }
 
