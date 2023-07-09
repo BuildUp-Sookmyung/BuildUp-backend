@@ -187,8 +187,8 @@ public class ActivityService {
         Activity activity= activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
         checkActivityAuth(activity, memberService.findCurrentMember());
-        List<Record> deleterecord = recordRepository.findAllByActivity(activity);
-        recordRepository.deleteAll(deleterecord);
+        List<Record> childRecords = recordRepository.findAllByActivity(activity);
+        recordRepository.deleteAll(childRecords);
         activityRepository.delete(activity);
     }
     private LocalDate convertLocalDate(String value) {
@@ -229,10 +229,10 @@ public class ActivityService {
     }
 
     private List<ActivityListResponse> toDtoList(List<Activity> entities) {
-        List<ActivityListResponse> dtos = new ArrayList<>();
+        List<ActivityListResponse> dtoList = new ArrayList<>();
 
         for (Activity entity : entities)
-            dtos.add(new ActivityListResponse(
+            dtoList.add(new ActivityListResponse(
                     entity.getId(),
                     entity.getName(),
                     entity.getCategory().getName(),
@@ -242,7 +242,7 @@ public class ActivityService {
                     )
             );
 
-        return dtos;
+        return dtoList;
     }
 
     private ActivityResponse toActivityResponse(Activity activity) {

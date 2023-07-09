@@ -96,13 +96,14 @@ public class RecordService {
 
     @Transactional
     public void updateRecordImage(RecordImageUpdateRequest requestDto, List<MultipartFile> multipartFiles){
+        // TODO: record 존재하는지만 확인하면 됨. 변수에 저장할 필요X
         Record record = recordRepository.findById(requestDto.getRecordid())
                 .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-        List<RecordImg> findrecordimg = recordImgRepository.findByRecordId(requestDto.getRecordid());
+        List<RecordImg> recordImagesByRecordId = recordImgRepository.findByRecordId(requestDto.getRecordid());
         List<String> imgUrls = s3Service.uploadRecord(multipartFiles);
-        for(RecordImg recordImg : findrecordimg){
+        for(RecordImg recordImg : recordImagesByRecordId){
             String old_url = recordImg.getStoreUrl();
-            String new_url = imgUrls.get(findrecordimg.indexOf(recordImg));
+            String new_url = imgUrls.get(recordImagesByRecordId.indexOf(recordImg));
             if(old_url == null){
                 recordImg.setStoreUrl(new_url);
             }else{
@@ -121,7 +122,7 @@ public class RecordService {
         }
     }
 
-    private RecordImgRequest updateoneImage(MultipartFile multipartFile){
+    private RecordImgRequest updateOneImage(MultipartFile multipartFile){
         return RecordImgRequest.builder()
                 .storeUrl(s3Service.uploadOneRecord(multipartFile))
                 .build();
@@ -138,8 +139,8 @@ public class RecordService {
     private void deleteRecord(Long id) {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new RecordException(RecordErrorCode.NOT_FOUND_RECORD));
-        List<RecordImg> deleterecordimg = recordImgRepository.findAllByRecord(record);
-        recordImgRepository.deleteAll(deleterecordimg);
+        List<RecordImg> recordImages = recordImgRepository.findAllByRecord(record);
+        recordImgRepository.deleteAll(recordImages);
         recordRepository.delete(record);
     }
 
