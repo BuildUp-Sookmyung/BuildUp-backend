@@ -1,12 +1,7 @@
 package buildup.server.member.service;
 
 import buildup.server.auth.domain.*;
-import buildup.server.auth.dto.TokenRequestDto;
-import buildup.server.auth.exception.AuthErrorCode;
-import buildup.server.auth.exception.AuthException;
-import buildup.server.auth.repository.RefreshTokenRepository;
 import buildup.server.auth.service.AuthService;
-import buildup.server.common.RedisUtil;
 import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Provider;
 import buildup.server.member.dto.LocalJoinRequest;
@@ -16,18 +11,15 @@ import buildup.server.member.dto.SocialLoginRequest;
 import buildup.server.member.exception.MemberErrorCode;
 import buildup.server.member.exception.MemberException;
 import buildup.server.member.repository.MemberRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,7 +28,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final AuthService authService;
     private final ProfileService profileService;
-    private final RedisUtil redisUtil;
     private static final String SOCIAL_PW = "social1234";
 
     //TODO: 추후 제거
