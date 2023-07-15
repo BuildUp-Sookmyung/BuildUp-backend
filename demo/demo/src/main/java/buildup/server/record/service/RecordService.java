@@ -48,8 +48,7 @@ public class RecordService {
 
         Activity activity = activityRepository.findById(requestDto.getActivityId())
                 .orElseThrow(() -> new ActivityException(ActivityErrorCode.ACTIVITY_NOT_FOUND));
-        Record record = requestDto.toRecord();
-        record.setActivity(activity);
+        Record record = requestDto.toRecord(activity);
 
         if (multipartFiles == null) {throw new RecordException(RecordErrorCode.WRONG_INPUT_CONTENT);}
 
