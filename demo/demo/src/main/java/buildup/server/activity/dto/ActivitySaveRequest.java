@@ -2,6 +2,7 @@ package buildup.server.activity.dto;
 
 import buildup.server.activity.domain.Activity;
 import buildup.server.category.Category;
+import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
@@ -39,7 +40,7 @@ public class ActivitySaveRequest {
     private LocalDate endDate;
 
 
-    public Activity toActivity() {
+    public Activity toActivity(Member member, Category category) {
         return Activity.builder()
                 .name(activityName)
                 .host(hostName)
@@ -47,12 +48,9 @@ public class ActivitySaveRequest {
                 .url(urlName)
                 .startDate(startDate)
                 .endDate(endDate)
+                .member(member)
+                .category(category)
                 .build();
     }
-
-//    public Activity toActivity(){
-//        return new Activity(categoryName, activityName, hostName, roleName, urlName,startDate, endDate, percentage);
-//    }
-
 
 }
