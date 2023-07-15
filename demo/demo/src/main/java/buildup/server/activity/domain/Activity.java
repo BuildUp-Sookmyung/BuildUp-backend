@@ -36,11 +36,10 @@ public class Activity {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @Setter
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
