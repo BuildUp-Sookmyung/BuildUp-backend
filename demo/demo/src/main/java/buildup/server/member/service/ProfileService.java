@@ -45,7 +45,6 @@ public class ProfileService {
     @Transactional
     public Long saveProfile(ProfileSaveRequest request, Member member) {
         Profile profile = request.toProfile(member);
-        String url = null;
         saveInterests(request.getInterests(), profile);
         profile.setMember(member);
         return profileRepository.save(profile).getId();
