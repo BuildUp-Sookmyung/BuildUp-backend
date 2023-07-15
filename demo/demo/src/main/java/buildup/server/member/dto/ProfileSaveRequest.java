@@ -1,5 +1,6 @@
 package buildup.server.member.dto;
 
+import buildup.server.member.domain.Member;
 import buildup.server.member.domain.Profile;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -26,7 +27,7 @@ public class ProfileSaveRequest {
 
     private List<String> interests;
 
-    public Profile toProfile() {
+    public Profile toProfile(Member member) {
         return Profile.builder()
                 .nickname(nickname)
                 .email(email)
@@ -34,6 +35,7 @@ public class ProfileSaveRequest {
                 .grade(grade)
                 .major(major)
                 .schoolPublicYn(schoolPublicYn)
+                .member(member)
                 .build();
     }
 
