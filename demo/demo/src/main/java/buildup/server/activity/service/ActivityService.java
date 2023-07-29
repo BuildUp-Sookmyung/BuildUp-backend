@@ -64,13 +64,11 @@ public class ActivityService {
                 .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
         categoryService.checkCategoryAuthForRead(member, category);
 
-        Activity activity = requestDto.toActivity();
-        activity.setCategory(category);
-        activity.setMember(member);
+        Activity activity = requestDto.toActivity(member, category);
         activityRepository.save(activity);
 
         String activity_url = null;
-        if (! img.isEmpty())
+        if (!img.isEmpty())
             activity_url = s3Service.uploadActivity(activity.getId(), img);
         activity.setActivityImg(activity_url);
 

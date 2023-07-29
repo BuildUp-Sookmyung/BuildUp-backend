@@ -1,5 +1,6 @@
 package buildup.server.record.dto;
 
+import buildup.server.activity.domain.Activity;
 import buildup.server.record.domain.Record;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class RecordSaveRequest {
 
     private String urlName;
 
-    public Record toRecord() {
+    public Record toRecord(Activity activity) {
         return Record.builder()
                 .title(recordTitle)
                 .date(date)
@@ -37,6 +38,7 @@ public class RecordSaveRequest {
                 .result(resultName)
                 .content(content)
                 .url(urlName)
+                .activity(activity)
                 .build();
     }
 
