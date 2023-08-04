@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class ActivitySaveRequest {
 
@@ -38,6 +38,16 @@ public class ActivitySaveRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
+    @Builder
+    public ActivitySaveRequest(Long categoryId, String activityName, String hostName, String roleName, String urlName, LocalDate startDate, LocalDate endDate) {
+        this.categoryId = categoryId;
+        this.activityName = activityName;
+        this.hostName = hostName;
+        this.roleName = roleName;
+        this.urlName = urlName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 
     public Activity toActivity() {
         return Activity.builder()

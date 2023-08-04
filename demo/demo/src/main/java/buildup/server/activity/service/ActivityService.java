@@ -50,7 +50,6 @@ public class ActivityService {
     private final MemberService memberService;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
-    private final RecordService recordService;
     private final RecordRepository recordRepository;
     private final S3Service s3Service;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -69,10 +68,10 @@ public class ActivityService {
         activity.setMember(member);
         activityRepository.save(activity);
 
-        String activity_url = null;
+        String activityUrl = null;
         if (! img.isEmpty())
-            activity_url = s3Service.uploadActivity(activity.getId(), img);
-        activity.setActivityImg(activity_url);
+            activityUrl = s3Service.uploadActivity(activity.getId(), img);
+        activity.setActivityImg(activityUrl);
 
         return activity.getId();
     }
