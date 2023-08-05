@@ -29,7 +29,6 @@ public class Record {
 
     private String url;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;

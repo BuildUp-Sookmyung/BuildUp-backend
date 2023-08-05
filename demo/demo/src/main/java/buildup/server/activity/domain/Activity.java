@@ -36,21 +36,29 @@ public class Activity {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @Setter
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Builder
-    public Activity(String name, String host, String role, String url, LocalDate startDate, LocalDate endDate, Category category, Member member) {
+    public Activity(String name,
+                    String host,
+                    String role,
+                    String url,
+                    String activityImg,
+                    LocalDate startDate,
+                    LocalDate endDate,
+                    Category category,
+                    Member member) {
         this.name = name;
         this.host = host;
         this.role = role;
         this.url = url;
+        this.activityImg = activityImg;
         this.startDate = startDate;
         this.endDate = endDate;
         this.category = category;
